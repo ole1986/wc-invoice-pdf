@@ -1,0 +1,4 @@
+[submodule "pdf-php"]
+	path = pdf-php
+	url = https://github.com/rospdf/pdf-php.git
+	branch = experimental
