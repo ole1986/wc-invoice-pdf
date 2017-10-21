@@ -9,3 +9,51 @@
  */
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
+if(class_exists( 'WCInvoicePdf' ) ) exit;
+
+define( 'WCINVOICEPDF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'WCINVOICEPDF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+
+add_action('init', array( 'WCInvoicePdf', 'init' ) );
+
+register_activation_hook( plugin_basename( __FILE__ ), array( 'WCInvoicePdf', 'install' ) );
+register_deactivation_hook(plugin_basename( __FILE__ ), array( 'WCInvoicePdf', 'deactivate' ));
+register_uninstall_hook( plugin_basename( __FILE__ ), array( 'WCInvoicePdf', 'uninstall' ) );
+
+class WCInvoicePdf {
+    /**
+     * installation
+     *
+     * @access public
+     * @static
+     * @return void
+     */
+    public static function install() {
+        // run the installer if ISPConfig invoicing module (if available)
+        
+    }
+
+    /**
+     * when plugin gets deactivated
+     *
+     * @access public
+     * @static
+     * @return void
+     */
+    public static function deactivate(){
+        // run the deactivate method from ISPConfig invoicing module (if available)
+        
+    }
+
+    /**
+        * uninstallation
+        *
+        * @access public
+        * @static
+        * @global $wpdb, $blog_id
+        * @return void
+        */
+    public static function uninstall() {
+        
+    }
+}
