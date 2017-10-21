@@ -7,20 +7,133 @@
  * Author URI: https://github.com/ole1986/wc-invoice-pdf
  * Text Domain: wc-invoice-pdf
  */
-defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
-if(class_exists( 'WCInvoicePdf' ) ) exit;
+namespace WCInvoicePdf;
+
+defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
 define( 'WCINVOICEPDF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WCINVOICEPDF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-add_action('init', array( 'WCInvoicePdf', 'init' ) );
+add_action('init', array( '\WCInvoicePdf\WCInvoicePdf', 'init' ) );
 
-register_activation_hook( plugin_basename( __FILE__ ), array( 'WCInvoicePdf', 'install' ) );
-register_deactivation_hook(plugin_basename( __FILE__ ), array( 'WCInvoicePdf', 'deactivate' ));
-register_uninstall_hook( plugin_basename( __FILE__ ), array( 'WCInvoicePdf', 'uninstall' ) );
+register_activation_hook( WCINVOICEPDF_PLUGIN_DIR, array( '\WCInvoicePdf\WCInvoicePdf', 'install' ) );
+register_deactivation_hook(WCINVOICEPDF_PLUGIN_DIR, array( '\WCInvoicePdf\WCInvoicePdf', 'deactivate' ));
+register_uninstall_hook( WCINVOICEPDF_PLUGIN_DIR, array( '\WCInvoicePdf\WCInvoicePdf', 'uninstall' ) );
 
 class WCInvoicePdf {
+
+    const OPTION_KEY = 'wc-invoice-pdf';
+
+    public static $OPTIONS = [
+        'wc_enable' => 0,
+        'wc_payment_reminder' => 1,
+        'wc_payment_message' => "Dear Administrator,\n\nThe following invoices are not being paid yet: %s\n\nPlease remind the customer(s) for payment",
+        'wc_recur' => 0,
+        'wc_recur_reminder' => 0,
+        'wc_recur_reminder_age' => 2,
+        'wc_recur_reminder_interval' => 2,
+        'wc_recur_reminder_max' => 2,
+        'wc_recur_message' => "Dear Customer,\n\nattached you can find your invoice %s\n\nKind Regards,\n Your hosting Team",
+        'wc_recur_reminder_message' => "Dear Customer,\n\nKindly be informed about the attached invoice %s not marked as paid in our system. If your payment has already been sent or remitted please ignore this email\n\nYour hosting Team",
+        'wc_recur_test' => 0,
+        'wc_mail_sender' => 'Invoice <invoice@domain.tld>',
+        'wc_mail_reminder' => 'yourmail@domain.tld',
+        'wc_pdf_title' => 'YourCompany - %s',
+        'wc_pdf_logo' => '/plugins/wc-invoice-pdf/logo.png',
+        'wc_pdf_addressline' => 'Your address in a single line',
+        'wc_pdf_condition' => "Some conditional things related to invoices\nLine breaks supported",
+        'wc_pdf_info' => 'Info block containing created date here: %s',
+        'wc_pdf_block1' => 'BLOCK #1',
+        'wc_pdf_block2' => 'BLOCK #2',
+        'wc_pdf_block3' => 'BLOCK #3'
+    ];
+
+    /**
+     * initialize the text domain and load the constructor
+     */
+    public static function init() {
+        self::load_textdomain_file();
+
+        require_once 'menu/invoice-menu.php';
+        require_once 'model/invoice.php';
+        require_once 'model/invoice-list.php';
+        require_once 'model/invoice-pdf.php';
+        require_once 'metabox/invoice-metabox.php';
+
+        // enable changing the due date through ajax
+        add_action( 'wp_ajax_invoicepdf', ['\WCInvoicePdf\WCInvoicePdf', 'doAjax'] );
+        // the rest after this is for NON-AJAX requests
+        if(defined('DOING_AJAX') && DOING_AJAX) return;
+
+        if(is_admin()) {
+            // used to trigger on invoice creation located in ispconfig_create_pdf.php
+            $invoicePdf = new Model\InvoicePdf();
+            $invoicePdf->Trigger();
+            // display invoice metabox in WC Order
+            new Metabox\InvoiceMetabox();
+            // display the admin menu
+            new Menu\InvoiceMenu();
+
+            add_action( 'admin_enqueue_scripts', ['\WCInvoicePdf\WCInvoicePdf', 'loadJS'] );
+        } else {
+            // scheduled tasks for invoice reminders
+            add_action('invoice_reminder', ['\WCInvoicePdf\Model\InvoiceTask', 'Run']);
+        }
+    }
+
+    /**
+     * load_textdomain_file
+     *
+     * @access protected
+     * @return void
+     */
+    protected static function load_textdomain_file() {
+        # load plugin textdomain
+        load_plugin_textdomain('wc-invoice-pdf', false, basename(WCINVOICEPDF_PLUGIN_DIR) . '/lang' );
+    }
+
+    public static function loadJS(){
+        wp_enqueue_script( 'my_custom_script', WCINVOICEPDF_PLUGIN_URL . 'js/wc-invoice-pdf-admin.js?_' . time() );
+    }
+
+    public static function doAjax(){
+        global $wpdb;
+
+        $result = '';
+        if(!empty($_POST['invoice_id'])) {
+            $invoice = new Model\Invoice(intval($_POST['invoice_id']));
+            if(!empty($_POST['due_date']))
+                $invoice->due_date = $result = date('Y-m-d H:i:s', strtotime($_POST['due_date']));
+            if(!empty($_POST['paid_date']))
+                $invoice->paid_date = $result = date('Y-m-d H:i:s', strtotime($_POST['paid_date']));
+
+            $invoice->Save();
+        } else if(!empty($_POST['order_id']) && isset($_POST['period'])) {
+            if(!empty($_POST['period']))
+                update_post_meta( intval($_POST['order_id']), '_ispconfig_period', $_POST['period']);
+            else
+                delete_post_meta( intval($_POST['order_id']), '_ispconfig_period');
+
+            $result = $_POST['period'];
+        } else if(!empty($_POST['payment_reminder'])) {
+            $taskPlaner = new Model\InvoiceTask();
+            $result = $taskPlaner->payment_reminder();
+        } else if(!empty($_POST['recurr'])) {
+            if(!empty(WPISPConfig3::$OPTIONS['wc_recur_test'])) {
+                $taskPlaner = new Model\InvoiceTask();
+                $result = $taskPlaner->payment_recur();
+            } else
+                $result = -2;
+        } else if(!empty($_POST['recurr_reminder'])) {
+            $taskPlaner = new Model\InvoiceTask();
+            $result = $taskPlaner->payment_recur_reminder();
+        }
+
+        echo json_encode($result);
+        wp_die();
+    }
+
     /**
      * installation
      *
@@ -29,8 +142,24 @@ class WCInvoicePdf {
      * @return void
      */
     public static function install() {
-        // run the installer if ISPConfig invoicing module (if available)
-        
+        global $wpdb;
+
+        Model\Invoice::install();
+
+        // setup the role
+        // add cap allowing adminstrators to download invoices by default
+        $role = get_role('administrator');
+        // TODO: Rename the cap accordingly
+        $role->add_cap('ispconfig_invoice');
+
+        // install WP schedule to remind due date
+        if (! wp_next_scheduled ( 'invoice_reminder' )) {
+            // install the invoice reminder schedule which runs on daily bases
+	        wp_schedule_event(time(), 'daily', 'invoice_reminder');
+        }
+
+        // refresh rewrite rules
+        flush_rewrite_rules();
     }
 
     /**
@@ -41,8 +170,8 @@ class WCInvoicePdf {
      * @return void
      */
     public static function deactivate(){
-        // run the deactivate method from ISPConfig invoicing module (if available)
-        
+        // turn off the invoice reminder schedule when plugin is disabled
+        wp_clear_scheduled_hook('invoice_reminder');
     }
 
     /**

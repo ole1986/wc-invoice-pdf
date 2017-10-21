@@ -1,0 +1,130 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Loco Demo\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: Mon Mar 14 2016 15:02:43 GMT+0100 (W. Europe Standard "
+"Time)\n"
+"PO-Revision-Date: Mon Mar 14 2016 15:13:23 GMT+0100 (W. Europe Standard "
+"Time)\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: English\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Loco-Source-Locale: en_US\n"
+"X-Loco-Target-Locale: de_DE\n"
+"X-Generator: Loco - https://localise.biz/\n"
+"X-Loco-Parser: loco_parse_po"
+
+msgid "Payments shall be made in advance:"
+msgstr "Die Zahlung erfolgt im Voraus:"
+
+msgid "A scheduler will submit the invoice to '%s'"
+msgstr "Ein Aufgabenplaner versendet die Rechnung an '%s'"
+
+msgid "Task Scheduler"
+msgstr "Aufgabenplaner"
+
+msgid "Run commands"
+msgstr "Kommandos ausführen"
+
+msgid "Sender info"
+msgstr "Absenderinformationen"
+
+msgid "Templates"
+msgstr "Vorlagen"
+
+msgid "Payments"
+msgstr "Zahlungen"
+
+msgid "Invoice template (PDF)"
+msgstr "Rechnungsvorlage (PDF)"
+
+msgid "Payment reminder"
+msgstr "Zahlungserinnerung"
+
+msgid "%s reminders sent"
+msgstr "%s Erinnerungen versendet"
+
+msgid "Recurring payments"
+msgstr "Regelmäßige Zahlungen"
+
+msgid "Payment report"
+msgstr "Zahlungsbericht"
+
+msgid "First reminder (days)"
+msgstr "Erste Erinnerung (tage)"
+
+msgid "Reminder interval"
+msgstr "Erinnerungsinterval"
+
+msgid "Max reminders"
+msgstr "Maximale Erinnerungen"
+
+msgid "yearly"
+msgstr "jährlich"
+
+msgid "monthly"
+msgstr "monatlich"
+
+msgid "per year"
+msgstr "pro Jahr"
+
+msgid "per month"
+msgstr "pro Monat"
+
+msgid "Invoice"
+msgstr "Rechnung"
+
+msgid "Invoices"
+msgstr "Rechnungen"
+
+msgid "Pay Now"
+msgstr "Bezahlen"
+
+msgid "Payment period"
+msgstr "Zahlungsinterval"
+
+msgid "Paid at"
+msgstr "Bezahlt am"
+
+msgid "Due at"
+msgstr "Fällig am"
+
+msgid "Paid"
+msgstr "Bezahlt"
+
+msgid "Sent"
+msgstr "Gesendet"
+
+msgid "Canceled"
+msgstr "Abgebrochen"
+
+msgid "Offer"
+msgstr "Angebot"
+
+msgid "No#"
+msgstr "Pos."
+
+msgid "Description"
+msgstr "Bezeichnung"
+
+msgid "Qty"
+msgstr "Menge"
+
+msgid "Net"
+msgstr "Netto"
+
+msgid "Tax"
+msgstr "MwSt."
+
+msgid "Summary"
+msgstr "Summe"
+
+msgid "Total"
+msgstr "Total"
+
+msgid "Discount"
+msgstr "Rabatt"
