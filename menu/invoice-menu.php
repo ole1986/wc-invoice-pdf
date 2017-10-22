@@ -29,13 +29,13 @@ class InvoiceMenu {
                 <input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
                 <input type="hidden" name="action" value="filter" />
                 <label class="post-attributes-label" for="user_login">Filter Customer:</label>
-                <select name="id" style="min-width: 200px">
+                <select name="customer_id" style="min-width: 200px">
                     <option value="">[any]</option>
                 <?php  
                 $users = get_users(['role' => 'customer']);
                 foreach ($users as $u) {
                     $company = get_user_meta($u->ID, 'billing_company', true);
-                    $selected = (isset($_GET['id']) && $u->ID == $_GET['id'])?'selected':'';
+                    $selected = (isset($_GET['customer_id']) && $u->ID == $_GET['customer_id'])?'selected':'';
                     echo '<option value="'.$u->ID.'" '.$selected.'>'. $company . ' (' .$u->user_login.')</option>';
                 }
                 ?>

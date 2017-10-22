@@ -147,8 +147,8 @@ class InvoiceList extends \WP_List_Table {
                     $invoice->Save();
                     break;
                 case 'filter':
-                    if(!empty($_GET['id']))
-                        $query = $wpdb->prepare($query . " AND i.customer_id = %d", $_GET['id']);
+                    if(!empty($_GET['customer_id']))
+                        $query = $wpdb->prepare($query . " AND i.customer_id = %d", $_GET['customer_id']);
                     if(!empty($_GET['recur_only']))
                         $query.= " AND pm.meta_value IS NOT NULL";
                     break;

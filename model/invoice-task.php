@@ -27,7 +27,7 @@ class InvoiceTask {
         if(!filter_var(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_mail_reminder'], FILTER_VALIDATE_EMAIL))
             return -2;
 
-        $res = $wpdb->get_results("SELECT i.*, u.display_name, u.user_login FROM {$wpdb->prefix}".IspconfigInvoice::TABLE." AS i 
+        $res = $wpdb->get_results("SELECT i.*, u.display_name, u.user_login FROM {$wpdb->prefix}".Invoice::TABLE." AS i 
                                 LEFT JOIN {$wpdb->posts} AS p ON (p.ID = i.wc_order_id)
                                 LEFT JOIN {$wpdb->users} AS u ON u.ID = i.customer_id
                                 WHERE i.deleted = 0 AND (i.status & 2) = 0 AND DATE(i.due_date) <= CURDATE()", OBJECT);
@@ -154,7 +154,7 @@ class InvoiceTask {
         $messageBody = \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_recur_reminder_message'];
 
         // fetch all invoices which have status = Sent (ignore all invoice which are already marked as paid)
-        $sql = "SELECT * FROM {$wpdb->prefix}".IspconfigInvoice::TABLE." WHERE `status` = 1 AND DATE_ADD(NOW(), INTERVAL -{$age} DAY) > due_date AND reminder_sent < $max";
+        $sql = "SELECT * FROM {$wpdb->prefix}".Invoice::TABLE." WHERE `status` = 1 AND DATE_ADD(NOW(), INTERVAL -{$age} DAY) > due_date AND reminder_sent < $max";
 
         $res = $wpdb->get_results($sql, OBJECT);
 
@@ -199,7 +199,7 @@ class InvoiceTask {
                 if($success)
                 {
                     $order->add_order_note("Invoice reminder #{$v->reminder_sent} for ".$v->invoice_number." sent to " . $recipient);
-                    $wpdb->query( $wpdb->prepare("UPDATE {$wpdb->prefix}".IspconfigInvoice::TABLE." SET reminder_sent = {$v->reminder_sent} WHERE ID = %s", $v->ID ) );
+                    $wpdb->query( $wpdb->prepare("UPDATE {$wpdb->prefix}".Invoice::TABLE." SET reminder_sent = {$v->reminder_sent} WHERE ID = %s", $v->ID ) );
                 }
             }
         }
