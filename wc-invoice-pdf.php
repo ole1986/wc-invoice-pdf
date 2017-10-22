@@ -69,6 +69,9 @@ class WCInvoicePdf {
         add_action( 'wp_ajax_invoicepdf', ['\WCInvoicePdf\WCInvoicePdf', 'doAjax'] );
         add_action( 'invoice_reminder', ['\WCInvoicePdf\Model\InvoiceTask', 'Run'] );
 
+        // update the order period
+        add_action('wcinvoicepdf_order_period', ['\WCInvoicePdf\WCInvoicePdf', 'order_period'], 10, 2);
+
         // the rest after this is for NON-AJAX requests
         if(defined('DOING_AJAX') && DOING_AJAX) return;
 
@@ -97,6 +100,19 @@ class WCInvoicePdf {
 
     public static function save_options(){
         return update_option( self::OPTION_KEY, self::$OPTIONS );
+    }
+
+    public static function order_period($order_id, $period = 'm'){
+        if(!is_int($order_id)) return false;
+
+        if(empty($period))
+            $period = 'm';
+        else if($period[0] == 'm')
+            $period = 'm';
+        else if($period[0] == 'y')
+            $period = 'y';
+
+        update_post_meta($order_id, '_ispconfig_period', $period);
     }
 
     /**

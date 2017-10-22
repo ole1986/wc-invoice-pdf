@@ -18,17 +18,11 @@ class InvoiceMetabox {
     public function invoice_box_callback() {
         global $post_id, $post;
 
-        $domain = get_post_meta($post_id, 'Domain', true);
-
         $period = get_post_meta($post_id, '_ispconfig_period', true);
-
         $customer_email = get_post_meta($post_id, '_billing_email', true, '');
 
         ?>
-        <p>
-            <label class="post-attributes-label">Domain: </label>
-            <?php echo $domain ?>
-        </p>
+        <?php do_action('wcinvoicepdf_invoice_metabox', $post_id); ?>
         <p>
             <label class="post-attributes-label" for="ispconfig_period"><?php _e('Payment period', 'wc-invoice-pdf') ?>:</label>
             <select id="ispconfig_period" data-id="<?php echo $post_id ?>" onchange="WCInvoicePdfAdmin.UpdatePeriod(this)">

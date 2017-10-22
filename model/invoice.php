@@ -157,7 +157,7 @@ class Invoice {
     public function makeNew(){
         unset($this->ID);
 
-        $d = new DateTime();
+        $d = new \DateTime();
 
         if(!empty($this->order) && is_object($this->order))
         {
@@ -171,13 +171,14 @@ class Invoice {
         }
         $this->created = $d->format('Y-m-d H:i:s');
         // due date
-        $d->add(new DateInterval('P14D'));
+        $d->add(new \DateInterval('P14D'));
         $this->due_date = $d->format('Y-m-d H:i:s');
         $this->paid_date = null;
         $this->status = 0;
 
         // (re)create the pdf
-        $this->document = IspconfigInvoicePdf::init()->BuildInvoice($this);
+        $invoicePdf = new InvoicePdf();
+        $this->document = $invoicePdf->BuildInvoice($this);
     }
 
     public function makeRecurring(){
