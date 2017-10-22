@@ -15,11 +15,19 @@ defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 define( 'WCINVOICEPDF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WCINVOICEPDF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-add_action('init', array( '\WCInvoicePdf\WCInvoicePdf', 'init' ) );
+require_once 'menu/invoice-menu.php';
+require_once 'menu/account-invoice.php';
+require_once 'model/invoice.php';
+require_once 'model/invoice-list.php';
+require_once 'model/invoice-pdf.php';
+require_once 'model/invoice-task.php';
+require_once 'metabox/invoice-metabox.php';
 
-register_activation_hook( WCINVOICEPDF_PLUGIN_DIR, array( '\WCInvoicePdf\WCInvoicePdf', 'install' ) );
-register_deactivation_hook(WCINVOICEPDF_PLUGIN_DIR, array( '\WCInvoicePdf\WCInvoicePdf', 'deactivate' ));
-register_uninstall_hook( WCINVOICEPDF_PLUGIN_DIR, array( '\WCInvoicePdf\WCInvoicePdf', 'uninstall' ) );
+add_action('init', ['\WCInvoicePdf\WCInvoicePdf', 'init'] );
+
+register_activation_hook( plugin_basename( __FILE__ ), ['\WCInvoicePdf\WCInvoicePdf', 'install' ] );
+register_deactivation_hook(plugin_basename( __FILE__ ), ['\WCInvoicePdf\WCInvoicePdf', 'deactivate' ]);
+register_uninstall_hook( plugin_basename( __FILE__ ), ['\WCInvoicePdf\WCInvoicePdf', 'uninstall'] );
 
 class WCInvoicePdf {
 
@@ -55,16 +63,17 @@ class WCInvoicePdf {
     public static function init() {
         self::load_textdomain_file();
 
-        require_once 'menu/invoice-menu.php';
-        require_once 'model/invoice.php';
-        require_once 'model/invoice-list.php';
-        require_once 'model/invoice-pdf.php';
-        require_once 'metabox/invoice-metabox.php';
+        self::load_options();
 
         // enable changing the due date through ajax
         add_action( 'wp_ajax_invoicepdf', ['\WCInvoicePdf\WCInvoicePdf', 'doAjax'] );
+        add_action( 'invoice_reminder', ['\WCInvoicePdf\Model\InvoiceTask', 'Run'] );
+
         // the rest after this is for NON-AJAX requests
         if(defined('DOING_AJAX') && DOING_AJAX) return;
+
+        // display the customer invoice menu
+        new Menu\AccountInvoice();
 
         if(is_admin()) {
             // used to trigger on invoice creation located in ispconfig_create_pdf.php
@@ -76,10 +85,18 @@ class WCInvoicePdf {
             new Menu\InvoiceMenu();
 
             add_action( 'admin_enqueue_scripts', ['\WCInvoicePdf\WCInvoicePdf', 'loadJS'] );
-        } else {
-            // scheduled tasks for invoice reminders
-            add_action('invoice_reminder', ['\WCInvoicePdf\Model\InvoiceTask', 'Run']);
         }
+    }
+
+    protected static function load_options(){
+        $opt = get_option( self::OPTION_KEY );
+        if(!empty($opt)) {
+            self::$OPTIONS = $opt;
+        }
+    }
+
+    public static function save_options(){
+        return update_option( self::OPTION_KEY, self::$OPTIONS );
     }
 
     /**
@@ -91,6 +108,60 @@ class WCInvoicePdf {
     protected static function load_textdomain_file() {
         # load plugin textdomain
         load_plugin_textdomain('wc-invoice-pdf', false, basename(WCINVOICEPDF_PLUGIN_DIR) . '/lang' );
+    }
+
+    public static function addField($name, $title, $type = 'text', $args = []){
+        $xargs = [  'container' => 'p', 
+                    'required' => false,
+                    'attr' => [], 
+                    'label_attr' => ['style' => 'width: 220px; display:inline-block;vertical-align:top;'], 
+                    'input_attr' => ['style' => 'width: 340px'],
+                    'value' => ''
+                ];
+
+        if($type == null) $type = 'text';
+
+        foreach ($xargs as $k => $v) {
+            if(!empty($args[$k])) $xargs[$k] = $args[$k];
+        }
+
+        echo '<' . $xargs['container'];
+        foreach ($xargs['attr'] as $k => $v) {
+            echo ' '.$k.'="'.$v.'"';
+        }
+        echo '>';
+        echo '<label';
+        foreach ($xargs['label_attr'] as $k => $v)
+            echo ' '. $k . '="'.$v.'"';
+
+        echo '>';
+        _e($title, 'wp-ispconfig3');
+        if($xargs['required']) echo '<span style="color: red;"> *</span>';
+        echo '</label>';
+
+        $attrStr = '';
+        foreach ($xargs['input_attr'] as $k => $v)
+            $attrStr.= ' '.$k.'="'.$v.'"';
+
+        if(isset(self::$OPTIONS[$name]))
+            $optValue = self::$OPTIONS[$name];
+        else
+            $optValue = $xargs['value'];
+
+        if($type == 'text' || $type == 'password')
+            echo '<input type="'.$type.'" class="regular-text" name="'.$name.'" value="'.$optValue.'"'.$attrStr.' />';
+        else if($type == 'email')
+            echo '<input type="'.$type.'" class="regular-text" name="'.$name.'" value="'.$optValue.'"'.$attrStr.' />';
+        else if($type == 'textarea') 
+            echo '<textarea name="'.$name.'" '.$attrStr.'>'  . strip_tags($optValue) . '</textarea>';
+        else if($type == 'checkbox')
+            echo '<input type="'.$type.'" name="'.$name.'" value="1"' . (($optValue == '1')?'checked':'') .' />';
+        else if($type == 'rte') {
+            echo '<div '.$attrStr.'>';
+            wp_editor($optValue, $name, ['teeny' => true, 'editor_height'=>200, 'media_buttons' => false]);
+            echo '</div>'; 
+        }           
+        echo '</' . $xargs['container'] .'>';
     }
 
     public static function loadJS(){

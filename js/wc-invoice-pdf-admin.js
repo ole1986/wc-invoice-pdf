@@ -156,15 +156,15 @@ function WCInvoicePdfAdminClass() {
     };
 
     var hideTabs = function(){
-        $('#ispconfig-tabs a').each(function () {
+        $('#wcinvoicepdf-tabs a').each(function () {
             var other_id = $(this).attr('href');
             $(other_id).hide();
         })
-        $('#ispconfig-tabs > li').removeClass('tabs');
+        $('#wcinvoicepdf-tabs > li').removeClass('tabs');
     };
 
     var initTabs = function(){
-        $('#ispconfig-tabs a').click(function(event){
+        $('#wcinvoicepdf-tabs a').click(function(event){
             event.preventDefault();
 
             var id = $(this).attr('href');
@@ -174,7 +174,7 @@ function WCInvoicePdfAdminClass() {
         })
 
         hideTabs();
-        $('#ispconfig-tabs a:first').trigger('click');
+        $('#wcinvoicepdf-tabs a:first').trigger('click');
     };
 
     var _constructor = function () {
