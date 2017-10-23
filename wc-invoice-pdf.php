@@ -199,8 +199,9 @@ class WCInvoicePdf {
 
             $invoice->Save();
         } else if(!empty($_POST['order_id']) && isset($_POST['period'])) {
-            do_action('wcinvoicepdf_order_period', intval($_POST['order_id']), $_POST['period']);
-            $result = $_POST['period'];
+            $period = esc_attr($_POST['period']);
+            do_action('wcinvoicepdf_order_period', intval($_POST['order_id']), $period);
+            $result = $period;
         } else if(!empty($_POST['payment_reminder'])) {
             $taskPlaner = new Model\InvoiceTask();
             $result = $taskPlaner->payment_reminder();

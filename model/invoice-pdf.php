@@ -210,7 +210,7 @@ class InvoicePdf {
         // skip invoice output when no invoice id is defined (and continue with the default page call)
         if(empty($_GET['invoice'])) return;
 
-        $invoice = new Invoice((integer)$_GET['invoice']);
+        $invoice = new Invoice( intval($_GET['invoice']) );
         if(!$invoice->ID) die("Invoice not found");
 
         // invoice has been defined but user does not have the cap to display it

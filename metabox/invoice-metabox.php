@@ -63,7 +63,9 @@ class InvoiceMetabox {
             $invoice = new Invoice($order);
             $invoicePdf = new InvoicePdf();
 
-            switch($_REQUEST['ispconfig_invoice_action'])
+            $action = preg_replace('/\W/', '', $_REQUEST['ispconfig_invoice_action']);
+
+            switch($action)
             {
                 case 'preview':
                     $invoicePdf->BuildInvoice($invoice, false, true);
