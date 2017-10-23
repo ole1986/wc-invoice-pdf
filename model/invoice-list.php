@@ -73,10 +73,11 @@ class InvoiceList extends \WP_List_Table {
     }
 
     function column_status($item) {
+        $page = ( isset($_REQUEST['page'] ) ) ? urlencode( $_REQUEST['page'] ) : '';
         $actions = [
-            'sent' => sprintf('<a href="?page=%s&action=%s&id=%s">'. __('Sent', 'wc-invoice-pdf').'</a>', $_REQUEST['page'],'sent',$item->ID),
-            'paid' => sprintf('<a href="?page=%s&action=%s&id=%s">'. __('Paid', 'wc-invoice-pdf').'</a>', $_REQUEST['page'],'paid',$item->ID),
-            'cancel' => sprintf('<a href="?page=%s&action=%s&id=%s">'. __('Canceled', 'wc-invoice-pdf').'</a>', $_REQUEST['page'],'cancel',$item->ID),
+            'sent' => sprintf('<a href="?page=%s&action=%s&id=%s">'. __('Sent', 'wc-invoice-pdf').'</a>', $page,'sent',$item->ID),
+            'paid' => sprintf('<a href="?page=%s&action=%s&id=%s">'. __('Paid', 'wc-invoice-pdf').'</a>', $page,'paid',$item->ID),
+            'cancel' => sprintf('<a href="?page=%s&action=%s&id=%s">'. __('Canceled', 'wc-invoice-pdf').'</a>', $page,'cancel',$item->ID),
         ];
         return sprintf('%s %s', Invoice::GetStatus($item->status, true), $this->row_actions($actions) );
     }
@@ -96,8 +97,9 @@ class InvoiceList extends \WP_List_Table {
     }
     
     function column_invoice_number($item) {
+        $page = ( isset($_REQUEST['page'] ) ) ? urlencode( $_REQUEST['page'] ) : '';
         $actions = [
-            'delete'    => sprintf('<a href="?page=%s&action=%s&id=%s" onclick="WCInvoicePdfAdmin.ConfirmDelete(this)" data-name="%s">Delete</a>',$_REQUEST['page'],'delete',$item->ID, $item->invoice_number),
+            'delete'    => sprintf('<a href="?page=%s&action=%s&id=%s" onclick="WCInvoicePdfAdmin.ConfirmDelete(this)" data-name="%s">Delete</a>',$page,'delete',$item->ID, $item->invoice_number),
             'quote' => sprintf('<a href="?invoice=%s&preview=1" target="_blank">Show Quote</a>',$item->ID),
         ];
         return sprintf('<a target="_blank" href="?invoice=%s">%s</a> %s', $item->ID, $item->invoice_number, $this->row_actions($actions) );
@@ -130,9 +132,9 @@ class InvoiceList extends \WP_List_Table {
                     WHERE i.deleted = 0";
                     
         if(isset($_GET['page'], $_GET['action'],$_GET['id']) && $_GET['page'] == 'wcinvoicepdf_invoices') {
-            $a = $_GET['action'];
+            $action = preg_replace('/\W/', '',$_GET['action']);
             $invoice = new Invoice( intval($_GET['id']) );
-            switch($a) {
+            switch($action) {
                 case 'delete':
                     $invoice->Delete();
                     break;
