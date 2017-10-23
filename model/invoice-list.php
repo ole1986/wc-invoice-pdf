@@ -148,7 +148,7 @@ class InvoiceList extends \WP_List_Table {
                     break;
                 case 'filter':
                     if(!empty($_GET['customer_id']))
-                        $query = $wpdb->prepare($query . " AND i.customer_id = %d", $_GET['customer_id']);
+                        $query = $wpdb->prepare($query . " AND i.customer_id = %d", intval($_GET['customer_id']));
                     if(!empty($_GET['recur_only']))
                         $query.= " AND pm.meta_value IS NOT NULL";
                     break;
@@ -164,15 +164,15 @@ class InvoiceList extends \WP_List_Table {
     }
 
     private function applySorting(&$query){
-        if(isset($_GET['orderby'], $_GET['order'])) {
-            $orderby = $_GET['orderby'];
-            $order = $_GET['order'];
-        } else {
-            // default sorting
-            $_GET['orderby'] = $orderby = 'created';
-            $_GET['order'] = $order = 'desc';
-        }
+        if(!isset($_GET['orderby']))
+            $_GET['orderby'] = 'created';
+        
+        if(!isset($_GET['order']))
+            $_GET['order'] = 'desc';
 
+        $_GET['orderby'] = $orderby = preg_replace('/\W/', '', $_GET['orderby']);
+        $_GET['order'] = $order = preg_replace('/\W/', '', $_GET['order']);
+        
         $query .= " ORDER BY $orderby $order";
     }
 
