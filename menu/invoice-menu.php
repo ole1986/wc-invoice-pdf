@@ -11,7 +11,7 @@ class InvoiceMenu {
     }
 
     public function admin_menu(){
-        add_menu_page( 'WC-' . __('Invoices', 'wc-invoice-pdf'), 'WC-' . __('Invoices', 'wc-invoice-pdf'), 'null', 'wcinvoicepdf_menu',  null, WCINVOICEPDF_PLUGIN_URL.'img/invoicepdf.png', 3);
+        add_menu_page( 'WC-' . __('Invoices', 'wc-invoice-pdf'), 'WC-' . __('Invoices', 'wc-invoice-pdf'), 'null', 'wcinvoicepdf_menu',  null, WCINVOICEPDF_PLUGIN_URL.'assets/invoicepdf.png', 3);
         add_submenu_page('wcinvoicepdf_menu', __('Invoices', 'wc-invoice-pdf'), __('Invoices', 'wc-invoice-pdf'), 'edit_themes', 'wcinvoicepdf_invoices',  [$this, 'DisplayInvoices'] );
         add_submenu_page('wcinvoicepdf_menu', __('Settings'), __('Settings'), 'edit_themes', 'wcinvoicepdf_settings',  [$this, 'DisplaySettings'] );
     }
