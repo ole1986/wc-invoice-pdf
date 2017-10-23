@@ -102,17 +102,19 @@ class WCInvoicePdf {
         return update_option( self::OPTION_KEY, self::$OPTIONS );
     }
 
-    public static function order_period($order_id, $period = 'm'){
+    public static function order_period($order_id, $period){
         if(!is_int($order_id)) return false;
 
-        if(empty($period))
-            $period = 'm';
-        else if($period[0] == 'm')
-            $period = 'm';
-        else if($period[0] == 'y')
-            $period = 'y';
+        $success = false;
 
-        update_post_meta($order_id, '_ispconfig_period', $period);
+        if(empty($period))
+            $success = delete_post_meta( $order_id, '_ispconfig_period');
+        else if($period[0] == 'm')
+            $success = update_post_meta($order_id, '_ispconfig_period', 'm');
+        else if($period[0] == 'y')
+            $success = update_post_meta($order_id, '_ispconfig_period', 'y');
+
+        return $success;
     }
 
     /**
@@ -186,7 +188,7 @@ class WCInvoicePdf {
 
     public static function doAjax(){
         global $wpdb;
-
+        
         $result = '';
         if(!empty($_POST['invoice_id'])) {
             $invoice = new Model\Invoice(intval($_POST['invoice_id']));
@@ -197,11 +199,7 @@ class WCInvoicePdf {
 
             $invoice->Save();
         } else if(!empty($_POST['order_id']) && isset($_POST['period'])) {
-            if(!empty($_POST['period']))
-                update_post_meta( intval($_POST['order_id']), '_ispconfig_period', $_POST['period']);
-            else
-                delete_post_meta( intval($_POST['order_id']), '_ispconfig_period');
-
+            do_action('wcinvoicepdf_order_period', intval($_POST['order_id']), $_POST['period']);
             $result = $_POST['period'];
         } else if(!empty($_POST['payment_reminder'])) {
             $taskPlaner = new Model\InvoiceTask();
