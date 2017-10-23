@@ -34,6 +34,8 @@ class InvoiceList extends \WP_List_Table {
 
     public function get_sortable_columns(){
         $sortable = [
+            'customer_name' => ['customer_name', true],
+            'status' => ['status', true],
             'created' => ['created', true],
             'due_date' => ['due_date', true],
             'paid_date' => ['paid_date', true]
