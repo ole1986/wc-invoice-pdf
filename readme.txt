@@ -65,6 +65,9 @@ You should have received a copy of the GNU General Public License along with WP 
 
 == Changelog ==
 
+= 1.0.3 =
+* removed migrated option from WP-ISPConfig3 only when migration succeeded
+
 = 1.0.2 =
 * select company logo from media library
 
