@@ -130,10 +130,15 @@ class InvoiceList extends \WP_List_Table {
                     LEFT JOIN wp_posts AS p ON p.ID = i.wc_order_id
                     LEFT JOIN wp_postmeta AS pm ON (p.ID = pm.post_id AND pm.meta_key = '_ispconfig_period')
                     WHERE i.deleted = 0";
-                    
-        if(isset($_GET['page'], $_GET['action'],$_GET['id']) && $_GET['page'] == 'wcinvoicepdf_invoices') {
-            $action = preg_replace('/\W/', '',$_GET['action']);
-            $invoice = new Invoice( intval($_GET['id']) );
+        
+        $action = preg_replace('/\W/', '', isset($_GET['action']) ? $_GET['action'] : '');
+        $invoiceId = isset($_GET['id']) ? intval($_GET['id']) : null;
+
+        if(isset($_GET['page']) && $_GET['page'] == 'wcinvoicepdf_invoices' && !empty($action)) {
+            if($invoiceId !== null) {
+                $invoice = new Invoice( $invoiceId );
+            }
+            
             switch($action) {
                 case 'delete':
                     $invoice->Delete();
