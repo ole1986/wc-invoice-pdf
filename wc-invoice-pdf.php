@@ -24,6 +24,7 @@ require_once 'model/invoice-task.php';
 require_once 'metabox/invoice-metabox.php';
 
 add_action('init', ['\WCInvoicePdf\WCInvoicePdf', 'init'] );
+add_filter( 'plugin_row_meta', array( '\WCInvoicePdf\WCInvoicePdf', 'plugin_meta' ), 10, 2 );
 
 register_activation_hook( plugin_basename( __FILE__ ), ['\WCInvoicePdf\WCInvoicePdf', 'install' ] );
 register_deactivation_hook(plugin_basename( __FILE__ ), ['\WCInvoicePdf\WCInvoicePdf', 'deactivate' ]);
@@ -218,6 +219,19 @@ class WCInvoicePdf {
 
         echo json_encode($result);
         wp_die();
+    }
+
+    public static function plugin_meta($links, $file){
+        $l = strlen($file);
+
+        if(substr(__FILE__, -$l) == $file) {
+			$row_meta = array(
+                'bug'    => '<a href="https://github.com/ole1986/wc-invoice-pdf/issues" style="color: #a00" target="_blank">Report Bug</a>',
+				'donate'    => '<a href="https://www.paypal.com/cgi-bin/webscr?item_name=Donation+WC+Recurring+Invoice+Pdf&cmd=_donations&business=ole.k@web.de" target="_blank">Donate</a>'
+			);
+			return array_merge( $links, $row_meta );
+		}
+		return (array) $links;
     }
 
     /**
