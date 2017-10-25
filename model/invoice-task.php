@@ -81,12 +81,12 @@ class InvoiceTask {
         
         // remind admin about new recurring invoices
         if(!empty($res)) {
-            $curDate = new DateTime();
+            $curDate = new \DateTime();
 
             $messageBody = \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_recur_message'];
 
             foreach ($res as $v) {
-                 $d = new DateTime($v->post_date_gmt);
+                 $d = new \DateTime($v->post_date_gmt);
 
                 if($v->payment_period == 'y') {
                     // yearly
@@ -102,8 +102,8 @@ class InvoiceTask {
 
                 if(isset($dueDate, $postDate) && $dueDate == $postDate) {
                     // send the real invoice
-                    $order = new WC_Order($v->ID);
-                    $invoice = new IspconfigInvoice($order);
+                    $order = new \WC_Order($v->ID);
+                    $invoice = new Invoice($order);
                     $invoice->makeRecurring();
 
                     add_action('phpmailer_init', function($phpmailer) use($invoice){
@@ -160,10 +160,10 @@ class InvoiceTask {
 
         if(!empty($res)) {
             foreach ($res as $v) {
-                $due_date = new DateTime($v->due_date);
-                $due_date->add(new DateInterval("P{$age}D"));
+                $due_date = new \DateTime($v->due_date);
+                $due_date->add(new \DateInterval("P{$age}D"));
 
-                $diff  = $due_date->diff(new DateTime());
+                $diff  = $due_date->diff(new \DateTime());
                 $diffDays = intval($diff->format("%a"));
                 $rest = $diffDays % $interval;
 
@@ -174,7 +174,7 @@ class InvoiceTask {
 
                 $v->reminder_sent++;
 
-                $order = new WC_Order($v->wc_order_id);
+                $order = new \WC_Order($v->wc_order_id);
 
                 if(!empty(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_recur_test']))
                     $recipient = \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_mail_reminder'];
