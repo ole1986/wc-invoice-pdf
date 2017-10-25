@@ -60,9 +60,9 @@ class InvoiceMenu {
                 }
             }
 
-            update_option('WPISPConfig3_Options', $oldConf);
             if(WCInvoicePdf::save_options()) {
                 ?><div class="updated"><p>ISPConfig settings migrated</p></div><?php
+                update_option('WPISPConfig3_Options', $oldConf);
             }
         }
 
