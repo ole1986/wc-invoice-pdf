@@ -113,15 +113,15 @@ class InvoiceMenu {
                                 <div id="wcinvoicepdf-scheduler" class="inside tabs-panel" style="display: none;">
                                     <h3><?php _e('Run commands', 'wc-invoice-pdf') ?></h3>
                                     <p>
-                                        <a href="javascript:void(0)" onclick="ISPConfigAdmin.RunReminder(this)" class="button">Run Payment Reminder</a><br />
+                                        <a href="javascript:void(0)" onclick="WCInvoicePdfAdmin.RunReminder(this)" class="button">Run Payment Reminder</a><br />
                                         Execute the payment reminder being sent to <strong>Admin Email</strong>.<br />This reminder usually occurs DAILY whenever an invoice is due.
                                     </p>
                                     <p>
-                                        <a href="javascript:void(0)" onclick="ISPConfigAdmin.RunRecurr(this)" class="button">Test Recurr Payment</a><br />
+                                        <a href="javascript:void(0)" onclick="WCInvoicePdfAdmin.RunRecurr(this)" class="button">Test Recurr Payment</a><br />
                                         Test the recurring payments (which is usually send to customer)<br />by overwriting the recipient addresses to <strong>Admin Email</strong>
                                     </p>
                                     <p>
-                                        <a href="javascript:void(0)" onclick="ISPConfigAdmin.RunRecurrReminder(this)" class="button">Run Recurr Reminder</a><br />
+                                        <a href="javascript:void(0)" onclick="WCInvoicePdfAdmin.RunRecurrReminder(this)" class="button">Run Recurr Reminder</a><br />
                                         Run the recurring reminder now
                                     </p>
                                     <h3><?php _e('Sender info', 'wc-invoice-pdf') ?></h3>

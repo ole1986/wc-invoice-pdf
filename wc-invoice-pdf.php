@@ -221,7 +221,7 @@ class WCInvoicePdf {
             $taskPlaner = new Model\InvoiceTask();
             $result = $taskPlaner->payment_reminder();
         } else if(!empty($_POST['recurr'])) {
-            if(!empty(WPISPConfig3::$OPTIONS['wc_recur_test'])) {
+            if(!empty(self::$OPTIONS['wc_recur_test'])) {
                 $taskPlaner = new Model\InvoiceTask();
                 $result = $taskPlaner->payment_recur();
             } else
