@@ -65,5 +65,8 @@ You should have received a copy of the GNU General Public License along with WP 
 
 == Changelog ==
 
+= 1.0.1 =
+* updated logo, banner, etc...
+
 = 1.0.0 =
 * initial version as part of the previous WP-ISPConfig3 plugin
