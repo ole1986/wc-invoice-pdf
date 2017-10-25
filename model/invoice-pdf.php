@@ -45,9 +45,13 @@ class InvoicePdf {
         $ls = new Cpdf_LineStyle(1, 'butt', 'miter');
         
         // Logo
-        if(file_exists(WCINVOICEPDF_PLUGIN_DIR . '/' . \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_logo'])) {
-            $logo = $pdf->NewAppearance();
-            $logo->AddImage('right',-30, WCINVOICEPDF_PLUGIN_DIR . '/' . \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_logo'], 280);
+        $mediaId = intval(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_logo']);
+        if($mediaId > 0) {
+            $mediaUrl = wp_get_attachment_url($mediaId);
+            if($mediaUrl !== false) {
+                $logo = $pdf->NewAppearance();
+                $logo->AddImage('right',-30, $mediaUrl, 280);
+            }
         }
                 
         // billing info

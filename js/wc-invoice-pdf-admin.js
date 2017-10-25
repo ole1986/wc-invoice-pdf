@@ -5,6 +5,8 @@ function WCInvoicePdfAdminClass() {
     var $ = jQuery;
     var self = this;
 
+    var mediaFrame;
+
     var jsonRequest = function (data, action) {
         if(!action) action = 'invoicepdf';
         $.extend(data, { action: action });
@@ -132,6 +134,36 @@ function WCInvoicePdfAdminClass() {
             alert("Recurring reminder executed");
         }).always(function () { $(obj).text(tmp); });
     };
+
+    this.OpenMedia = function(event, name){
+        
+        if(mediaFrame) {
+            mediaFrame.open();
+            return;
+        }
+
+        mediaFrame = wp.media({
+            title: 'Select a image to upload',
+            button: {
+                text: 'Use this image',
+            },
+            multiple: false	// Set to true to allow multiple files to be selected
+        })
+        mediaFrame.open();
+
+        mediaFrame.on('select', function(){
+            // Get media attachment details from the frame state
+            var att = mediaFrame.state().get('selection').first().toJSON();
+            console.log(att);
+            $('#' + name + "-preview").attr('src', att.url);
+            $('#' + name).val(att.id);
+        });
+    };
+
+    this.ClearMedia = function(event, name) {
+        $('#' + name).val('');
+        $('#' + name + "-preview").attr('src', '');
+    }
 
     var openDateInput = function (defaultValue, onSaveCallback, onCancelCallback) {
         var container = $('<div />');

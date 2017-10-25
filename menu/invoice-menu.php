@@ -101,7 +101,7 @@ class InvoiceMenu {
                                     <h3><?php _e('Invoice template (PDF)', 'wc-invoice-pdf') ?></h3>
                                     <?php
                                     WCInvoicePdf::addField('wc_pdf_title', 'Document Title');
-                                    WCInvoicePdf::addField('wc_pdf_logo', 'Logo Image');
+                                    WCInvoicePdf::addField('wc_pdf_logo', 'Logo Image', 'media');
                                     WCInvoicePdf::addField('wc_pdf_addressline', 'Address line');
                                     WCInvoicePdf::addField('wc_pdf_condition', 'Conditions', 'textarea');
                                     WCInvoicePdf::addField('wc_pdf_info', 'Info Block', 'textarea');
