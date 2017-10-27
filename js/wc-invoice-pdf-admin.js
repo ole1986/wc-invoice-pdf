@@ -6,7 +6,11 @@ function WCInvoicePdfAdminClass() {
     var self = this;
 
     var mediaFrame;
-
+    /**
+     * 
+     * @param {JSON} data data parameters
+     * @param {String} action action
+     */
     var jsonRequest = function (data, action) {
         if(!action) action = 'invoicepdf';
         $.extend(data, { action: action });
@@ -15,6 +19,7 @@ function WCInvoicePdfAdminClass() {
 
      /** 
      * confirm deletion
+     * @param {Object} obj sender object
      */
     this.ConfirmDelete = function (obj) {
         var invoice = $(obj).data('name');
@@ -23,7 +28,8 @@ function WCInvoicePdfAdminClass() {
     };
 
     /**
-     * Edit due date through ajax
+     * Edit due date through ajax from the invoice list
+     * @param {Object} obj sender object
      */
     this.EditDueDate = function (obj) {
         var d = $(obj).text();
@@ -43,6 +49,10 @@ function WCInvoicePdfAdminClass() {
         $(obj).after(container);
     }
 
+    /**
+     * Edit paid date though ajax from the invoice list
+     * @param {Object} obj sender object
+     */
     this.EditPaidDate = function (obj) {
         var d = $(obj).text();
         var invoice_id = parseInt($(obj).data('id'));
@@ -61,6 +71,10 @@ function WCInvoicePdfAdminClass() {
         $(obj).after(container);
     }
 
+    /**
+     * allow changing the recurring period from the invoice metabox in any order
+     * @param {Object} obj sender object
+     */
     this.UpdatePeriod = function(obj){
         var order_id = parseInt($(obj).data('id'));
         var value = $(obj).val();
@@ -82,56 +96,33 @@ function WCInvoicePdfAdminClass() {
         }).always(function () { loading.remove(); });
     }
 
-    this.RunReminder = function(obj){
+    this.RunTask = function(obj, name){
         var tmp = $(obj).text();
         $(obj).text('Loading...');
 
-        jsonRequest({ payment_reminder: true}).done(function(resp){
-            if(resp < -1) {
-                alert("Invalid email address");
+        jsonRequest({name: name}, 'InvoiceTask').done(function(resp){
+            if(name === 'reminder' && resp < -1) {
+                self.ShowNotice("Failed to send the payment reminder due to an invalid email address", 'warning');
                 return;
             }
-            if(resp < 0) {
-                alert("Payment reminder disabled");
+            if(name === 'reminder' && resp < 0) {
+                self.ShowNotice("The payment reminder is disabled. Please enable before using it", 'warning');
+                return;
+            }
+            if(name === 'recurring' && resp < -1) {
+                self.ShowNotice("Please select 'Test Recurring' first.", 'warning');
+                return;
+            }
+            if(name === 'recurring' && resp < 0) {
+                self.ShowNotice("Recurring payments is disabled", 'warning');
+                return;
+            }
+            if(name === 'recurring_reminder' && resp < 0) {
+                self.ShowNotice("Recurring reminder is disabled", 'warning');
                 return;
             }
 
-            if (resp <= 0) {
-                alert("Payment reminder executed (no email)");
-                return;
-            }
-            alert("Payment reminder executed");
-        }).always(function () { $(obj).text(tmp); });
-    }
-
-    this.RunRecurr = function(obj){
-        var tmp = $(obj).text();
-        $(obj).text('Loading...');
-
-        jsonRequest({ recurr: true }).done(function(resp){
-            if(resp < -1)
-            {
-                alert("Please select 'Test Recurring' first.");
-                return;
-            }
-            if (resp < 0) {
-                alert("Recurring payments is disabled");
-                return;
-            }
-            alert("Recurring payments executed");
-        }).always(function () { $(obj).text(tmp); });
-    };
-
-    this.RunRecurrReminder = function(obj){
-        var tmp = $(obj).text();
-        $(obj).text('Loading...');
-
-        jsonRequest({ recurr_reminder: true }).done(function(resp){
-            if(resp < 0) {
-                alert("Recurring reminder is disabled");
-                return;
-            }
-            alert("Recurring reminder executed");
+            self.ShowNotice("Task " + name + " successfully executed | Return code: " + resp, 'success');
         }).always(function () { $(obj).text(tmp); });
     };
 
@@ -163,6 +154,18 @@ function WCInvoicePdfAdminClass() {
     this.ClearMedia = function(event, name) {
         $('#' + name).val('');
         $('#' + name + "-preview").attr('src', '');
+    }
+
+    this.ShowNotice = function(message, type, ondismiss){
+        $button = $('<button />', {type: 'button', class:'notice-dismiss'});
+        $notice = $('<div />', {class: 'notice is-dismissible notice-'+type});
+
+        $button.click(function(){ $(this).parent().remove(); });
+
+        $notice.html('<p>'+message+'</p>');
+        $notice.append($button);
+
+        $('#wpbody-content > .wrap > :first-child').after($notice);
     }
 
     var openDateInput = function (defaultValue, onSaveCallback, onCancelCallback) {

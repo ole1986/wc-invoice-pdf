@@ -68,10 +68,14 @@ class WCInvoicePdf {
 
         // enable changing the due date through ajax
         add_action( 'wp_ajax_invoicepdf', ['\WCInvoicePdf\WCInvoicePdf', 'doAjax'] );
+        // register the scheduler action being used by wp_schedule_event
         add_action( 'invoice_reminder', ['\WCInvoicePdf\Model\InvoiceTask', 'Run'] );
 
         // update the order period
         add_action('wcinvoicepdf_order_period', ['\WCInvoicePdf\WCInvoicePdf', 'order_period'], 10, 2);
+
+        // initialize the invoice task planer to allow ajax calls
+        new Model\InvoiceTask();
 
         // the rest after this is for NON-AJAX requests
         if(defined('DOING_AJAX') && DOING_AJAX) return;
@@ -201,9 +205,7 @@ class WCInvoicePdf {
         wp_enqueue_script( 'my_custom_script', WCINVOICEPDF_PLUGIN_URL . 'js/wc-invoice-pdf-admin.js?_' . time() );
     }
 
-    public static function doAjax(){
-        global $wpdb;
-        
+    public static function doAjax(){       
         $result = '';
         if(!empty($_POST['invoice_id'])) {
             $invoice = new Model\Invoice(intval($_POST['invoice_id']));
@@ -217,18 +219,6 @@ class WCInvoicePdf {
             $period = esc_attr($_POST['period']);
             do_action('wcinvoicepdf_order_period', intval($_POST['order_id']), $period);
             $result = $period;
-        } else if(!empty($_POST['payment_reminder'])) {
-            $taskPlaner = new Model\InvoiceTask();
-            $result = $taskPlaner->payment_reminder();
-        } else if(!empty($_POST['recurr'])) {
-            if(!empty(self::$OPTIONS['wc_recur_test'])) {
-                $taskPlaner = new Model\InvoiceTask();
-                $result = $taskPlaner->payment_recur();
-            } else
-                $result = -2;
-        } else if(!empty($_POST['recurr_reminder'])) {
-            $taskPlaner = new Model\InvoiceTask();
-            $result = $taskPlaner->payment_recur_reminder();
         }
 
         echo json_encode($result);

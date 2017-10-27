@@ -12,7 +12,32 @@ class InvoiceTask {
         $me->payment_recur_reminder();
     }
 
-    public function __construct(){ }
+    public function __construct(){
+        add_action( 'wp_ajax_InvoiceTask', [$this, 'doAjax'] );
+    }
+
+    public function doAjax(){
+        $name = esc_attr($_POST['name']);
+
+        switch($name) {
+            case 'reminder':
+                $result = $this->payment_reminder();
+                break;
+            case 'recurring':
+                if(!empty(WCInvoicePdf::$OPTIONS['wc_recur_test'])) {
+                    $result = $this->payment_recur();   
+                } else {
+                    $result = -2;
+                }
+                break;
+            case 'recurring_reminder':
+                $result = $this->payment_recur_reminder();
+                break;
+        }
+
+        echo json_encode(intval($result));
+        wp_die();
+    }
 
     /**
      * SCHEDULE: Daily reminder for administrators on invoices which are due
