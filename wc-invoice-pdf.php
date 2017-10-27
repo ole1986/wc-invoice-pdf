@@ -1,6 +1,6 @@
 <?php
 /*
- * Plugin Name: WC Invoice PDF
+ * Plugin Name: WC Recurring Invoice PDF
  * Description: WooCommerce invoice pdf plugin with recurring payments (scheduled)
  * Version: 1.0.0
  * Author: ole1986 <ole.k@web.de>

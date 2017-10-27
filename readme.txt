@@ -1,4 +1,4 @@
-=== WC Invoice Pdf ===
+=== WC Recurring Invoice Pdf ===
 Contributors: ole1986
 Tags:  woocommerce, WC, invoicing, billing, recurring, order, pdf, automation, read-only, law
 Donate link: https://www.paypal.com/cgi-bin/webscr?item_name=Donation+WP-ISPConfig3&cmd=_donations&business=ole.k@web.de
