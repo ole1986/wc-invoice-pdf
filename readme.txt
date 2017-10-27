@@ -25,6 +25,8 @@ It also allows to setup WC Orders to be recurring and submits the invoices to th
 * individual the PDF template in text and picture
 * remind delegate person about pending payments from customers
 
+[RELEASE NOTES]( https://github.com/ole1986/wc-invoice-pdf/releases)
+
 == Installation ==
 
 * Search for "wp-ispconfig3" in the "Plugins -> Install" register
