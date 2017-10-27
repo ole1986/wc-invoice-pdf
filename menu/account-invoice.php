@@ -4,8 +4,11 @@ namespace WCInvoicePdf\Menu;
 use WCInvoicePdf\Model\Invoice;
 
 class AccountInvoice {
-    public function __construct(){
+    public static function permalink(){
         add_rewrite_endpoint( 'invoices', EP_PERMALINK | EP_PAGES );
+    }
+    public function __construct(){
+        self::permalink();
         if(!is_admin()) {
             add_filter('woocommerce_account_menu_items', [$this, 'wc_invoice_menu']);
             add_action('woocommerce_account_invoices_endpoint', [$this, 'wc_invoice_content']);

@@ -251,7 +251,6 @@ class Invoice {
         }
 
         $sql.= "UNIQUE KEY id (id) ) $charset_collate;";
-        error_log($sql);
 
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
         dbDelta( $sql );
@@ -264,8 +263,7 @@ class Invoice {
         if($version <= 1) {
             $wpdb->query("ALTER TABLE {$wpdb->prefix}".self::TABLE." ADD `reminder_sent` tinyint(4) NOT NULL DEFAULT 0 AFTER `paid_date`;");
         }
-            
-
+        
         update_option('_ispconfig_invoice_version', 2);
     }
 }

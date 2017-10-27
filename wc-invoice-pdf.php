@@ -259,7 +259,6 @@ class WCInvoicePdf {
         global $wpdb;
 
         Model\Invoice::install();
-
         // setup the role
         // add cap allowing adminstrators to download invoices by default
         $role = get_role('administrator');
@@ -272,7 +271,8 @@ class WCInvoicePdf {
 	        wp_schedule_event(time(), 'daily', 'invoice_reminder');
         }
 
-        // refresh rewrite rules
+        // add new permalinks and refresh the rewrite rules
+        Menu\AccountInvoice::permalink();
         flush_rewrite_rules();
     }
 
