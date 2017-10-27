@@ -12,26 +12,24 @@ class InvoiceTask {
         $me->payment_recur_reminder();
     }
 
-    public function __construct(){
-        add_action( 'wp_ajax_InvoiceTask', [$this, 'doAjax'] );
-    }
+    public static function DoAjax(){
+        $task = new self();
 
-    public function doAjax(){
         $name = esc_attr($_POST['name']);
 
         switch($name) {
             case 'reminder':
-                $result = $this->payment_reminder();
+                $result = $task->payment_reminder();
                 break;
             case 'recurring':
                 if(!empty(WCInvoicePdf::$OPTIONS['wc_recur_test'])) {
-                    $result = $this->payment_recur();   
+                    $result = $task->payment_recur();   
                 } else {
                     $result = -2;
                 }
                 break;
             case 'recurring_reminder':
-                $result = $this->payment_recur_reminder();
+                $result = $task->payment_recur_reminder();
                 break;
         }
 

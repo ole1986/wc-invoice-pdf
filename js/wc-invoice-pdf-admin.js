@@ -12,7 +12,10 @@ function WCInvoicePdfAdminClass() {
      * @param {String} action action
      */
     var jsonRequest = function (data, action) {
-        if(!action) action = 'invoicepdf';
+        if(!action) {
+            alert('No hook action defined');
+            return;
+        }
         $.extend(data, { action: action });
         return jQuery.post(ajaxurl, data, null, 'json');
     };
@@ -38,7 +41,7 @@ function WCInvoicePdfAdminClass() {
         $(obj).hide();
 
         var container = openDateInput(d, function (newDate) {
-            jsonRequest({ invoice_id: invoice_id, due_date: newDate }).done(function (resp) {
+            jsonRequest({ invoice_id: invoice_id, due_date: newDate }, 'Invoice').done(function (resp) {
                 $(obj).text(resp);
                 $(obj).show();
             });
@@ -60,7 +63,7 @@ function WCInvoicePdfAdminClass() {
         $(obj).hide();
 
         var container = openDateInput(d, function (newDate) {
-            jsonRequest({ invoice_id: invoice_id, paid_date: newDate }).done(function (resp) {
+            jsonRequest({ invoice_id: invoice_id, paid_date: newDate }, 'Invoice').done(function (resp) {
                 $(obj).text(resp);
                 $(obj).show();
             });
@@ -84,7 +87,7 @@ function WCInvoicePdfAdminClass() {
 
         $(obj).after(loading);
 
-        jsonRequest({ order_id: order_id, period: value}).done(function(resp){
+        jsonRequest({ order_id: order_id, period: value}, 'InvoiceMetabox').done(function(resp){
             if (resp !== '')
                 $('.ispconfig_scheduler_info').show();
             else

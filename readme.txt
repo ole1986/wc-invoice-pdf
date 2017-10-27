@@ -17,13 +17,13 @@ It also allows to setup WC Orders to be recurring and submits the invoices to th
 
 **Features**
 
-* save an invoice pdf from any order being created by WooCommerce
-* build quote pdf (from orders) to send provisional offers to customer
-* schedule recurring invoices and directly submit to customers email
-* send kindly reminders to customers and limit the number of retries
-* display (pending) invoices in "my Account" of the customer 
-* customize the PDF template by adding text and pictures
-* remind a delegate person about pending payments of all customers
+* save invoice as pdf from any order created by WooCommerce
+* preview quote as pdf to submit provisional offer to customers
+* schedule recurring invoices directly send to customers email address
+* send kindly reminders for over due invoices
+* show payable invoices in customers "My Account"
+* individual the PDF template in text and picture
+* remind delegate person about pending payments from customers
 
 == Installation ==
 
@@ -68,7 +68,7 @@ You should have received a copy of the GNU General Public License along with WP 
 = 1.0.5 =
 * fixed issue #1
 * place holders for customer messages - see WC-Invoice -> Settings -> Templates for more details
-* use Invoice Task properly when doing ajax request
+* cleanup code for ajax execution
 
 = 1.0.4 =
 * reenable the invoice list filter

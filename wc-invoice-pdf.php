@@ -67,15 +67,17 @@ class WCInvoicePdf {
         self::load_options();
 
         // enable changing the due date through ajax
-        add_action( 'wp_ajax_invoicepdf', ['\WCInvoicePdf\WCInvoicePdf', 'doAjax'] );
+        add_action( 'wp_ajax_Invoice', ['\WCInvoicePdf\Model\Invoice', 'DoAjax'] );
+        // enable ajax requests for invoice tasks (admin-only)
+        add_action( 'wp_ajax_InvoiceTask', ['WCInvoicePdf\Model\InvoiceTask', 'DoAjax'] );
+        // enable ajax request for the invoice metabox located in the edit order post
+        add_action( 'wp_ajax_InvoiceMetabox', ['WCInvoicePdf\Metabox\InvoiceMetabox', 'DoAjax'] );
+
         // register the scheduler action being used by wp_schedule_event
         add_action( 'invoice_reminder', ['\WCInvoicePdf\Model\InvoiceTask', 'Run'] );
 
         // update the order period
         add_action('wcinvoicepdf_order_period', ['\WCInvoicePdf\WCInvoicePdf', 'order_period'], 10, 2);
-
-        // initialize the invoice task planer to allow ajax calls
-        new Model\InvoiceTask();
 
         // the rest after this is for NON-AJAX requests
         if(defined('DOING_AJAX') && DOING_AJAX) return;
@@ -203,26 +205,6 @@ class WCInvoicePdf {
 
     public static function loadJS(){
         wp_enqueue_script( 'my_custom_script', WCINVOICEPDF_PLUGIN_URL . 'js/wc-invoice-pdf-admin.js?_' . time() );
-    }
-
-    public static function doAjax(){       
-        $result = '';
-        if(!empty($_POST['invoice_id'])) {
-            $invoice = new Model\Invoice(intval($_POST['invoice_id']));
-            if(!empty($_POST['due_date']))
-                $invoice->due_date = $result = date('Y-m-d H:i:s', strtotime($_POST['due_date']));
-            if(!empty($_POST['paid_date']))
-                $invoice->paid_date = $result = date('Y-m-d H:i:s', strtotime($_POST['paid_date']));
-
-            $invoice->Save();
-        } else if(!empty($_POST['order_id']) && isset($_POST['period'])) {
-            $period = esc_attr($_POST['period']);
-            do_action('wcinvoicepdf_order_period', intval($_POST['order_id']), $period);
-            $result = $period;
-        }
-
-        echo json_encode($result);
-        wp_die();
     }
 
     public static function plugin_meta($links, $file){

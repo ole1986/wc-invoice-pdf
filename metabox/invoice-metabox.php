@@ -11,6 +11,17 @@ class InvoiceMetabox {
         add_action('post_updated', [$this, 'invoice_submit']);
     }
 
+    public static function DoAjax(){
+        if(!empty($_POST['order_id']) && isset($_POST['period'])) {
+            $period = esc_attr($_POST['period']);
+            do_action('wcinvoicepdf_order_period', intval($_POST['order_id']), $period);
+            $result = $period;
+        }
+
+        echo json_encode($result);
+        wp_die();
+    }
+
     public function invoice_box(){
         add_meta_box( 'ispconfig-invoice-box', 'Invoice', [$this, 'invoice_box_callback'], 'shop_order', 'side', 'high' );
     }

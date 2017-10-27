@@ -239,6 +239,22 @@ class Invoice {
         return rtrim($res, ' | ');
     }
 
+    public static function DoAjax(){       
+        $result = '';
+        if(!empty($_POST['invoice_id'])) {
+            $invoice = new self(intval($_POST['invoice_id']));
+            if(!empty($_POST['due_date']))
+                $invoice->due_date = $result = date('Y-m-d H:i:s', strtotime($_POST['due_date']));
+            if(!empty($_POST['paid_date']))
+                $invoice->paid_date = $result = date('Y-m-d H:i:s', strtotime($_POST['paid_date']));
+
+            $invoice->Save();
+        }
+
+        echo json_encode($result);
+        wp_die();
+    }
+
     public static function install(){
         global $wpdb;
 
