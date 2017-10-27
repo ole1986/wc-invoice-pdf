@@ -142,18 +142,29 @@ class InvoiceMenu {
                                     <input type="hidden" name="wc_enable" value="1" />
                                 </div>
                                 <div id="wcinvoicepdf-template" class="inside tabs-panel" style="display: none;">
-                                    <h3><?php _e('Templates', 'wc-invoice-pdf') ?></h3>
                                     <p>
                                         Customize your templates being sent internally or to the customer<br />
                                         <strong>PLEASE NOTE: The changes will immediatly take effect once you pressed "Save"</strong>
                                     </p>
-                                    <h3><?php _e('Payments', 'wc-invoice-pdf') ?></h3>
+                                    <h3><?php _e('Payment report', 'wc-invoice-pdf')  ?></h3>
                                     <?php
                                     $attr = [
                                         'label_attr' => [ 'style' => 'width: 200px; display:inline-block;vertical-align:top;'],
                                         'input_attr' => ['style' => 'margin-left: 1em; width:50em;height: 200px']
                                     ];
                                     WCInvoicePdf::addField('wc_payment_message', '<strong>'. __('Payment report', 'wc-invoice-pdf') .'</strong><br />Inform the administrator (see "Admin Email") about outstanding invoices','textarea', $attr);
+                                    ?>
+                                    <h3><?php _e('Payments', 'wc-invoice-pdf') ?></h3>
+                                    <p>The below messages support placeholder enclosed with brackets "{}". Example: {CUSTOMER_NAME}</p>
+                                    <div>
+                                        <div style="display:inline-block; width: 150px; padding:.3em; background-color: #e9e9e9;">CUSTOMER_NAME</div>
+                                        <div style="display:inline-block; width: 150px; padding:.3em; background-color: #e9e9e9;">INVOICE_NO</div>
+                                        <div style="display:inline-block; width: 150px; padding:.3em; background-color: #e9e9e9;">DUE_DATE</div>
+                                        <div style="display:inline-block; width: 150px; padding:.3em; background-color: #e9e9e9;">DUE_DAYS</div>
+                                        <div style="display:inline-block; width: 150px; padding:.3em; background-color: #e9e9e9;">NEXT_DUE_DAYS</div>
+                                    </div>
+                                    
+                                    <?php
                                     WCInvoicePdf::addField('wc_recur_message', '<strong>' . __('Recurring payments', 'wc-invoice-pdf').'</strong><br />Submit the recurring invoice to the customer containing this message', 'textarea', $attr);
                                     WCInvoicePdf::addField('wc_recur_reminder_message', '<strong>'. __('Payment reminder', 'wc-invoice-pdf').'</strong><br />Submit the recurring invoice to the customer containing this message', 'textarea', $attr);
                                     ?>

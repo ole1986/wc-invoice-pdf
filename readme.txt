@@ -67,6 +67,7 @@ You should have received a copy of the GNU General Public License along with WP 
 
 = 1.0.5 =
 * fixed issue #1
+* place holders for customer messages - see WC-Invoice -> Settings -> Templates for more details
 
 = 1.0.4 =
 * reenable the invoice list filter

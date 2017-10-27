@@ -1,6 +1,8 @@
 <?php
 namespace WCInvoicePdf\Model;
 
+use WCInvoicePdf\WCInvoicePdf;
+
 class InvoiceTask {
 
     public static function Run(){
@@ -18,13 +20,13 @@ class InvoiceTask {
     public function payment_reminder(){
         global $wpdb;
 
-        if(empty(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_payment_reminder'])) {
+        if(empty(WCInvoicePdf::$OPTIONS['wc_payment_reminder'])) {
             error_log("WARNING: Payment reminder for adminstrators is disabled");
             return -1;
         }
             
 
-        if(!filter_var(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_mail_reminder'], FILTER_VALIDATE_EMAIL))
+        if(!filter_var(WCInvoicePdf::$OPTIONS['wc_mail_reminder'], FILTER_VALIDATE_EMAIL))
             return -2;
 
         $res = $wpdb->get_results("SELECT i.*, u.display_name, u.user_login FROM {$wpdb->prefix}".Invoice::TABLE." AS i 
@@ -52,13 +54,13 @@ class InvoiceTask {
                 }
             });
 
-            $message = sprintf(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_payment_message'], $content);
+            $message = sprintf(WCInvoicePdf::$OPTIONS['wc_payment_message'], $content);
 
-            error_log("invoice_payment_reminder - Sending reminder to: " . \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_mail_reminder']);
-            $ok = wp_mail(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_mail_reminder'], 
+            error_log("invoice_payment_reminder - Sending reminder to: " . WCInvoicePdf::$OPTIONS['wc_mail_reminder']);
+            $ok = wp_mail(WCInvoicePdf::$OPTIONS['wc_mail_reminder'], 
                         $subject,
                         $message,
-                        'From: '. \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_mail_sender']);
+                        'From: '. WCInvoicePdf::$OPTIONS['wc_mail_sender']);
             return $ok;
         }
         return 0;
@@ -70,7 +72,7 @@ class InvoiceTask {
     public function payment_recur(){
         global $wpdb;
 
-        if(empty(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_recur'])) {
+        if(empty(WCInvoicePdf::$OPTIONS['wc_recur'])) {
             error_log("WARNING: Recurring payment submission is disabled");
             return -1;
         }
@@ -83,7 +85,7 @@ class InvoiceTask {
         if(!empty($res)) {
             $curDate = new \DateTime();
 
-            $messageBody = \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_recur_message'];
+            $messageBody = WCInvoicePdf::$OPTIONS['wc_recur_message'];
 
             foreach ($res as $v) {
                  $d = new \DateTime($v->post_date_gmt);
@@ -112,16 +114,16 @@ class InvoiceTask {
                     });
 
                     // CHECK IF IT IS TEST - DO NOT SEND TO CUSTOMER THEN
-                    if(!empty(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_recur_test']))
-                        $recipient = \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_mail_reminder'];
+                    if(!empty(WCInvoicePdf::$OPTIONS['wc_recur_test']))
+                        $recipient = WCInvoicePdf::$OPTIONS['wc_mail_reminder'];
                     else
                         $recipient = $order->get_billing_email();
                     error_log("INFO: Sending recurring invoice ".$invoice->invoice_number." to: " . $recipient);
 
                     $success = wp_mail($recipient, 
                             __('Invoice', 'wc-invoice-pdf') . ' ' . $invoice->invoice_number,
-                            sprintf($messageBody, $invoice->invoice_number),
-                            'From: '. \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_mail_sender']);
+                            $this->parsePlaceHolder($messageBody, $invoice),
+                            'From: '. WCInvoicePdf::$OPTIONS['wc_mail_sender']);
                     
                     if($success)
                     {
@@ -141,17 +143,17 @@ class InvoiceTask {
     public function payment_recur_reminder() {
         global $wpdb;
         
-        if(empty(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_recur_reminder'])) {
+        if(empty(WCInvoicePdf::$OPTIONS['wc_recur_reminder'])) {
             error_log("WARNING: Recurring reminder on due invoices is disabled");
             return -1;
         }
 
-        $age = intval(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_recur_reminder_age']);
-        $interval = intval(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_recur_reminder_interval']);
+        $age = intval(WCInvoicePdf::$OPTIONS['wc_recur_reminder_age']);
+        $interval = intval(WCInvoicePdf::$OPTIONS['wc_recur_reminder_interval']);
 
-        $max = intval(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_recur_reminder_max']);
+        $max = intval(WCInvoicePdf::$OPTIONS['wc_recur_reminder_max']);
 
-        $messageBody = \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_recur_reminder_message'];
+        $messageBody = WCInvoicePdf::$OPTIONS['wc_recur_reminder_message'];
 
         // fetch all invoices which have status = Sent (ignore all invoice which are already marked as paid)
         $sql = "SELECT * FROM {$wpdb->prefix}".Invoice::TABLE." WHERE `status` = 1 AND DATE_ADD(NOW(), INTERVAL -{$age} DAY) > due_date AND reminder_sent < $max";
@@ -174,10 +176,12 @@ class InvoiceTask {
 
                 $v->reminder_sent++;
 
-                $order = new \WC_Order($v->wc_order_id);
+                $invoice = new Invoice($v);
+                $order = $invoice->order;
+                //$order = new \WC_Order($v->wc_order_id);
 
-                if(!empty(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_recur_test']))
-                    $recipient = \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_mail_reminder'];
+                if(!empty(WCInvoicePdf::$OPTIONS['wc_recur_test']))
+                    $recipient = WCInvoicePdf::$OPTIONS['wc_mail_reminder'];
                 else
                     $recipient = $order->get_billing_email();
                 
@@ -192,8 +196,8 @@ class InvoiceTask {
 
                 $success = wp_mail($recipient, 
                     __('Payment reminder', 'wc-invoice-pdf') . ' ' . $v->invoice_number,
-                    sprintf($messageBody, $v->invoice_number),
-                    'From: '. \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_mail_sender']
+                    $this->parsePlaceHolder($messageBody, $invoice),
+                    'From: '. WCInvoicePdf::$OPTIONS['wc_mail_sender']
                 );
         
                 if($success)
@@ -205,5 +209,35 @@ class InvoiceTask {
         }
 
         return 0;
+    }
+
+    /**
+     * Parse the reminder and recurring email messages to replace the placeholder with its content
+     * @param {string} $message message text
+     * @param {WCInvoicePdf\Model\Invoice} $invoice the invoice object
+     */
+    private function parsePlaceHolder($message, $invoice){
+        $customer = $invoice->Order()->get_user();
+
+        $dueDate = new \DateTime($invoice->due_date);
+        $today = new \DateTime();
+
+        $ph = [
+            'INVOICE_NO' => $invoice->invoice_number,
+            'DUE_DATE' => $dueDate->format('Y-m-d'),
+            'DUE_DAYS' => $dueDate->diff($today)->format('%a'),
+            'NEXT_DUE_DAYS' => WCInvoicePdf::$OPTIONS['wc_recur_reminder_interval'],
+            'CUSTOMER_NAME' => 'Guest'
+        ];
+
+        if($customer !== false) {
+            $ph['CUSTOMER_NAME'] = $customer->display_name;
+        }
+
+        foreach($ph as $placeHolder => $value) {
+            $message = str_replace('{'.$placeHolder.'}', $value, $message);
+        }
+
+        return $message;
     }
 }
