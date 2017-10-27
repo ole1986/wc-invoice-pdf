@@ -5,6 +5,7 @@
  * Version: 1.0.5
  * Author: ole1986 <ole.k@web.de>
  * Author URI: https://github.com/ole1986/wc-invoice-pdf
+ * Plugin URI: https://github.com/ole1986/wc-invoice-pdf/releases
  * Text Domain: wc-invoice-pdf
  */
 

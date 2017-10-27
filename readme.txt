@@ -65,4 +65,4 @@ You should have received a copy of the GNU General Public License along with WP 
 
 == Changelog ==
 
-[Release Notes on github.com] (https://github.com/ole1986/wc-invoice-pdf/releases)
+Click "Plugin URI" for release notes
