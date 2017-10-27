@@ -65,23 +65,4 @@ You should have received a copy of the GNU General Public License along with WP 
 
 == Changelog ==
 
-= 1.0.5 =
-* fixed issue #1
-* place holders for customer messages - see WC-Invoice -> Settings -> Templates for more details
-* cleanup code for ajax execution
-
-= 1.0.4 =
-* reenable the invoice list filter
-* fixed invoice scheduler not sending invoices
-
-= 1.0.3 =
-* removed migrated option from WP-ISPConfig3 only when migration succeeded
-
-= 1.0.2 =
-* select company logo from media library
-
-= 1.0.1 =
-* updated logo, banner, etc...
-
-= 1.0.0 =
-* initial version as part of the previous WP-ISPConfig3 plugin
+[Release Notes on github.com] (https://github.com/ole1986/wc-invoice-pdf/releases)
