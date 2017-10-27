@@ -67,4 +67,5 @@ You should have received a copy of the GNU General Public License along with WP 
 
 == Changelog ==
 
-Click "Plugin URI" for release notes
+Please click on "Plugin Homepage" the for all release notes.
+You will be refered to the github project page.
