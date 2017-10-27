@@ -65,6 +65,9 @@ You should have received a copy of the GNU General Public License along with WP 
 
 == Changelog ==
 
+= 1.0.5 =
+* fixed issue #1
+
 = 1.0.4 =
 * reenable the invoice list filter
 * fixed invoice scheduler not sending invoices
