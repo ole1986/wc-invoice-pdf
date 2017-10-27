@@ -49,7 +49,7 @@ class InvoiceList extends \WP_List_Table {
             'invoice_number' => __('Invoice', 'wc-invoice-pdf'),
             'customer_name'  => __('Customer', 'woocommerce'),
             'order_id'   => __('Order', 'woocommerce'),
-            'status' => __('Status'),
+            'status' => __('Status', 'wc-invoice-pdf'),
             'created'        => __('Created at', 'woocommerce'),
             'due_date'    => __('Due at', 'wc-invoice-pdf'),
             'paid_date' => __('Paid at', 'wc-invoice-pdf')

@@ -196,8 +196,8 @@ class WCInvoicePdf {
             }
             echo "<div class='image-preview-wrapper' style='display:inline-block;'>";
             echo "<img id='${name}-preview' src=\"$url\" style='max-height: 100px;'><br />";
-            echo "<input onclick=\"WCInvoicePdfAdmin.OpenMedia(this,'$name')\" type=\"button\" class=\"button\" value=\"" . __( 'Select image' ) ."\" />";
-            echo "<input onclick=\"WCInvoicePdfAdmin.ClearMedia(this,'$name')\" type=\"button\" class=\"button\" value=\"" . __( 'Clear image' ) ."\" />";
+            echo "<input onclick=\"WCInvoicePdfAdmin.OpenMedia(this,'$name')\" type=\"button\" class=\"button\" value=\"" . __( 'Select image', 'wc-invoice-pdf' ) ."\" />";
+            echo "<input onclick=\"WCInvoicePdfAdmin.ClearMedia(this,'$name')\" type=\"button\" class=\"button\" value=\"" . __( 'Clear image' , 'wc-invoice-pdf') ."\" />";
             echo "<input type='hidden' name=\"".$name."\" id='$name' value=\"$optValue\" />";
             echo "</div>";
         }

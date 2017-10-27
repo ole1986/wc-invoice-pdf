@@ -18,6 +18,10 @@ msgstr ""
 "X-Generator: Loco - https://localise.biz/\n"
 "X-Loco-Parser: loco_parse_po"
 
+msgid "WC-Invoice Settings"
+msgstr "WC-Rechnung Einstellungen"
+
+
 msgid "Payments shall be made in advance:"
 msgstr "Die Zahlung erfolgt im Voraus:"
 
@@ -128,3 +132,22 @@ msgstr "Total"
 
 msgid "Discount"
 msgstr "Rabatt"
+
+msgid "Clear Image"
+msgstr "Bild bereinigen"
+
+msgid "Select Image"
+msgstr "Bild auswählen"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Save"
+msgstr "Speichern"
+
+msgid "Preview"
+msgstr "Vorschau"
+
+msgid "Settings saved"
+msgstr "Einstellungen gespeichert"
+

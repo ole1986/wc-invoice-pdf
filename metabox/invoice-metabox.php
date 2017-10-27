@@ -48,7 +48,7 @@ class InvoiceMetabox {
         </p>
         <p style="text-align: right">
             <button type="submit" name="ispconfig_invoice_action" class="button" value="preview">
-                <?php printf(__('Preview %s'), '') ?>
+                <?php printf(__('Preview', 'wc-invoice-pdf'), '') ?>
             </button>
             <button type="submit" name="ispconfig_invoice_action" class="button" value="offer">
                 <?php _e('Offer', 'wc-invoice-pdf') ?>

@@ -69,7 +69,7 @@ class InvoiceMenu {
         if ( 'POST' === $_SERVER[ 'REQUEST_METHOD' ] ) {
             WCInvoicePdf::$OPTIONS = $_POST;           
             if(WCInvoicePdf::save_options()) {
-                ?><div class="updated"><p> <?php _e( 'Settings saved', 'wp-ispconfig3' );?></p></div><?php
+                ?><div class="updated"><p> <?php _e( 'Settings saved', 'wc-invoice-pdf' );?></p></div><?php
             }
         }
         ?>
@@ -180,7 +180,7 @@ class InvoiceMenu {
                         </div>
                         <div class="inside">
                             <p></p>
-                            <p><input type="submit" class="button-primary" name="submit" value="<?php _e('Save');?>" /></p>
+                            <p><input type="submit" class="button-primary" name="submit" value="<?php _e('Save', 'wc-invoice-pdf');?>" /></p>
                             <p></p>
                         </div>
                     </div>
