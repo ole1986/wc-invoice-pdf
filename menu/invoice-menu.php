@@ -28,9 +28,9 @@ class InvoiceMenu {
             <form action="" method="GET">
                 <input type="hidden" name="page" value="<?php echo esc_attr($_REQUEST['page']) ?>" />
                 <input type="hidden" name="action" value="filter" />
-                <label class="post-attributes-label" for="user_login">Filter Customer:</label>
+                <label class="post-attributes-label" for="user_login"><?php _e('Customer', 'woocommerce') ?></label>
                 <select name="customer_id" style="min-width: 200px">
-                    <option value="">[any]</option>
+                    <option value=""></option>
                 <?php  
                 $users = get_users(['role' => 'customer']);
                 foreach ($users as $u) {
@@ -40,11 +40,12 @@ class InvoiceMenu {
                 }
                 ?>
                 </select>
-                <input type="checkbox" id="recur_only" name="recur_only" value="1" <?php echo (!empty($_GET['recur_only'])?'checked':'') ?> /> <label for="recur_only">Recurring only</label>
-                <input type="submit" value="filter">
-                <input type="button" value="Reset" onclick="document.location.href='?page=<?php echo esc_attr($_REQUEST['page']) ?>'">
+                <input type="checkbox" id="recur_only" name="recur_only" value="1" <?php echo (!empty($_GET['recur_only'])?'checked':'') ?> /> <label for="recur_only"><?php _e('Recurring payments', 'wc-invoice-pdf') ?></label>
+                <input type="submit" class="button" value="<?php _e('Filter &#187;') ?>">
             </form>
-            <?php $invList->display(); ?>
+            <form action="" method="POST">
+                <?php $invList->display(); ?>
+            </form>
         </div>
         <?php
     }
@@ -94,6 +95,7 @@ class InvoiceMenu {
                             <li class="hide-if-no-js"><a href="#wcinvoicepdf-invoice"><?php _e('Invoices', 'wc-invoice-pdf')?></a></li>
                             <li class="hide-if-no-js"><a href="#wcinvoicepdf-scheduler"><?php _e('Task Scheduler', 'wc-invoice-pdf') ?></a></li>
                             <li class="hide-if-no-js"><a href="#wcinvoicepdf-template"><?php _e('Templates', 'wc-invoice-pdf') ?></a></li>
+                            <li class="hide-if-no-js"><a href="#wcinvoicepdf-export"><?php _e('Export', 'wc-invoice-pdf') ?></a></li>
                         </ul>
                         <div class="postbox inside">
                             <div id="wcinvoicepdf-invoice" class="inside tabs-panel" style="display: none;">
@@ -176,6 +178,19 @@ class InvoiceMenu {
                                     <strong>{NEXT_DUE_DAYS}</strong>
                                 </div>
                                 <input type="hidden" name="wc_enable" value="1" />
+                            </div>
+                            <div id="wcinvoicepdf-export" class="inside tabs-panel" style="display: none;">
+                                <p>
+                                    The export feature currently supports GnuCash *.csv format to import invoices.</br />
+                                    Please make sure the CUSTOMER ID (in GnuCash) matches the user id in wordpress
+                                </p>
+                                <?php
+                                WCInvoicePdf::addField('wc_export_locale', '<strong>Locale</strong><br />Example: de_DE en_US');
+                                WCInvoicePdf::addField('wc_export_notes', '<strong>Notes</strong><br />Invoice notes');
+                                WCInvoicePdf::addField('wc_export_account', '<strong>Account name</strong><br />Name of the account an invoce is booked');
+                                WCInvoicePdf::addField('wc_export_account_posted', '<strong>Account name</strong><br />Name of the account invoce is posted');
+                                WCInvoicePdf::addField('wc_export_account_tax', '<strong>Tax Account (optional)</strong><br />Name of the tax account');
+                                ?>
                             </div>
                         </div>
                         <div class="inside">

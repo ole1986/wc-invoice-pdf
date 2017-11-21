@@ -16,7 +16,7 @@ class InvoicePdf {
      */
     public function BuildInvoice($invoice, $isOffer = false, $stream = false){
         setlocale(LC_ALL, get_locale());
-        $order = $invoice->order;
+        $order = $invoice->Order();
 
         $items = $order->get_items();
 

@@ -18,6 +18,7 @@ It also allows to setup WC Orders to be recurring and submits the invoices to th
 **Features**
 
 * save invoice as pdf from any order created by WooCommerce
+* export invoices into CSV
 * preview quote as pdf to submit provisional offer to customers
 * schedule recurring invoices directly send to customers email address
 * send kindly reminders for over due invoices

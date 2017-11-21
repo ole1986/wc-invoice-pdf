@@ -200,8 +200,7 @@ class InvoiceTask {
                 $v->reminder_sent++;
 
                 $invoice = new Invoice($v);
-                $order = $invoice->order;
-                //$order = new \WC_Order($v->wc_order_id);
+                $order = $invoice->Order();
 
                 if(!empty(WCInvoicePdf::$OPTIONS['wc_recur_test']))
                     $recipient = WCInvoicePdf::$OPTIONS['wc_mail_reminder'];

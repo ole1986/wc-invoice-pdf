@@ -75,7 +75,7 @@ class AccountInvoice {
 
     public function showPaymentForInvoice($invoiceID){
         $invoice = new Invoice($invoiceID);
-        $order = $invoice->order;
+        $order = $invoice->Order();
         ?>
         <h3><?php  _e('Invoice', 'wc-invoice-pdf'); ?> <?php echo $invoice->invoice_number ?></h3>
         Zahlung via <?php echo $order->get_payment_method_title() ?>

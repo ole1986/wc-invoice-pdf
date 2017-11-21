@@ -2,7 +2,7 @@
 /*
  * Plugin Name: WC Recurring Invoice PDF
  * Description: WooCommerce invoice pdf plugin with recurring payments (scheduled)
- * Version: 1.0.5
+ * Version: 1.0.6
  * Author: ole1986 <ole.k@web.de>
  * Author URI: https://github.com/ole1986/wc-invoice-pdf
  * Plugin URI: https://github.com/ole1986/wc-invoice-pdf/releases
@@ -20,6 +20,7 @@ require_once 'menu/invoice-menu.php';
 require_once 'menu/account-invoice.php';
 require_once 'model/invoice.php';
 require_once 'model/invoice-list.php';
+require_once 'model/invoice-export.php';
 require_once 'model/invoice-pdf.php';
 require_once 'model/invoice-task.php';
 require_once 'metabox/invoice-metabox.php';
@@ -56,7 +57,12 @@ class WCInvoicePdf {
         'wc_pdf_info' => 'Info block containing created date here: %s',
         'wc_pdf_block1' => 'BLOCK #1',
         'wc_pdf_block2' => 'BLOCK #2',
-        'wc_pdf_block3' => 'BLOCK #3'
+        'wc_pdf_block3' => 'BLOCK #3',
+        'wc_export_locale' => 'de_DE',
+        'wc_export_notes' => 'Rechnung %s',
+        'wc_export_account' => 'Erlöse u. Erträge 2/8:Erlöskonten 8:8400 Erlöse USt. 19%',
+        'wc_export_account_posted' => 'Aktiva:Finanzkonten 1:1400 Ford. a. Lieferungen und Leistungen',
+        'wc_export_account_tax' => 'Umsatzsteuer'
     ];
 
     /**

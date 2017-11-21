@@ -10,6 +10,7 @@ class Invoice {
     const SUBMITTED = 1;
     const PAID = 2;
     const RECURRING = 4;
+    const EXPORTED = 8;
     const CANCELED = 128;
 
     /**
@@ -19,6 +20,7 @@ class Invoice {
         1 => 'Sent',
         2 => 'Paid',
         4 => 'Recur.Task',
+        8 => 'Exported',
         128 => 'Canceled'
     ];
 
@@ -42,6 +44,8 @@ class Invoice {
          'paid_date' => 'datetime NULL',
          'deleted' => 'BOOLEAN NOT NULL DEFAULT FALSE'
     ];
+
+    public $isFirst = false;
 
     /**
      * constructor call with various load options given in parameter $id
@@ -80,6 +84,10 @@ class Invoice {
         $this->status |= self::RECURRING;
     }
 
+    public function Exported(){
+        $this->status |= self::EXPORTED;
+    }
+
     public function Cancel(){
         $this->status = self::CANCELED;
     }
@@ -88,8 +96,10 @@ class Invoice {
      * dynamic property loader to lazy load objects
      */
     public function __get($name){
-        if($name == 'order' && !empty($this->wc_order_id))
-            return new \WC_Order($this->wc_order_id);
+        if($name == 'order' && !empty($this->wc_order_id)) {
+            $this->$name = new \WC_Order($this->wc_order_id);
+        }
+        return $this->$name;
     }
 
     /**

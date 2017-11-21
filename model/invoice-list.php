@@ -45,6 +45,7 @@ class InvoiceList extends \WP_List_Table {
 
     public function get_columns(){
         $columns = [
+            'cb' => '<input type="checkbox" />',
             'ID' => 'ID',
             'invoice_number' => __('Invoice', 'wc-invoice-pdf'),
             'customer_name'  => __('Customer', 'woocommerce'),
@@ -70,6 +71,10 @@ class InvoiceList extends \WP_List_Table {
             default:
                 return print_r( $item, true ) ; //Show the whole array for troubleshooting purposes
         }
+    }
+
+    function column_cb($item) {
+        return sprintf('<input type="checkbox" name="invoice[]" value="%s" />', $item->ID);
     }
 
     function column_status($item) {
@@ -116,21 +121,43 @@ class InvoiceList extends \WP_List_Table {
         return '<a href="javascript:void(0)" data-id="'.$item->ID.'" onclick="WCInvoicePdfAdmin.EditPaidDate(this)">'.$item->paid_date.'</a>';
     }
     
+    function get_bulk_actions() {
+        $actions = [
+          'export' => __('Export', 'wc-invoice-pdf')
+        ];
+        return $actions;
+      }
+
+    function process_bulk_actions() {
+        if(!empty($_POST['action']) && $_POST['action'] == 'export'){
+            if(empty($_POST['invoice'])) {
+                echo '<div class="wrap"><div class="notice notice-info"><p>Nothing to export</p></div></div>';
+                return;
+            }
+
+            $invoiceIds = array_map(function($value){ return intval($value); }, $_POST['invoice']);
+            $exp = new InvoiceExport($invoiceIds);
+            $exp->GnuCash();
+        }
+    }
+
     public function prepare_items() {
         global $wpdb;
-        
+
+        $this->process_bulk_actions();
+
         $columns = $this->get_columns();
         $hidden = [];
         $sortable = $this->get_sortable_columns();
         $this->_column_headers = array($columns, $hidden, $sortable);
 
-        $query = "SELECT i.*, u.user_login AS customer_name, u.user_email AS user_email, u.ID AS user_id, p.ID AS order_id, p.post_status, pm.meta_value AS ispconfig_period 
+        $query = "SELECT i.id AS ID, i.customer_id, i.invoice_number, i.wc_order_id, i.created, i.due_date, i.paid_date, i.status, i.reminder_sent, u.user_login AS customer_name, u.user_email AS user_email, u.ID AS user_id, p.ID AS order_id, p.post_status, pm.meta_value AS ispconfig_period 
                     FROM {$wpdb->prefix}".Invoice::TABLE." AS i 
                     LEFT JOIN wp_users AS u ON u.ID = i.customer_id
                     LEFT JOIN wp_posts AS p ON p.ID = i.wc_order_id
                     LEFT JOIN wp_postmeta AS pm ON (p.ID = pm.post_id AND pm.meta_key = '_ispconfig_period')
                     WHERE i.deleted = 0";
-        
+                    
         $action = preg_replace('/\W/', '', isset($_GET['action']) ? $_GET['action'] : '');
         $invoiceId = isset($_GET['id']) ? intval($_GET['id']) : null;
 
@@ -166,7 +193,6 @@ class InvoiceList extends \WP_List_Table {
 
         $this->applySorting($query);
         $this->applyPaging($query);
-        
         $this->items = $wpdb->get_results($query, OBJECT);
 
         $this->postPaging();
