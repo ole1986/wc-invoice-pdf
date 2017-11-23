@@ -179,7 +179,7 @@ class InvoiceTask {
         $messageBody = WCInvoicePdf::$OPTIONS['wc_recur_reminder_message'];
 
         // fetch all invoices which have status = Sent (ignore all invoice which are already marked as paid)
-        $sql = "SELECT * FROM {$wpdb->prefix}".Invoice::TABLE." WHERE `status` = 1 AND DATE_ADD(NOW(), INTERVAL -{$age} DAY) > due_date AND reminder_sent < $max";
+        $sql = "SELECT * FROM {$wpdb->prefix}".Invoice::TABLE." WHERE deleted = 0 AND NOT (`status` & ".Invoice::PAID.") AND `status` < ".Invoice::CANCELED." AND DATE_ADD(NOW(), INTERVAL -{$age} DAY) > due_date AND reminder_sent < $max";
 
         $res = $wpdb->get_results($sql, OBJECT);
 
