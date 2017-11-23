@@ -55,7 +55,7 @@ class InvoiceTask {
         $res = $wpdb->get_results("SELECT i.*, u.display_name, u.user_login FROM {$wpdb->prefix}".Invoice::TABLE." AS i 
                                 LEFT JOIN {$wpdb->posts} AS p ON (p.ID = i.wc_order_id)
                                 LEFT JOIN {$wpdb->users} AS u ON u.ID = i.customer_id
-                                WHERE i.deleted = 0 AND (i.status & 2) = 0 AND DATE(i.due_date) <= CURDATE()", OBJECT);
+                                WHERE i.deleted = 0 AND i.status < ".Invoice::PAID." AND i.status >= ".Invoice::SUBMITTED." AND DATE(i.due_date) <= CURDATE()", OBJECT);
             
         // remind admin when customer has not yet paid the invoices
         if(!empty($res)) {
