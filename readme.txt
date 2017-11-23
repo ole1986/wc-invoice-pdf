@@ -3,7 +3,7 @@ Contributors: ole1986
 Tags:  woocommerce, WC, invoicing, billing, recurring, order, pdf, automation, read-only, law
 Donate link: https://www.paypal.com/cgi-bin/webscr?item_name=Donation+WC+Recurring+Invoice+Pdf&cmd=_donations&business=ole.k@web.de
 Requires at least: 3.1
-Tested up to: 4.8
+Tested up to: 4.9
 Stable tag: trunk
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -18,7 +18,7 @@ It also allows to setup WC Orders to be recurring and submits the invoices to th
 **Features**
 
 * save invoice as pdf from any order created by WooCommerce
-* export invoices into CSV
+* export invoices into CSV (primary GnuCash, more may follow...)
 * preview quote as pdf to submit provisional offer to customers
 * schedule recurring invoices directly send to customers email address
 * send kindly reminders for over due invoices
