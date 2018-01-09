@@ -151,8 +151,6 @@ class InvoicePdf {
             $total = round($v['total'], 2);
             $tax = round($v['total_tax'], 2);
 
-            error_log($product_name);
-
             $table->AddCell("$i", null, [], ['top' => 5]);
             $table->AddCell($product_name, null, [], ['top' => 5]);
             $table->AddCell($qtyStr, 'right', [], ['top' => 5]);
