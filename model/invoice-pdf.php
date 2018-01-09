@@ -118,27 +118,29 @@ class InvoicePdf {
         $items = array_merge($items, $fees);
         
         foreach($items as $v){
+            $product_name = $v['name'];
+            //error_log(print_r($v,true));
             $product = null;
             // check if product id is available and fetch the ISPCONFIG tempalte ID
             if(!empty($v['product_id']))
                 $product = wc_get_product($v['product_id']);
                 
             if(!isset($v['qty'])) $v['qty'] = 1;
-
-            if($product instanceof WC_Product_Webspace) {
+           
+            if($product instanceof \WC_Product_Webspace) {
                 // if its an ISPCONFIG Template product
-                $current = new DateTime($invoice->created);
+                $current = new \DateTime($invoice->created);
                 $next = clone $current;
                 if($v['qty'] == 1) {
-                    $next->add(new DateInterval('P1M'));
+                    $next->add(new \DateInterval('P1M'));
                 } else if($v['qty'] == 12) {
                     // overwrite the QTY to be 1 MONTH
-                    $next->add(new DateInterval('P12M'));
+                    $next->add(new \DateInterval('P12M'));
                 }
                 $qtyStr = number_format($v['qty'], 0, ',',' ') . ' Monat(e)';
-                if(!$isOffer)
-                    $v['name'] .= "\n<strong>Zeitraum: " . $current->format('d.m.Y')." - ".$next->format('d.m.Y')."</strong>\n";
-            } else if($product instanceof WC_Product_Hour) {
+                //if(!$isOffer)
+                    $product_name .= "\n<strong>Zeitraum: " . $current->format('d.m.Y')." - ".$next->format('d.m.Y') . '</strong>';
+            } else if($product instanceof \WC_Product_Hour) {
                 // check if product type is "hour" to output hours instead of Qty
                 $qtyStr = number_format($v['qty'], 1, ',',' ');
 			    $qtyStr .= ' Std.';
@@ -149,8 +151,10 @@ class InvoicePdf {
             $total = round($v['total'], 2);
             $tax = round($v['total_tax'], 2);
 
+            error_log($product_name);
+
             $table->AddCell("$i", null, [], ['top' => 5]);
-            $table->AddCell($v['name'], null, [], ['top' => 5]);
+            $table->AddCell($product_name, null, [], ['top' => 5]);
             $table->AddCell($qtyStr, 'right', [], ['top' => 5]);
             $table->AddCell(number_format($total, 2, ',',' ') . ' ' . $order->get_currency(), 'right', [], ['top' => 5]);
 
@@ -166,11 +170,11 @@ class InvoicePdf {
             $summary += $total;
             $summaryTax += $tax;
 
-            if($v instanceof WC_Order_Item_Product) {
+            if($v instanceof \WC_Order_Item_Product) {
                 $meta = $v->get_meta_data();
                 if(!empty($meta)) {
                     $table->AddCell('');
-                    $mdcontent = "\n" . implode('',array_map(function($m){ return "<strong>".$m->key."</strong>\n".$m->value; }, $meta));
+                    $mdcontent = "\n" . implode('',array_map(function($m){ return "<strong>".$m->key.":</strong> ".$m->value; }, $meta));
                     $table->AddCell($mdcontent);
                     $table->AddCell('');
                     $table->AddCell('');
