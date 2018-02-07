@@ -7,6 +7,9 @@
  * Author URI: https://github.com/ole1986/wc-invoice-pdf
  * Plugin URI: https://github.com/ole1986/wc-invoice-pdf/releases
  * Text Domain: wc-invoice-pdf
+ * 
+ * WC requires at least: 3.0
+ * WC tested up to: 3.2.6
  */
 
 namespace WCInvoicePdf;
