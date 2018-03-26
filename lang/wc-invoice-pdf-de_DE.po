@@ -124,8 +124,11 @@ msgstr "Bezeichnung"
 msgid "Qty"
 msgstr "Menge"
 
-msgid "Net"
-msgstr "Netto"
+msgid "Unit Price"
+msgstr "Einzelpreis"
+
+msgid "Amount"
+msgstr "Gesamt"
 
 msgid "Tax"
 msgstr "MwSt."

@@ -16,7 +16,12 @@ class InvoicePdf {
      */
     public function BuildInvoice($invoice, $isOffer = false, $stream = false){
         setlocale(LC_ALL, get_locale());
+        
         $order = $invoice->Order();
+
+        $formatStyle = \NumberFormatter::DECIMAL;
+        $formatter = new \NumberFormatter(get_locale(), $formatStyle);
+        $formatter->setPattern("#0.00 " . $order->get_currency());
 
         $items = $order->get_items();
 
@@ -99,7 +104,7 @@ class InvoicePdf {
         $text->SetFont('Helvetica', 15);
         $text->AddText("$headlineText");
         
-        $table = $pdf->NewTable(array('uy'=>480, 'addlx' => 20, 'addux' => -20,'ly' => 120), 4, null, $ls, Cpdf_Table::DRAWLINE_HEADERROW);
+        $table = $pdf->NewTable(array('uy'=>480, 'addlx' => 20, 'addux' => -20,'ly' => 120), 5, null, $ls, Cpdf_Table::DRAWLINE_HEADERROW);
         
         $table->SetColumnWidths(30,240);
         $table->Fit = true;
@@ -107,7 +112,8 @@ class InvoicePdf {
         $table->AddCell("<strong>". __('No#', 'wc-invoice-pdf') ."</strong>");
         $table->AddCell("<strong>". __('Description', 'wc-invoice-pdf') ."</strong>");
         $table->AddCell("<strong>". __('Qty', 'wc-invoice-pdf') ."</strong>", 'right');
-        $table->AddCell("<strong>". __('Net', 'wc-invoice-pdf') ."</strong>", 'right');
+        $table->AddCell("<strong>". __('Unit Price', 'wc-invoice-pdf') ."</strong>", 'right');
+        $table->AddCell("<strong>". __('Amount', 'wc-invoice-pdf') ."</strong>", 'right');
 
         $i = 1;
         $summary = 0;
@@ -149,12 +155,14 @@ class InvoicePdf {
 			}
 
             $total = round($v['total'], 2);
+            $unitprice = $total / intval($v['qty']);
             $tax = round($v['total_tax'], 2);
 
             $table->AddCell("$i", null, [], ['top' => 5]);
             $table->AddCell($product_name, null, [], ['top' => 5]);
             $table->AddCell($qtyStr, 'right', [], ['top' => 5]);
-            $table->AddCell(number_format($total, 2, ',',' ') . ' ' . $order->get_currency(), 'right', [], ['top' => 5]);
+            $table->AddCell($formatter->format($unitprice), 'right', [], ['top' => 5]);
+            $table->AddCell($formatter->format($total), 'right', [], ['top' => 5]);
 
             // display discount
             if(isset($v['subtotal']) && ($subtotal = round($v['subtotal'], 2)) > $total)
@@ -162,7 +170,8 @@ class InvoicePdf {
                 $table->AddCell("", null, [], ['top' => 5]);
                 $table->AddCell(" - " . __("Discount", 'wc-invoice-pdf'), null, [], ['top' => 5]);
                 $table->AddCell("", 'right', [], ['top' => 5]);
-                $table->AddCell(number_format($total - $subtotal, 2, ',',' ') . ' ' . $order->get_currency(), 'right', [], ['top' => 5]);
+                $table->AddCell("", 'right', [], ['top' => 5]);
+                $table->AddCell($formatter->format($total - $subtotal), 'right', [], ['top' => 5]);
             }
             
             $summary += $total;
@@ -176,6 +185,7 @@ class InvoicePdf {
                     $table->AddCell($mdcontent);
                     $table->AddCell('');
                     $table->AddCell('');
+                    $table->AddCell('');
                 } 
             }
 
@@ -184,18 +194,21 @@ class InvoicePdf {
 
         $table->AddCell("", null, [], ['top' => 5]);
         $table->AddCell("", null, [], ['top' => 5]);
+        $table->AddCell("", null, [], ['top' => 5]);
         $table->AddCell("<strong>".__('Summary', 'wc-invoice-pdf')."</strong>", 'right', [], ['top' => 15]);
-        $table->AddCell("<strong>".number_format($summary, 2,',',' '). ' ' . $order->get_currency()."</strong>", 'right', [], ['top' => 15]);
+        $table->AddCell("<strong>".$formatter->format($summary)."</strong>", 'right', [], ['top' => 15]);
 
         $table->AddCell("", null, [], ['top' => 5]);
         $table->AddCell("", null, [], ['top' => 5]);
+        $table->AddCell("", null, [], ['top' => 5]);
         $table->AddCell("<strong>+ 19% ".__('Tax', 'wc-invoice-pdf')."</strong>", 'right', [], ['top' => 5]);
-        $table->AddCell("<strong>".number_format($summaryTax, 2,',',' '). ' ' . $order->get_currency() ."</strong>", 'right', [], ['top' => 5]);
+        $table->AddCell("<strong>".$formatter->format($summaryTax) ."</strong>", 'right', [], ['top' => 5]);
         
         $table->AddCell("", null, [], ['top' => 5]);
         $table->AddCell("", null, [], ['top' => 5]);
+        $table->AddCell("", null, [], ['top' => 5]);
         $table->AddCell("<strong>".__('Total', 'wc-invoice-pdf')."</strong>", 'right', [], ['top' => 15]);
-        $table->AddCell("<strong>".number_format($summary + $summaryTax, 2,',',' '). ' ' . $order->get_currency()."</strong>", 'right', [], ['top' => 15]);
+        $table->AddCell("<strong>".$formatter->format($summary + $summaryTax)."</strong>", 'right', [], ['top' => 15]);
         
         $table->EndTable();
         
