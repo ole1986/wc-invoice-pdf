@@ -1,12 +1,7 @@
 <?php
 namespace WCInvoicePdf\Model;
 
-include_once WCINVOICEPDF_PLUGIN_DIR . 'pdf-php/src/CpdfExtension.php';
-
-use ROSPDF\Cpdf as Cpdf;
-use ROSPDF\CpdfExtension as Cpdf_Extension;
-use ROSPDF\CpdfLineStyle as Cpdf_LineStyle;
-use ROSPDF\CpdfTable as Cpdf_Table;
+include_once WCINVOICEPDF_PLUGIN_DIR . 'vendor/rospdf/pdf-php/src/Cezpdf.php';
 
 class InvoicePdf { 
     /**
@@ -32,98 +27,90 @@ class InvoicePdf {
         //error_log(print_r($items, true));
 
         $billing_info = str_replace('<br/>', "\n", $order->get_formatted_billing_address());
-                    
-        Cpdf::$DEBUGLEVEL = Cpdf::DEBUG_MSG_ERR;
-        //Cpdf::$DEBUGLEVEL = Cpdf::DEBUG_ALL;
-                
-        $pdf = new Cpdf_Extension(Cpdf::$Layout['A4']);
-        $pdf->Compression = 0;
-        //$pdf->ImportPage(1);
+
         if($isOffer) {
             $headlineText =  __('Offer', 'wc-invoice-pdf') . ' ' . $invoice->offer_number;
         } else {
             $headlineText =  __('Invoice', 'wc-invoice-pdf') . ' ' . $invoice->invoice_number;
         }
-            
-        $pdf->Metadata->SetInfo('Title', sprintf(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_title'], $headlineText) );
-        
-        $ls = new Cpdf_LineStyle(1, 'butt', 'miter');
-        
-        // Logo
+
+                    
+        $pdf = new \Cezpdf('a4');
+        $pdf->ezSetMargins(50,110,50,50);
+
         $mediaId = intval(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_logo']);
         if($mediaId > 0) {
             $mediaUrl = wp_get_attachment_url($mediaId);
             if($mediaUrl !== false) {
-                $logo = $pdf->NewAppearance();
-                $logo->AddImage('right',-30, $mediaUrl, 280);
+                $pdf->ezImage($mediaUrl, 0, 250, 'none', 'right');
             }
         }
-                
-        // billing info
-        $billing_text = $pdf->NewAppearance(['uy'=> 650, 'addlx' => 20, 'ly' => 520, 'ux'=> 300]);
-        if(!empty(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_addressline'])) {
-            $billing_text->SetFont('Helvetica', 8);
-            $billing_text->AddText( "<strong>" . \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_addressline'] . "</strong>\n");
-            $billing_text->AddLine(0, -11, 177, 0, $ls);
-        }
-        
-        $billing_text->SetFont('Helvetica', 10);
-        $billing_text->AddText($billing_info);
-        
-        // Rechnung info
-        $billing_text = $pdf->NewAppearance(['uy'=> 650, 'lx' => 400, 'ly' => 520, 'addux' => -20]);
-        $billing_text->SetFont('Helvetica', 10);
-        $billing_text->AddText(sprintf( \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_info'], strftime('%x',strtotime($invoice->created))) );
-        
+
+
+        $all = $pdf->openObject();
+        $pdf->saveState();
+        $pdf->setStrokeColor(0, 0, 0, 1);
+        $pdf->line(50, 100, 550, 100);
+
+        $pdf->addTextWrap(50, 90, 8,\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_block1']);
+        $pdf->addTextWrap(250, 90, 8,\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_block2'], 0);
+        $pdf->addTextWrap(550, 90, 8,\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_block3'], 0, 'right');
+
+        $pdf->restoreState();
+        $pdf->closeObject();
+
+        $pdf->addObject($all, 'all');
+
+
+        $pdf->ezSetDy(-60);
+
+        $y = $pdf->y;
+
+        $pdf->ezText(sprintf( \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_info'], strftime('%x',strtotime($invoice->created))) , 0, ['justification' => 'right']);
+
         if($order->get_date_paid() && !$isOffer) {
-            $billing_text->AddColor(1,0,0);
-            $billing_text->SetFont('Helvetica', 12);
-            $billing_text->AddText("\n" . sprintf(__('Paid at', 'wc-invoice-pdf') . ' %s', strftime('%x',strtotime($order->get_date_paid())) ) );
+            $pdf->saveState();
+            $pdf->setColor(1,0,0);
+            $pdf->ezText(sprintf(__('Paid at', 'wc-invoice-pdf') . ' %s', strftime('%x',strtotime($order->get_date_paid())) ) , 0,['justification' => 'right']);
+            $pdf->restoreState();
+        } else {
+            $pdf->ezText('');
         }
 
-        // Zahlungsinfo und AGB
-        $payment_text = $pdf->NewAppearance(['uy'=> 130, 'addlx' => 20, 'addux' => -20]);
-        $payment_text->SetFont('Helvetica', 8);
-        $payment_text->AddText("<strong>" .  \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_condition'] . "</strong>",0, 'center');
 
-        // Firmeninfo (1)
-        $billing_text = $pdf->NewAppearance(['uy'=> 100, 'addlx' => 20, 'ux' => 200]);
-        $billing_text->SetFont('Helvetica', 8);
-        $billing_text->AddText( \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_block1'] );
-        // firmeninfo (2)
-        $billing_text = $pdf->NewAppearance(['uy'=> 100, 'lx' => 200, 'ux' => 370]);
-        $billing_text->SetFont('Helvetica', 8);
-        $billing_text->AddText( \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_block2']);
-        // firmeninfo (3)
-        $billing_text = $pdf->NewAppearance(['uy'=> 100, 'lx' => 430, 'addux' => -20]);
-        $billing_text->SetFont('Helvetica', 8);
-        $billing_text->AddText(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_block3']);
-        
-        // Rechnungsnummer
-        $text = $pdf->NewText(['uy' => 510, 'ly' => 490, 'addlx' => 20, 'addux' => -20]);
-        $text->SetFont('Helvetica', 15);
-        $text->AddText("$headlineText");
-        
-        $table = $pdf->NewTable(array('uy'=>480, 'addlx' => 20, 'addux' => -20,'ly' => 120), 5, null, $ls, Cpdf_Table::DRAWLINE_HEADERROW);
-        
-        $table->SetColumnWidths(30,240);
-        $table->Fit = true;
+        $pdf->y = $y;
 
-        $table->AddCell("<strong>". __('No#', 'wc-invoice-pdf') ."</strong>");
-        $table->AddCell("<strong>". __('Description', 'wc-invoice-pdf') ."</strong>");
-        $table->AddCell("<strong>". __('Qty', 'wc-invoice-pdf') ."</strong>", 'right');
-        $table->AddCell("<strong>". __('Unit Price', 'wc-invoice-pdf') ."</strong>", 'right');
-        $table->AddCell("<strong>". __('Amount', 'wc-invoice-pdf') ."</strong>", 'right');
+        $pdf->ezText("<strong>" . \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_addressline'] . "</strong>\n", 8);
+        $pdf->line($pdf->ez['leftMargin'],$pdf->y + 5, 200, $pdf->y + 5);
+
+        $pdf->ezText($billing_info, 10);
+        $pdf->ezSetDy(-60);
+
+        $pdf->ezText("$headlineText", 14);
+
+
+
+        $cols = array('num' => __('No#', 'wc-invoice-pdf'), 'desc' => __('Description', 'wc-invoice-pdf'), 'qty' => __('Qty', 'wc-invoice-pdf'), 'price' => __('Unit Price', 'wc-invoice-pdf'), 'total' => __('Amount', 'wc-invoice-pdf'));
+        $colOptions = [
+            'num' => ['width' => 32],
+            'desc' => [],
+            'qty' => ['justification' => 'right', 'width' => 64],
+            'price' => ['justification' => 'right', 'width' => 80],
+            'total' => ['justification' => 'right', 'width' => 80],
+        ];
+
+        $data = [];
 
         $i = 1;
         $summary = 0;
         $summaryTax = 0;
-        
-        // add fees and possible discounts (if value is negative)
-        $fees = $order->get_fees();
+
+	$fees = $order->get_fees();
         $items = array_merge($items, $fees);
-        
+
         foreach($items as $v){
+            $row = [];
+
             $product_name = $v['name'];
             //error_log(print_r($v,true));
             $product = null;
@@ -158,66 +145,65 @@ class InvoicePdf {
             $unitprice = $total / intval($v['qty']);
             $tax = round($v['total_tax'], 2);
 
-            $table->AddCell("$i", null, [], ['top' => 5]);
-            $table->AddCell($product_name, null, [], ['top' => 5]);
-            $table->AddCell($qtyStr, 'right', [], ['top' => 5]);
-            $table->AddCell($formatter->format($unitprice), 'right', [], ['top' => 5]);
-            $table->AddCell($formatter->format($total), 'right', [], ['top' => 5]);
 
-            // display discount
-            if(isset($v['subtotal']) && ($subtotal = round($v['subtotal'], 2)) > $total)
-            {
-                $table->AddCell("", null, [], ['top' => 5]);
-                $table->AddCell(" - " . __("Discount", 'wc-invoice-pdf'), null, [], ['top' => 5]);
-                $table->AddCell("", 'right', [], ['top' => 5]);
-                $table->AddCell("", 'right', [], ['top' => 5]);
-                $table->AddCell($formatter->format($total - $subtotal), 'right', [], ['top' => 5]);
-            }
-            
-            $summary += $total;
-            $summaryTax += $tax;
-
+            $mdcontent = '';
             if($v instanceof \WC_Order_Item_Product) {
                 $meta = $v->get_meta_data();
                 if(!empty($meta)) {
-                    $table->AddCell('');
-                    $mdcontent = "\n" . implode('',array_map(function($m){ return "<strong>".$m->key.":</strong> ".$m->value; }, $meta));
-                    $table->AddCell($mdcontent);
-                    $table->AddCell('');
-                    $table->AddCell('');
-                    $table->AddCell('');
+                    $mdcontent.= implode('',array_map(function($m){ return "\n<strong>".$m->key.":</strong> ".$m->value."\n"; }, $meta));
                 } 
             }
 
+            $row['num'] = "$i";
+            $row['desc'] = $product_name . "\n" . $mdcontent;
+            $row['qty'] = $qtyStr;
+            $row['price'] = $formatter->format($unitprice);
+            $row['total'] = $formatter->format($total);
+
+            $summary += $total;
+            $summaryTax += $tax;
+
+            $data[] = $row;
             $i++;
         }
 
-        $table->AddCell("", null, [], ['top' => 5]);
-        $table->AddCell("", null, [], ['top' => 5]);
-        $table->AddCell("", null, [], ['top' => 5]);
-        $table->AddCell("<strong>".__('Summary', 'wc-invoice-pdf')."</strong>", 'right', [], ['top' => 15]);
-        $table->AddCell("<strong>".$formatter->format($summary)."</strong>", 'right', [], ['top' => 15]);
+        
+        $pdf->ezSetDy(-30);
 
-        $table->AddCell("", null, [], ['top' => 5]);
-        $table->AddCell("", null, [], ['top' => 5]);
-        $table->AddCell("", null, [], ['top' => 5]);
-        $table->AddCell("<strong>+ 19% ".__('Tax', 'wc-invoice-pdf')."</strong>", 'right', [], ['top' => 5]);
-        $table->AddCell("<strong>".$formatter->format($summaryTax) ."</strong>", 'right', [], ['top' => 5]);
-        
-        $table->AddCell("", null, [], ['top' => 5]);
-        $table->AddCell("", null, [], ['top' => 5]);
-        $table->AddCell("", null, [], ['top' => 5]);
-        $table->AddCell("<strong>".__('Total', 'wc-invoice-pdf')."</strong>", 'right', [], ['top' => 15]);
-        $table->AddCell("<strong>".$formatter->format($summary + $summaryTax)."</strong>", 'right', [], ['top' => 15]);
-        
-        $table->EndTable();
-        
-        if($stream)
-        {
-            $pdf->Stream($invoice->invoice_number.'.pdf');
-            return;
+        $pdf->ezTable($data, $cols, '', ['width' => '500','splitRows' => 1,'gridlines' => EZ_GRIDLINE_HEADERONLY, 'cols' => $colOptions]);
+    
+        $colOptions = [
+            ['justification' => 'right'],
+            ['justification' => 'right']
+        ];
+
+        $summaryData = [
+            [
+                "<strong>".__('Summary', 'wc-invoice-pdf')."</strong>",
+                "<strong>".$formatter->format($summary)."</strong>"
+            ],
+            [
+                "<strong>+ 19% ".__('Tax', 'wc-invoice-pdf')."</strong>",
+                "<strong>".$formatter->format($summaryTax) ."</strong>"
+            ],
+            [
+                "<strong>".__('Total', 'wc-invoice-pdf')."</strong>",
+                "<strong>".$formatter->format($summary + $summaryTax)."</strong>"
+            ]
+        ];
+
+        $pdf->ezSetDy(-20);
+
+        $pdf->ezTable($summaryData, null, '', ['width' => 200, 'gridlines' => 0, 'showHeadings' => 0,'shaded' => 0 ,'xPos' => 'right', 'xOrientation' => 'left', 'cols' => $colOptions ]);
+
+        $pdf->ezSetDy(-20);
+        $pdf->ezText("<strong>" .  \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_condition'] . "</strong>", 8, ['justification' => 'center']);
+
+        if($stream) {
+            $pdf->ezStream();
+        } else {
+            return $pdf->ezOutput();
         }
-        return $pdf->OutputAll();
     }
 
     /**

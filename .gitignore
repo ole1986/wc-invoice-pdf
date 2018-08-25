@@ -2,3 +2,6 @@
 .vscode
 # ignore .svn
 .svn
+
+# ignore composer vendor path
+vendor
