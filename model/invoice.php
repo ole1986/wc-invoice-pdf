@@ -172,7 +172,7 @@ class Invoice {
         if(!empty($this->order) && is_object($this->order))
         {
             $this->invoice_number = $d->format('Ym') . '-' . $this->order->get_id() . '-R';
-            $this->offer_number = $d->format('Ym') . '-' . $this->order->get_id() . '-R';
+            $this->offer_number = $d->format('Ym') . '-' . $this->order->get_id() . '-A';
             $this->wc_order_id = $this->order->get_id();
             $this->customer_id = $this->order->get_customer_id();
         } else {
