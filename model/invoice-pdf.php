@@ -94,8 +94,8 @@ class InvoicePdf {
         $colOptions = [
             'num' => ['width' => 32],
             'desc' => [],
-            'qty' => ['justification' => 'right', 'width' => 64],
-            'price' => ['justification' => 'right', 'width' => 80],
+            'qty' => ['justification' => 'right', 'width' => 75],
+            'price' => ['justification' => 'right', 'width' => 70],
             'total' => ['justification' => 'right', 'width' => 80],
         ];
 
@@ -130,13 +130,13 @@ class InvoicePdf {
                     // overwrite the QTY to be 1 MONTH
                     $next->add(new \DateInterval('P12M'));
                 }
-                $qtyStr = number_format($v['qty'], 0, ',',' ') . ' Monat(e)';
+                $qtyStr = number_format($v['qty'], 0, ',',' ') . ' ' . $product->get_price_suffix('', $v['qty']);
                 //if(!$isOffer)
                     $product_name .= "\n<strong>Zeitraum: " . $current->format('d.m.Y')." - ".$next->format('d.m.Y') . '</strong>';
             } else if($product instanceof \WC_Product_Hour) {
                 // check if product type is "hour" to output hours instead of Qty
                 $qtyStr = number_format($v['qty'], 1, ',',' ');
-			    $qtyStr .= ' Std.';
+                $qtyStr.= ' ' . $product->get_price_suffix('', $v['qty']);
 			} else {
 			    $qtyStr = number_format($v['qty'], 2, ',',' ');
 			}

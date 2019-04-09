@@ -76,11 +76,32 @@ msgstr "jährlich"
 msgid "monthly"
 msgstr "monatlich"
 
+msgid "month"
+msgstr "Monat"
+
+msgid "months"
+msgstr "Monate"
+
 msgid "per year"
 msgstr "pro Jahr"
 
 msgid "per month"
 msgstr "pro Monat"
+
+msgid "Hour"
+msgstr "Stunde"
+
+msgid "Hours"
+msgstr "Stunden"
+
+msgid "minute"
+msgstr "Minute"
+
+msgid "minutes"
+msgstr "Minuten"
+
+msgid "per"
+msgstr "pro"
 
 msgid "Invoice"
 msgstr "Rechnung"
@@ -160,3 +181,11 @@ msgstr "Vorschau"
 msgid "Settings saved"
 msgstr "Einstellungen gespeichert"
 
+msgid "To the minute calculation"
+msgstr "Minuten-genaue Berechnung"
+
+msgid "Working hours"
+msgstr "Arbeitszeiten"
+
+msgid "Webspace"
+msgstr "Webspeicher"

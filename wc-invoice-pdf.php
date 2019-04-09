@@ -2,14 +2,14 @@
 /*
  * Plugin Name: WC Recurring Invoice PDF
  * Description: WooCommerce invoice pdf plugin with recurring payments (scheduled)
- * Version: 1.1.0
+ * Version: 1.4.0
  * Author: ole1986 <ole.k@web.de>
  * Author URI: https://github.com/ole1986/wc-invoice-pdf
  * Plugin URI: https://github.com/ole1986/wc-invoice-pdf/releases
  * Text Domain: wc-invoice-pdf
  * 
  * WC requires at least: 3.0.0
- * WC tested up to: 3.4.4
+ * WC tested up to: 3.5
  */
 
 namespace WCInvoicePdf;
@@ -74,9 +74,10 @@ class WCInvoicePdf {
     public static function init() {
         self::load_textdomain_file();
 
-        if(file_exists(WCINVOICEPDF_PLUGIN_DIR . '../wp-ispconfig3/wc/ispconfig_wc_product.php')) {
-            include_once WCINVOICEPDF_PLUGIN_DIR . '../wp-ispconfig3/wc/ispconfig_wc_product.php';
-            include_once WCINVOICEPDF_PLUGIN_DIR . '../wp-ispconfig3/wc/ispconfig_wc_product_webspace.php';
+        if(file_exists(WCINVOICEPDF_PLUGIN_DIR . 'wc/wc_product.php')) {
+            include_once WCINVOICEPDF_PLUGIN_DIR . 'wc/wc_product.php';
+            include_once WCINVOICEPDF_PLUGIN_DIR . 'wc/wc_product_webspace.php';
+            include_once WCINVOICEPDF_PLUGIN_DIR . 'wc/wc_product_service.php';
         }
 
         self::load_options();

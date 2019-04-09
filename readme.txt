@@ -17,14 +17,16 @@ It also allows to setup WC Orders to be recurring and submits the invoices to th
 
 **Features**
 
-* save invoice as pdf from any order created by WooCommerce
-* export invoices into CSV (primary GnuCash, more may follow...)
-* preview quote as pdf to submit provisional offer to customers
-* schedule recurring invoices directly send to customers email address
-* send kindly reminders for over due invoices
-* show payable invoices in customers "My Account"
-* individual the PDF template in text and picture
-* remind delegate person about pending payments from customers
+* Save invoice as pdf from any order created by WooCommerce
+* Export invoices into CSV (primary GnuCash, more may follow...)
+* Preview quote as pdf to submit provisional offer to customers
+* Schedule recurring invoices directly send to customers email address
+* Send kindly reminders for over due invoices
+* Show payable invoices in customers "My Account"
+* Individual the PDF template in text and picture
+* Remind delegate person about pending payments from customers
+* A "Webspace" product type for recurring payment support
+* A "Working hours" product type to support service hours being invoiced to customers
 
 [RELEASE NOTES]( https://github.com/ole1986/wc-invoice-pdf/releases)
 
@@ -40,7 +42,7 @@ For testing the recuring payments (submission of invoices) the "Test recuring" s
 
 = DEVELOPMENT =
 
-To set the *recurring state* of an order while receiving an action hook can be used to achieve this
+To set the *recurring state* of an order while receiving a request, an action hook can be used to achieve this
 
 Example:
 
@@ -68,5 +70,5 @@ You should have received a copy of the GNU General Public License along with WP 
 
 == Changelog ==
 
-Please click on "Plugin Homepage" the for all release notes.
-You will be refered to the github project page.
+Please click on "Plugin Homepage" for release notes.
+You will be redirected to the github project page.
