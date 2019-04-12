@@ -87,11 +87,12 @@ function WCInvoicePdfAdminClass() {
 
         $(obj).after(loading);
 
+        $('.ispconfig_scheduler_info').hide();
+
         jsonRequest({ order_id: order_id, period: value}, 'InvoiceMetabox').done(function(resp){
+            if(value === '') value = 's';
             if (resp !== '')
-                $('.ispconfig_scheduler_info').show();
-            else
-                $('.ispconfig_scheduler_info').hide();
+                $('.periodinfo-' + value).show();
 
             $(obj).val(resp);
         }).fail(function(){

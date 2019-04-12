@@ -21,12 +21,17 @@ msgstr ""
 msgid "WC-Invoice Settings"
 msgstr "WC-Rechnung Einstellungen"
 
-
 msgid "Payments shall be made in advance:"
 msgstr "Die Zahlung erfolgt im Voraus:"
 
-msgid "A scheduler will submit the invoice to '%s'"
-msgstr "Ein Aufgabenplaner versendet die Rechnung an '%s'"
+msgid "A scheduler will submit the invoice %s to '%s'"
+msgstr "Ein Aufgabenplaner versendet die Rechnung %s an '%s'"
+
+msgid "A scheduler will submit the invoice once it has been created using the %s button to '%s'"
+msgstr "Ein Aufgabenplaner versendet die Rechnung einmalig, sobald diese über den %s Knopf ersellt wurde an '%s'"
+
+msgid "Show all invoices"
+msgstr "Alle Rechnungen anzeigen"
 
 msgid "Task Scheduler"
 msgstr "Aufgabenplaner"
@@ -57,6 +62,21 @@ msgstr "%s Erinnerungen versendet"
 
 msgid "Recurring payments"
 msgstr "Regelmäßige Zahlungen"
+
+msgid "Recurring invoice %s has been created"
+msgstr "Wiederkehrende Rechnung %s wurde erstellt"
+
+msgid "Automate invoice submission"
+msgstr "Rechnungen automatisert versenden"
+
+msgid "The next automated invoice submission is scheduled for %s"
+msgstr "Die nächste automatisierte Rechnungszustellung erfolgt am %s"
+
+msgid "The invoice %s has been submitted to %s"
+msgstr "Die Rechnung %s wurde an %s übermittelt"
+
+msgid "A reminder #%s for invoice %s has been submitted to %s"
+msgstr "Eine Erinnerung #%s für die Rechnung %s wurde an %s übermittelt"
 
 msgid "Payment report"
 msgstr "Zahlungsbericht"

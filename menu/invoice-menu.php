@@ -21,9 +21,24 @@ class InvoiceMenu {
         
         $a = $invList->current_action();
         $invList->prepare_items();
+
+        // get the invoice_reminder cron job installed by this plugin
+        $cron_jobs = get_option( 'cron' );
+        $invoice_reminder_event = array_filter($cron_jobs, function($v) { return isset($v['invoice_reminder']); });
+
+        $isInvoiceSubmissionEnabled = WCInvoicePdf::$OPTIONS['wc_recur'];
+
         ?>
         <div class='wrap'>
             <h1><?php _e('Invoices', 'wc-invoice-pdf') ?></h1>
+            <?php if (count($invoice_reminder_event) > 0 && $isInvoiceSubmissionEnabled):
+                $event_time = key($invoice_reminder_event);
+
+                $d = new \DateTime();
+                $d->setTimestamp($event_time);
+            ?>
+            <div class="updated"><p><?php printf(__('The next automated invoice submission is scheduled for %s', 'wc-invoice-pdf'), $d->format('Y-m-d H:i')); ?></p></div>
+            <?php endif; ?>
             <h2></h2>
             <form action="" method="GET">
                 <input type="hidden" name="page" value="<?php echo esc_attr($_REQUEST['page']) ?>" />
@@ -114,16 +129,20 @@ class InvoiceMenu {
                             <div id="wcinvoicepdf-scheduler" class="inside tabs-panel" style="display: none;">
                                 <h3><?php _e('Run commands', 'wc-invoice-pdf') ?></h3>
                                 <p>
-                                    <a href="javascript:void(0)" onclick="WCInvoicePdfAdmin.RunTask(this, 'reminder')" class="button">Run Payment Reminder</a><br />
-                                    Execute the payment reminder being sent to <strong>Admin Email</strong>.<br />This reminder usually occurs DAILY whenever an invoice is due.
+                                    <a href="javascript:void(0)" onclick="WCInvoicePdfAdmin.RunTask(this, 'notify')" class="button">Run Payment Notification</a><br />
+                                    Run the payment notifier now and submit outstanding invoice information to <strong>Admin Email</strong>.
                                 </p>
                                 <p>
-                                    <a href="javascript:void(0)" onclick="WCInvoicePdfAdmin.RunTask(this, 'recurring')" class="button">Test Recurr Payment</a><br />
-                                    Test the recurring payments (which is usually send to customer)<br />by overwriting the recipient addresses to <strong>Admin Email</strong>
+                                    <a href="javascript:void(0)" onclick="WCInvoicePdfAdmin.RunTask(this, 'recur')" class="button" style="background-color: #bd0000; color: white">Generate recurring invoices</a><br />
+                                    Generate all recurring invoices for today. Please be careful with this as it may generate (and later submit) duplicates to the recipients
                                 </p>
                                 <p>
-                                    <a href="javascript:void(0)" onclick="WCInvoicePdfAdmin.RunTask(this, 'recurring_reminder')" class="button">Run Recurr Reminder</a><br />
-                                    Run the recurring reminder now
+                                    <a href="javascript:void(0)" onclick="WCInvoicePdfAdmin.RunTask(this, 'submit')" class="button" style="background-color: #bd0000; color: white">Run invoice submission</a><br />
+                                    Submit all outstanding invoices to their recipients
+                                </p>
+                                <p>
+                                    <a href="javascript:void(0)" onclick="WCInvoicePdfAdmin.RunTask(this, 'reminder')" class="button" style="background-color: #bd0000; color: white">Run invoice Reminder</a><br />
+                                    Submit all reminder for invoice which are due. Please be careful with this as it will re-submit the reminders and increase the counter
                                 </p>
                                 <h3><?php _e('Sender info', 'wc-invoice-pdf') ?></h3>
                                 <?php
@@ -132,9 +151,9 @@ class InvoiceMenu {
                                 ?>
                                 <h3><?php _e('Payments', 'wc-invoice-pdf') ?></h3>
                                 <?php
+                                WCInvoicePdf::addField('wc_recur_test', '<span style="color: red; font-weight: bold">Test Mode</span><br />Enable test mode and replace all recipients with the admin email address.','checkbox');
                                 WCInvoicePdf::addField('wc_payment_reminder', '<strong>'. __('Payment report', 'wc-invoice-pdf') .'</strong><br />send a daily report of unpaid invoices to "Admin Email"','checkbox');
-                                WCInvoicePdf::addField('wc_recur', '<strong>' . __('Recurring payments', 'wc-invoice-pdf').'</strong><br />Submit every invoice to the customer based on the recurring payment period','checkbox');
-                                WCInvoicePdf::addField('wc_recur_test', '<span style="color: red; font-weight: bold">Test Recurring</span><br />replace the recipient email with the admin email to test recurring PAYMENTS and REMINDERS','checkbox');
+                                WCInvoicePdf::addField('wc_recur', '<strong>' . __('Automate invoice submission', 'wc-invoice-pdf').'</strong><br />Enable automate invoice submission to customers on a daily schedule','checkbox');
                                 WCInvoicePdf::addField('wc_recur_reminder', '<strong>'. __('Payment reminder', 'wc-invoice-pdf').'</strong><br />Send payment reminders to customer when invoice is due','checkbox');
                                 WCInvoicePdf::addField('wc_recur_reminder_age', '<strong>' . __('First reminder (days)', 'wc-invoice-pdf') . '</strong><br />The number of days (after due date) when a reminder should be sent to customer');
                                 WCInvoicePdf::addField('wc_recur_reminder_interval', '<strong>'. __('Reminder interval', 'wc-invoice-pdf') .'</strong><br />The number of days (after first occurence) a reminder should be resent to customer');
@@ -157,7 +176,7 @@ class InvoiceMenu {
                                 ?>
                                 <h3><?php _e('Payments', 'wc-invoice-pdf') ?></h3>
                                 <?php
-                                WCInvoicePdf::addField('wc_recur_message', '<strong>' . __('Recurring payments', 'wc-invoice-pdf').'</strong><br />Submit the recurring invoice to the customer containing this message', 'textarea', $attr);
+                                WCInvoicePdf::addField('wc_recur_message', '<strong>' . __('Automate invoice submission', 'wc-invoice-pdf').'</strong><br />Submit the recurring invoice to the customer containing this message', 'textarea', $attr);
                                 ?>
                                 <div style="font-size: smaller; margin-left: 220px;">
                                     Placeholder: 

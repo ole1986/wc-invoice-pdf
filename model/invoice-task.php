@@ -7,9 +7,10 @@ class InvoiceTask {
 
     public static function Run(){
         $me = new self();
-        $me->payment_reminder();
+        $me->payment_notify();
         $me->payment_recur();
-        $me->payment_recur_reminder();
+        $me->payment_submit();
+        $me->payment_reminder();
     }
 
     public static function DoAjax(){
@@ -18,18 +19,17 @@ class InvoiceTask {
         $name = esc_attr($_POST['name']);
 
         switch($name) {
+            case 'notify':
+                $result = $task->payment_notify();
+                break;
+            case 'recur':
+                $result = $task->payment_recur();
+                break;
+            case 'submit':
+                $result = $task->payment_submit();
+                break;
             case 'reminder':
                 $result = $task->payment_reminder();
-                break;
-            case 'recurring':
-                if(!empty(WCInvoicePdf::$OPTIONS['wc_recur_test'])) {
-                    $result = $task->payment_recur();   
-                } else {
-                    $result = -2;
-                }
-                break;
-            case 'recurring_reminder':
-                $result = $task->payment_recur_reminder();
                 break;
         }
 
@@ -40,7 +40,8 @@ class InvoiceTask {
     /**
      * SCHEDULE: Daily reminder for administrators on invoices which are due
      */
-    public function payment_reminder(){
+    public function payment_notify()
+    {
         global $wpdb;
 
         if(empty(WCInvoicePdf::$OPTIONS['wc_payment_reminder'])) {
@@ -90,9 +91,10 @@ class InvoiceTask {
     }
 
     /**
-     * SCHEDULE: Submit the recurring invoices (based on the period) to customers email address (daily checked)
+     * SCHEDULE: Store recurring invoices when the created date matches the period (monthly/yearly)
      */
-    public function payment_recur(){
+    public function payment_recur()
+    {
         global $wpdb;
 
         if(empty(WCInvoicePdf::$OPTIONS['wc_recur'])) {
@@ -104,70 +106,94 @@ class InvoiceTask {
                                 LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id 
                                 WHERE p.post_type = 'shop_order' AND p.post_status = 'wc-completed' AND pm.meta_key = '_ispconfig_period'", OBJECT);
         
-        // remind admin about new recurring invoices
-        if(!empty($res)) {
-            $curDate = new \DateTime();
+        if(empty($res)) return 0;
 
-            $messageBody = WCInvoicePdf::$OPTIONS['wc_recur_message'];
+        $curDate = new \DateTime();
 
-            foreach ($res as $v) {
-                 $d = new \DateTime($v->post_date_gmt);
+        foreach ($res as $v) {
+                $d = new \DateTime($v->post_date_gmt);
 
-                if($v->payment_period == 'y') {
-                    // yearly
-                    $postDate = $d->format('md');
-                    $dueDate = $curDate->format('md');
-                } else if($v->payment_period == 'm') {
-                    // monthly
-                    $postDate = $d->format('d');
-                    $dueDate = $curDate->format('d');
-                } else {
-                    continue;
-                }
+            if($v->payment_period == 'y') {
+                // yearly
+                $postDate = $d->format('md');
+                $dueDate = $curDate->format('md');
+            } else if($v->payment_period == 'm') {
+                // monthly
+                $postDate = $d->format('d');
+                $dueDate = $curDate->format('d');
+            } else {
+                continue;
+            }
 
-                if(isset($dueDate, $postDate) && $dueDate == $postDate) {
-                    // send the real invoice
-                    $order = new \WC_Order($v->ID);
-                    $invoice = new Invoice($order);
-                    $invoice->makeRecurring();
-
-                    add_action('phpmailer_init', function($phpmailer) use($invoice){
-                        $phpmailer->clearAttachments();
-                        $phpmailer->AddStringAttachment($invoice->document, $invoice->invoice_number . '.pdf');
-                    });
-
-                    // CHECK IF IT IS TEST - DO NOT SEND TO CUSTOMER THEN
-                    if(!empty(WCInvoicePdf::$OPTIONS['wc_recur_test']))
-                        $recipient = WCInvoicePdf::$OPTIONS['wc_mail_reminder'];
-                    else
-                        $recipient = $order->get_billing_email();
-                    error_log("INFO: Sending recurring invoice ".$invoice->invoice_number." to: " . $recipient);
-
-                    $success = wp_mail($recipient, 
-                            __('Invoice', 'wc-invoice-pdf') . ' ' . $invoice->invoice_number,
-                            $this->parsePlaceHolder($messageBody, $invoice),
-                            'From: '. WCInvoicePdf::$OPTIONS['wc_mail_sender']);
-                    
-                    if($success)
-                    {
-                        $invoice->Submitted();
-
-                        $invoice->Save();
-                        $order->add_order_note("Invoice ".$invoice->invoice_number." sent to: " . $recipient);
-                    }
-                }
+            if(isset($dueDate, $postDate) && $dueDate == $postDate) {
+                // send the real invoice
+                $order = new \WC_Order($v->ID);
+                $invoice = new Invoice($order);
+                $invoice->makeRecurring();
+                $invoice->Save();
+                // internal notice in the associated order
+                $order->add_order_note(printf(__("Recurring invoice %s has been created", 'wc-invoice-pdf'), $invoice->invoice_number));
             }
         }
+
         return 0;
     }
+
+    public function payment_submit()
+    {
+        global $wpdb;
+
+        // get all invoices from table which are not yet submitted
+        $sql = "SELECT * FROM {$wpdb->prefix}".Invoice::TABLE." WHERE deleted = 0 AND `status` = 0";
+        $res = $wpdb->get_results($sql, OBJECT);
+
+        if(empty($res)) {
+            error_log("No pending invoices to submit");
+            return 0;
+        }
+
+        $messageBody = WCInvoicePdf::$OPTIONS['wc_recur_message'];
+
+        foreach ($res as $v) {
+            $invoice = new Invoice($v);
+            $order = $invoice->order;
+
+            add_action('phpmailer_init', function($phpmailer) use($invoice){
+                $phpmailer->clearAttachments();
+                $phpmailer->AddStringAttachment($invoice->document, $invoice->invoice_number . '.pdf');
+            });
+
+            // CHECK IF IT IS TEST - DO NOT SEND TO CUSTOMER THEN
+            if(!empty(WCInvoicePdf::$OPTIONS['wc_recur_test']))
+                $recipient = WCInvoicePdf::$OPTIONS['wc_mail_reminder'];
+            else
+                $recipient = $order->get_billing_email();
+
+            error_log("INFO: Sending invoice ".$invoice->invoice_number." to: " . $recipient);
+
+            $success = wp_mail($recipient,
+                    __('Invoice', 'wc-invoice-pdf') . ' ' . $invoice->invoice_number,
+                    $this->parsePlaceHolder($messageBody, $invoice),
+                    'From: '. WCInvoicePdf::$OPTIONS['wc_mail_sender']);
+
+            if($success)
+            {
+                $invoice->Submitted();
+                $invoice->Save();
+                $order->add_order_note( printf(__("The invoice %s has been submitted to %s", 'wc-invoice-pdf'), $invoice->invoice_number, $recipient));
+            }
+        }
+    }
+
     /**
      * SCHEDULE: Recurring reminder being sent to customer when due date is older "wc_recur_reminder_age"
      */
-    public function payment_recur_reminder() {
+    public function payment_reminder()
+    {
         global $wpdb;
         
         if(empty(WCInvoicePdf::$OPTIONS['wc_recur_reminder'])) {
-            error_log("WARNING: Recurring reminder on due invoices is disabled");
+            error_log("WARNING: Payment reminder on due invoices is disabled");
             return -1;
         }
 
@@ -190,10 +216,15 @@ class InvoiceTask {
 
                 $diff  = $due_date->diff(new \DateTime());
                 $diffDays = intval($diff->format("%a"));
-                $rest = $diffDays % $interval;
 
-                if($rest > 0) {
-                    error_log("Skipping recurring reminder for {$v->invoice_number}");
+                $acceptableDays = $age + ($interval * $v->reminder_sent);
+
+                if ($v->reminder_sent >= 1 && $diffDays <= $acceptableDays) {
+                    // age: 2 days, interval: 2 days
+                    // 4 days later for the second reminder
+                    // 6 days later for the third reminder
+                    $nextReminderNo = $v->reminder_sent + 1;
+                    error_log("Skipping reminder for {$v->invoice_number} as its the {$nextReminderNo} reminder and {$diffDays} days are in acceptable range of {$acceptableDays} days");
                     continue;
                 }
 
@@ -208,7 +239,7 @@ class InvoiceTask {
                     $recipient = $order->get_billing_email();
                 
                 
-                error_log("INFO: Sending recurring reminder for {$v->invoice_number} to $recipient | DIFF: $diffDays | REST: $rest");
+                error_log("INFO: Sending recurring reminder number {$v->reminder_sent} for {$v->invoice_number} to $recipient with $diffDays days due");
 
                 // attach invoice pdf into php mailer
                 add_action('phpmailer_init', function($phpmailer) use($v){
@@ -224,7 +255,7 @@ class InvoiceTask {
         
                 if($success)
                 {
-                    $order->add_order_note("Invoice reminder #{$v->reminder_sent} for ".$v->invoice_number." sent to " . $recipient);
+                    $order->add_order_note(printf(__('A reminder #%s for invoice %s has been submitted to %s', 'wc-invoice-pdf'), $v->reminder_sent, $v->invoice_number, $recipient));
                     $wpdb->query( $wpdb->prepare("UPDATE {$wpdb->prefix}".Invoice::TABLE." SET reminder_sent = {$v->reminder_sent} WHERE ID = %s", $v->ID ) );
                 }
             }

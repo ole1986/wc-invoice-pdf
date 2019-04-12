@@ -43,8 +43,17 @@ class InvoiceMetabox {
             <?php } ?>
             </select>
         </p>
-        <p class="ispconfig_scheduler_info <?php if(empty($period)) echo 'hidden'; ?>">
-            <?php printf(__("A scheduler will submit the invoice to '%s'", 'wc-invoice-pdf'), $customer_email); ?>
+        <p class="ispconfig_scheduler_info periodinfo-s" style="<?php if($period != '') { echo 'display: none'; } ?>">
+            <?php printf(__("A scheduler will submit the invoice once it has been created using the %s button to '%s'", 'wc-invoice-pdf'), __( 'Invoice', 'wc-invoice-pdf'), $customer_email); ?>
+        </p>
+        <p class="ispconfig_scheduler_info periodinfo-m" style="<?php if($period != 'm') { echo 'display: none'; } ?>">
+            <?php printf(__("A scheduler will submit the invoice %s to '%s'", 'wc-invoice-pdf'), __('monthly', 'wc-invoice-pdf'), $customer_email); ?>
+        </p>
+        <p class="ispconfig_scheduler_info periodinfo-y" style="<?php if($period != 'y') { echo 'display: none'; } ?>">
+            <?php printf(__("A scheduler will submit the invoice %s to '%s'", 'wc-invoice-pdf'), __('yearly', 'wc-invoice-pdf'), $customer_email); ?>
+        </p>
+        <p style="text-align: right">
+            <a href="/wp-admin/admin.php?page=wcinvoicepdf_invoices"><?php _e('Show all invoices', 'wc-invoice-pdf') ?></a>
         </p>
         <p style="text-align: right">
             <button type="submit" name="ispconfig_invoice_action" class="button" value="preview">
