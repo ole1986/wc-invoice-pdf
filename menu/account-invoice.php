@@ -55,7 +55,7 @@ class AccountInvoice {
                 <?php foreach($result as $k => $v) { ?>
                 <tr>
                     <td><a href="<?php echo get_site_url() . '/wp-admin/admin.php?invoice=' . $v['ID'] ?>"><?php echo $v['invoice_number'] ?></a></td>
-                    <td><a href="<?php echo get_site_url() . '/my-account/view-order/' . $v['order_id'] ?>"><?php echo '#' . $v['order_id'] ?></a></td>
+                    <td><a href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id')). 'view-order/' . $v['order_id'] ?>"><?php echo '#' . $v['order_id'] ?></a></td>
                     <td><?php echo strftime("%Y-%m-%d", strtotime($v['created'])) ?></td>
                     <td>
                         <?php if($v['status'] == Invoice::CANCELED): ?>
