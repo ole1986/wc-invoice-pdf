@@ -40,6 +40,9 @@ class InvoiceMenu {
             ?>
             <div class="updated"><p><?php printf(__('The next automated invoice submission is scheduled for %s', 'wc-invoice-pdf'), $d->format('Y-m-d H:i')); ?></p></div>
             <?php endif; ?>
+            <?php if (!$isInvoiceSubmissionEnabled): ?>
+            <div class="error"><p><?php _e("The scheduler is disabled for automated invoice submission. Please check the <a href='/wp-admin/admin.php?page=wcinvoicepdf_settings'>settings</a>", 'wc-invoice-pdf') ?></p></div>
+            <?php endif; ?>
             <h2></h2>
             <form action="" method="GET">
                 <input type="hidden" name="page" value="<?php echo esc_attr($_REQUEST['page']) ?>" />

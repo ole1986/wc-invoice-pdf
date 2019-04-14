@@ -132,7 +132,7 @@ class InvoiceTask {
                 $invoice->makeRecurring();
                 $invoice->Save();
                 // internal notice in the associated order
-                $order->add_order_note(printf(__("Recurring invoice %s has been created", 'wc-invoice-pdf'), $invoice->invoice_number));
+                $order->add_order_note(sprintf(__("Recurring invoice %s has been created", 'wc-invoice-pdf'), $invoice->invoice_number));
             }
         }
 
@@ -180,7 +180,8 @@ class InvoiceTask {
             {
                 $invoice->Submitted();
                 $invoice->Save();
-                $order->add_order_note( printf(__("The invoice %s has been submitted to %s", 'wc-invoice-pdf'), $invoice->invoice_number, $recipient));
+
+                $order->add_order_note(sprintf(__("The invoice %s has been submitted to %s", 'wc-invoice-pdf'), $invoice->invoice_number, $recipient));
             }
         }
     }

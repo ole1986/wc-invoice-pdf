@@ -30,6 +30,9 @@ msgstr "Ein Aufgabenplaner versendet die Rechnung %s an '%s'"
 msgid "A scheduler will submit the invoice once it has been created using the %s button to '%s'"
 msgstr "Ein Aufgabenplaner versendet die Rechnung einmalig, sobald diese über den %s Knopf ersellt wurde an '%s'"
 
+msgid "The scheduler is disabled for automated invoice submission. Please check the <a href='/wp-admin/admin.php?page=wcinvoicepdf_settings'>settings</a>"
+msgstr "Der Aufgabenplaner ist für das automatisierte versenden von Rechnungen deaktiviert. Bitte prüfe die <a href='/wp-admin/admin.php?page=wcinvoicepdf_settings'>Einstellungen</a>"
+
 msgid "Show all invoices"
 msgstr "Alle Rechnungen anzeigen"
 
