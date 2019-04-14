@@ -14,6 +14,8 @@ class InvoiceList extends \WP_List_Table {
     private $rows_per_page = 15;
     private $total_rows = 0;
 
+    public $total_trash_rows = 0;
+
     public function __construct(){
         parent::__construct();
     }
@@ -79,11 +81,16 @@ class InvoiceList extends \WP_List_Table {
 
     function column_status($item) {
         $page = ( isset($_REQUEST['page'] ) ) ? urlencode( $_REQUEST['page'] ) : '';
-        $actions = [
-            'sent' => sprintf('<a href="?page=%s&action=%s&id=%s">'. __('Sent', 'wc-invoice-pdf').'</a>', $page,'sent',$item->ID),
-            'paid' => sprintf('<a href="?page=%s&action=%s&id=%s">'. __('Paid', 'wc-invoice-pdf').'</a>', $page,'paid',$item->ID),
-            'cancel' => sprintf('<a href="?page=%s&action=%s&id=%s">'. __('Canceled', 'wc-invoice-pdf').'</a>', $page,'cancel',$item->ID),
-        ];
+        $action = [];
+
+        if(!$item->deleted) {
+            $actions = [
+                'sent' => sprintf('<a href="?page=%s&action=%s&id=%s">'. __('Sent', 'wc-invoice-pdf').'</a>', $page,'sent',$item->ID),
+                'paid' => sprintf('<a href="?page=%s&action=%s&id=%s">'. __('Paid', 'wc-invoice-pdf').'</a>', $page,'paid',$item->ID),
+                'cancel' => sprintf('<a href="?page=%s&action=%s&id=%s">'. __('Canceled', 'wc-invoice-pdf').'</a>', $page,'cancel',$item->ID),
+            ];
+        }
+        
         return sprintf('%s %s', Invoice::GetStatus($item->status, true), $this->row_actions($actions) );
     }
 
@@ -103,14 +110,22 @@ class InvoiceList extends \WP_List_Table {
     
     function column_invoice_number($item) {
         $page = ( isset($_REQUEST['page'] ) ) ? urlencode( $_REQUEST['page'] ) : '';
-        $actions = [
-            'delete'    => sprintf('<a href="?page=%s&action=%s&id=%s" onclick="WCInvoicePdfAdmin.ConfirmDelete(this)" data-name="%s">Delete</a>',$page,'delete',$item->ID, $item->invoice_number),
-            'quote' => sprintf('<a href="?invoice=%s&preview=1" target="_blank">Show Quote</a>',$item->ID),
-        ];
+        $action = [];
+        
+        if(!$item->deleted) {
+            $actions = [
+                'delete'    => sprintf('<a href="?page=%s&action=%s&id=%s" onclick="WCInvoicePdfAdmin.ConfirmDelete(this)" data-name="%s">Delete</a>',$page,'delete',$item->ID, $item->invoice_number),
+                'quote' => sprintf('<a href="?invoice=%s&preview=1" target="_blank">Show Quote</a>',$item->ID),
+            ];
+        }
+        
         return sprintf('<a target="_blank" href="?invoice=%s">%s</a> %s', $item->ID, $item->invoice_number, $this->row_actions($actions) );
     }
 
     function column_due_date($item){
+        if ($item->deleted) {
+            return $item->due_date;
+        }
         $result = '<a href="javascript:void(0)" data-id="'.$item->ID.'" onclick="WCInvoicePdfAdmin.EditDueDate(this)">'.$item->due_date.'</a>';
         if($item->reminder_sent > 0)
         $result.= "<br />" . sprintf(__('%s reminders sent', 'wc-invoice-pdf'), $item->reminder_sent);
@@ -151,12 +166,18 @@ class InvoiceList extends \WP_List_Table {
         $sortable = $this->get_sortable_columns();
         $this->_column_headers = array($columns, $hidden, $sortable);
 
-        $query = "SELECT i.id AS ID, i.customer_id, i.invoice_number, i.wc_order_id, i.created, i.due_date, i.paid_date, i.status, i.reminder_sent, u.user_login AS customer_name, u.user_email AS user_email, u.ID AS user_id, p.ID AS order_id, p.post_status, pm.meta_value AS ispconfig_period 
+        $query = "SELECT i.id AS ID, i.customer_id, i.invoice_number, i.wc_order_id, i.created, i.due_date, i.paid_date, i.status, i.deleted, i.reminder_sent, u.user_login AS customer_name, u.user_email AS user_email, u.ID AS user_id, p.ID AS order_id, p.post_status, pm.meta_value AS ispconfig_period 
                     FROM {$wpdb->prefix}".Invoice::TABLE." AS i 
                     LEFT JOIN wp_users AS u ON u.ID = i.customer_id
                     LEFT JOIN wp_posts AS p ON p.ID = i.wc_order_id
                     LEFT JOIN wp_postmeta AS pm ON (p.ID = pm.post_id AND pm.meta_key = '_ispconfig_period')
-                    WHERE i.deleted = 0";
+                    WHERE";
+        
+        if (isset($_GET['post_status']) && $_GET['post_status'] == 'deleted') {
+            $query .= ' i.deleted = 1';
+        } else {
+            $query .= ' i.deleted = 0';
+        }
                     
         $action = preg_replace('/\W/', '', isset($_GET['action']) ? $_GET['action'] : '');
         $invoiceId = isset($_GET['id']) ? intval($_GET['id']) : null;
@@ -190,6 +211,8 @@ class InvoiceList extends \WP_List_Table {
                     break;
             }
         }
+
+        $this->total_trash_rows = $wpdb->get_var("SELECT COUNT(id) FROM {$wpdb->prefix}".Invoice::TABLE." AS i WHERE deleted = 1");
 
         $this->applySorting($query);
         $this->applyPaging($query);

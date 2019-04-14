@@ -17,6 +17,7 @@ class InvoiceMenu {
     }
 
     public function DisplayInvoices(){
+        global $wpdb;
         $invList = new InvoiceList();
         
         $a = $invList->current_action();
@@ -59,6 +60,19 @@ class InvoiceMenu {
                 <input type="submit" class="button" value="<?php _e('Filter &#187;') ?>">
             </form>
             <form action="" method="POST">
+                <div style="margin-top: 1em">
+                    <?php if(isset($_GET['post_status'])): ?>
+                        <a href="/wp-admin/admin.php?page=wcinvoicepdf_invoices">Alle</a>
+                    <?php else: ?>
+                        <?php _e('All') ?>
+                    <?php endif; ?>
+                    |
+                    <?php if(!isset($_GET['post_status'])): ?>
+                        <a href="<?php echo $_REQUEST['URL'] . '?' . $_SERVER['QUERY_STRING'] . '&post_status=deleted'; ?>"><?php printf(__('Trash <span class="count">(%s)</span>'), $invList->total_trash_rows) ?></a>
+                    <?php else: ?>
+                        Papierkorb
+                    <?php endif; ?>
+                </div>
                 <?php $invList->display(); ?>
             </form>
         </div>
