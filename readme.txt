@@ -3,7 +3,7 @@ Contributors: ole1986
 Tags:  woocommerce, WC, invoicing, billing, recurring, order, pdf, automation, read-only, law
 Donate link: https://www.paypal.com/cgi-bin/webscr?item_name=Donation+WC+Recurring+Invoice+Pdf&cmd=_donations&business=ole.k@web.de
 Requires at least: 3.1
-Tested up to: 4.9
+Tested up to: 5.1
 Stable tag: trunk
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -58,9 +58,10 @@ do_action('wcinvoicepdf_order_period', $order_id, 'monthly');
 1. Display the invoices from the admin pane
 2. Show customer all invoices and pending payments
 3. Invoice metabox shown in woocommerce order
-4. Invoice PDf template settings
-5. Task planer settings (recurring, reminders, ...)
-6. Email content for payments reminders
+4. Order notes when submitting to customer
+5. Customize PDF Template for invoices
+6. Task planer settings (recurring, reminders, ...)
+7. Email content for payments reminders
 
 == License ==
 
