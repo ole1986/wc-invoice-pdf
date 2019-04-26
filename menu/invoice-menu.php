@@ -36,6 +36,7 @@ class InvoiceMenu {
                 $event_time = key($invoice_reminder_event);
 
                 $d = new \DateTime();
+                $d->setTimezone(new \DateTimeZone(get_option('timezone_string')));
                 $d->setTimestamp($event_time);
             ?>
             <div class="updated"><p><?php printf(__('The next automated invoice submission is scheduled for %s', 'wc-invoice-pdf'), $d->format('Y-m-d H:i')); ?></p></div>
