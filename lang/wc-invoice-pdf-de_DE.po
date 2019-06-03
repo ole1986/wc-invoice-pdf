@@ -160,7 +160,7 @@ msgid "Offer"
 msgstr "Angebot"
 
 msgid "No#"
-msgstr "Pos."
+msgstr "Pos"
 
 msgid "Description"
 msgstr "Bezeichnung"
