@@ -92,9 +92,9 @@ class InvoicePdf {
 
         $cols = array('num' => __('No#', 'wc-invoice-pdf'), 'desc' => __('Description', 'wc-invoice-pdf'), 'qty' => __('Qty', 'wc-invoice-pdf'), 'price' => __('Unit Price', 'wc-invoice-pdf'), 'total' => __('Amount', 'wc-invoice-pdf'));
         $colOptions = [
-            'num' => ['width' => 32],
+            'num' => ['width' => 30],
             'desc' => [],
-            'qty' => ['justification' => 'right', 'width' => 75],
+            'qty' => ['justification' => 'right', 'width' => 60],
             'price' => ['justification' => 'right', 'width' => 70],
             'total' => ['justification' => 'right', 'width' => 80],
         ];
@@ -136,7 +136,7 @@ class InvoicePdf {
             } else if($product instanceof \WC_Product_Hour) {
                 // check if product type is "hour" to output hours instead of Qty
                 $qtyStr = number_format($v['qty'], 1, ',',' ');
-                $qtyStr.= ' ' . $product->get_price_suffix('', $v['qty']);
+                $qtyStr.= '' . $product->get_price_suffix('', $v['qty'], true);
 			} else {
 			    $qtyStr = number_format($v['qty'], 2, ',',' ');
 			}

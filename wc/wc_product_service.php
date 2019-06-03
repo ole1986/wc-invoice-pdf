@@ -96,14 +96,25 @@ class WC_Product_Hour extends WC_Product
         update_post_meta($post_id, '_hour_useminute', $_POST['_hour_useminute']);
     }
 
-    public function get_price_suffix($price = '', $qty = 1)
+    public function get_price_suffix($price = '', $qty = 1, $shorten = false)
     {
         $plural = $qty > 1 ? 's' : '';
+
         $suffix = __('Hour' . $plural, 'wc-invoice-pdf');
+
+        if($shorten)
+        {
+            $suffix = 'h';
+        }
+
         
         if($this->get_meta('_hour_useminute', true))
         {
             $suffix = __('minute' . $plural, 'wc-invoice-pdf');
+            if($shorten)
+            {
+                $suffix = 'min';
+            }
         }
 
         return ' ' . $suffix;
