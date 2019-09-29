@@ -168,9 +168,9 @@ class InvoiceList extends \WP_List_Table {
 
         $query = "SELECT i.id AS ID, i.customer_id, i.invoice_number, i.wc_order_id, i.created, i.due_date, i.paid_date, i.status, i.deleted, i.reminder_sent, u.user_login AS customer_name, u.user_email AS user_email, u.ID AS user_id, p.ID AS order_id, p.post_status, pm.meta_value AS ispconfig_period 
                     FROM {$wpdb->prefix}".Invoice::TABLE." AS i 
-                    LEFT JOIN wp_users AS u ON u.ID = i.customer_id
-                    LEFT JOIN wp_posts AS p ON p.ID = i.wc_order_id
-                    LEFT JOIN wp_postmeta AS pm ON (p.ID = pm.post_id AND pm.meta_key = '_ispconfig_period')
+                    LEFT JOIN {$wpdb->users} AS u ON u.ID = i.customer_id
+                    LEFT JOIN {$wpdb->posts} AS p ON p.ID = i.wc_order_id
+                    LEFT JOIN {$wpdb->postmeta} AS pm ON (p.ID = pm.post_id AND pm.meta_key = '_ispconfig_period')
                     WHERE";
         
         if (isset($_GET['post_status']) && $_GET['post_status'] == 'deleted') {

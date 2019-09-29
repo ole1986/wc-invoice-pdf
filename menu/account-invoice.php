@@ -34,9 +34,9 @@ class AccountInvoice {
 
         $query = "SELECT i.*, u.user_login AS customer_name, u.user_email AS user_email, u.ID AS user_id, p.ID AS order_id, p.post_status, pm.meta_value AS ispconfig_period 
                     FROM {$wpdb->prefix}ispconfig_invoice AS i 
-                    LEFT JOIN wp_users AS u ON u.ID = i.customer_id
-                    LEFT JOIN wp_posts AS p ON p.ID = i.wc_order_id
-                    LEFT JOIN wp_postmeta AS pm ON (p.ID = pm.post_id AND pm.meta_key = '_ispconfig_period')
+                    LEFT JOIN {$wpdb->users} AS u ON u.ID = i.customer_id
+                    LEFT JOIN {$wpdb->posts} AS p ON p.ID = i.wc_order_id
+                    LEFT JOIN {$wpdb->postmeta} AS pm ON (p.ID = pm.post_id AND pm.meta_key = '_ispconfig_period')
                     WHERE i.customer_id = {$current_user->ID} AND i.deleted = 0
                     ORDER BY i.created DESC";
 

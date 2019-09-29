@@ -13,8 +13,8 @@ class InvoiceExport {
         if(!empty($invoiceIds)) {
             $query = "SELECT i.ID, i.customer_id, i.invoice_number, i.wc_order_id, i.created, i.due_date, i.paid_date, i.status, u.user_login AS customer_name, u.user_email AS user_email, u.ID AS user_id, p.ID AS order_id, p.post_status 
                         FROM {$wpdb->prefix}".Invoice::TABLE." AS i 
-                        LEFT JOIN wp_users AS u ON u.ID = i.customer_id
-                        LEFT JOIN wp_posts AS p ON p.ID = i.wc_order_id
+                        LEFT JOIN {$wpdb->users} AS u ON u.ID = i.customer_id
+                        LEFT JOIN {$wpdb->posts} AS p ON p.ID = i.wc_order_id
                       WHERE 
                         i.deleted = 0 AND (status < ".Invoice::CANCELED.")
                         AND i.ID IN (".implode(',', $invoiceIds).")";
