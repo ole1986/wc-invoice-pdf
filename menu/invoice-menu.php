@@ -139,6 +139,8 @@ class InvoiceMenu {
                                 WCInvoicePdf::addField('wc_pdf_addressline', 'Address line');
                                 WCInvoicePdf::addField('wc_pdf_condition', 'Conditions', 'textarea');
                                 WCInvoicePdf::addField('wc_pdf_info', 'Info Block', 'textarea');
+                                WCInvoicePdf::addField('wc_pdf_keeprows', '<strong>Protect rows from splitting</strong><br />Keep rows together on page break','checkbox');
+
                                 WCInvoicePdf::addField('wc_pdf_block1', 'Block #1', 'rte', ['container' => 'div', 'input_attr' => ['style'=>'width: 350px;display:inline-block;'] ]);
                                 WCInvoicePdf::addField('wc_pdf_block2', 'Block #2', 'rte', ['container' => 'div', 'input_attr' => ['style'=>'width: 350px;display:inline-block;'] ]);
                                 WCInvoicePdf::addField('wc_pdf_block3', 'Block #3', 'rte', ['container' => 'div', 'input_attr' => ['style'=>'width: 350px;display:inline-block;'] ]);

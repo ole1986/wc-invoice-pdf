@@ -170,7 +170,7 @@ class InvoicePdf {
         
         $pdf->ezSetDy(-30);
 
-        $pdf->ezTable($data, $cols, '', ['width' => '500','splitRows' => 1,'gridlines' => EZ_GRIDLINE_HEADERONLY, 'cols' => $colOptions]);
+        $pdf->ezTable($data, $cols, '', ['width' => '500','splitRows' => !boolval(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_keeprows']),'gridlines' => EZ_GRIDLINE_HEADERONLY, 'cols' => $colOptions]);
     
         $colOptions = [
             ['justification' => 'right'],
