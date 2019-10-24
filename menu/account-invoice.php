@@ -2,6 +2,7 @@
 namespace WCInvoicePdf\Menu;
 
 use WCInvoicePdf\Model\Invoice;
+use WCInvoicePdf\Menu\InvoiceMenu;
 
 class AccountInvoice {
     public static function permalink(){
@@ -12,6 +13,12 @@ class AccountInvoice {
         if(!is_admin()) {
             add_filter('woocommerce_account_menu_items', [$this, 'wc_invoice_menu']);
             add_action('woocommerce_account_invoices_endpoint', [$this, 'wc_invoice_content']);
+
+            if (isset($_GET['invoice'])) {
+                $menu = new InvoiceMenu();
+                $menu->OpenInvoice();
+                return;
+            }
         }
     }
 
@@ -26,9 +33,9 @@ class AccountInvoice {
 
     public function wc_invoice_content(){
         global $wpdb, $current_user;
-
-        if(isset($_GET['invoice'])) {
-            $this->showPaymentForInvoice(intval($_GET['invoice']));
+        
+        if (isset($_GET['payment'])) {
+            $this->showPaymentForInvoice(intval($_GET['payment']));
             return;
         }
 
@@ -54,14 +61,14 @@ class AccountInvoice {
             <tbody>
                 <?php foreach($result as $k => $v) { ?>
                 <tr>
-                    <td><a href="<?php echo get_site_url() . '/wp-admin/admin.php?invoice=' . $v['ID'] ?>"><?php echo $v['invoice_number'] ?></a></td>
+                    <td><a href="<?php echo '?invoice=' . $v['ID'] ?>"><?php echo $v['invoice_number'] ?></a></td>
                     <td><a href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id')). 'view-order/' . $v['order_id'] ?>"><?php echo '#' . $v['order_id'] ?></a></td>
                     <td><?php echo strftime("%Y-%m-%d", strtotime($v['created'])) ?></td>
                     <td>
                         <?php if($v['status'] == Invoice::CANCELED): ?>
                             <?php _e('Canceled', 'wc-invoice-pdf') ?>
                         <?php elseif(($v['status'] & Invoice::PAID) == 0): ?>
-                            <a href="<?php echo '?invoice='.$v['ID']; ?>" class="button view"><?php _e('Pay Now', 'wc-invoice-pdf') ?></a>
+                            <a href="<?php echo '?payment='.$v['ID']; ?>" class="button view"><?php _e('Pay Now', 'wc-invoice-pdf') ?></a>
                         <?php elseif(($v['status'] & Invoice::PAID) != 0): ?>
                             <strong><?php echo __('Paid at', 'wc-invoice-pdf') . ' ' . strftime("%x",strtotime($v['paid_date'])) ?> </strong>
                         <?php endif; ?>

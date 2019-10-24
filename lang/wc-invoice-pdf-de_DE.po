@@ -57,6 +57,9 @@ msgstr "Vorlagen"
 msgid "Export"
 msgstr "Exportieren"
 
+msgid "Generate"
+msgstr "Erstellen"
+
 msgid "Payments"
 msgstr "Zahlungen"
 
@@ -107,6 +110,9 @@ msgstr "Die nächste automatisierte Rechnungszustellung erfolgt am %s"
 
 msgid "The invoice %s has been submitted to %s"
 msgstr "Die Rechnung %s wurde an %s übermittelt"
+
+msgid "Invoice %s successfully created"
+msgstr "Rechnung %s erfolgreich erstellt"
 
 msgid "A reminder #%s for invoice %s has been submitted to %s"
 msgstr "Eine Erinnerung #%s für die Rechnung %s wurde an %s übermittelt"

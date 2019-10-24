@@ -2,7 +2,7 @@
 /*
  * Plugin Name: WC Recurring Invoice PDF
  * Description: WooCommerce invoice pdf plugin with recurring payments (scheduled)
- * Version: 1.4.5
+ * Version: 1.4.6
  * Author: ole1986 <ole.k@web.de>
  * Author URI: https://github.com/ole1986/wc-invoice-pdf
  * Plugin URI: https://github.com/ole1986/wc-invoice-pdf/releases
@@ -102,9 +102,6 @@ class WCInvoicePdf {
         new Menu\AccountInvoice();
 
         if(is_admin()) {
-            // used to trigger on invoice creation located in ispconfig_create_pdf.php
-            $invoicePdf = new Model\InvoicePdf();
-            $invoicePdf->Trigger();
             // display invoice metabox in WC Order
             new Metabox\InvoiceMetabox();
             // display the admin menu
@@ -250,8 +247,11 @@ class WCInvoicePdf {
         // setup the role
         // add cap allowing adminstrators to download invoices by default
         $role = get_role('administrator');
-        // TODO: Rename the cap accordingly
-        $role->add_cap('ispconfig_invoice');
+        $role->add_cap('wc_invoice_pdf');
+
+        // add woocommerce customer role to the correct cap
+        $role = get_role('customer');
+        $role->add_cap('wc_invoice_pdf');
 
         // install WP schedule to remind due date
         if (! wp_next_scheduled ( 'invoice_reminder' )) {
