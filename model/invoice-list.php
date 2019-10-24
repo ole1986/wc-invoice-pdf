@@ -114,12 +114,12 @@ class InvoiceList extends \WP_List_Table {
         
         if(!$item->deleted) {
             $actions = [
-                'delete'    => sprintf('<a href="?page=%s&action=%s&id=%s" onclick="WCInvoicePdfAdmin.ConfirmDelete(this)" data-name="%s">Delete</a>',$page,'delete',$item->ID, $item->invoice_number),
-                'quote' => sprintf('<a href="?invoice=%s&preview=1" target="_blank">Show Quote</a>',$item->ID),
+                'delete'=> sprintf('<a href="?page=%s&action=%s&id=%s" onclick="WCInvoicePdfAdmin.ConfirmDelete(this)" data-name="%s">Delete</a>',$page,'delete',$item->ID, $item->invoice_number),
+                'quote' => sprintf('<a href="?page=wcinvoicepdf_invoice&order=%s&offer=1" target="_blank">%s</a>',$item->order_id, __('Offer', 'wc-invoice-pdf')),
             ];
         }
         
-        return sprintf('<a target="_blank" href="?invoice=%s">%s</a> %s', $item->ID, $item->invoice_number, $this->row_actions($actions) );
+        return sprintf('<a target="_blank" href="?page=wcinvoicepdf_invoice&invoice=%s">%s</a> %s', $item->ID, $item->invoice_number, $this->row_actions($actions) );
     }
 
     function column_due_date($item){

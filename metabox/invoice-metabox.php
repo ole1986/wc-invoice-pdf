@@ -23,7 +23,7 @@ class InvoiceMetabox {
     }
 
     public function invoice_box(){
-        add_meta_box( 'ispconfig-invoice-box', 'Invoice', [$this, 'invoice_box_callback'], 'shop_order', 'side', 'high' );
+        add_meta_box( 'ispconfig-invoice-box', __( 'Invoice', 'wc-invoice-pdf'), [$this, 'invoice_box_callback'], 'shop_order', 'side', 'high' );
     }
 
     public function invoice_box_callback() {
@@ -56,14 +56,10 @@ class InvoiceMetabox {
             <a href="/wp-admin/admin.php?page=wcinvoicepdf_invoices"><?php _e('Show all invoices', 'wc-invoice-pdf') ?></a>
         </p>
         <p style="text-align: right">
-            <button type="submit" name="ispconfig_invoice_action" class="button" value="preview">
-                <?php printf(__('Preview', 'wc-invoice-pdf'), '') ?>
-            </button>
-            <button type="submit" name="ispconfig_invoice_action" class="button" value="offer">
-                <?php _e('Offer', 'wc-invoice-pdf') ?>
-            </button>
+            <a href="admin.php?page=wcinvoicepdf_invoice&order=<?php echo $post_id ?>" target="_blank" class="button"><?php printf(__('Preview', 'wc-invoice-pdf'), '') ?></a>
+            <a href="admin.php?page=wcinvoicepdf_invoice&order=<?php echo $post_id ?>&offer=1" target="_blank" class="button"><?php _e('Offer', 'wc-invoice-pdf') ?></a>
             <button type="submit" name="ispconfig_invoice_action" class="button button-primary" value="invoice">
-                <?php _e( 'Invoice', 'wc-invoice-pdf') ?>
+                <?php _e( 'Generate', 'wc-invoice-pdf') ?>
             </button>
         </p>
         <?php
@@ -77,31 +73,22 @@ class InvoiceMetabox {
 
         remove_action( 'post_updated', [$this, 'ispconfig_invoice_submit']);
 
-        if( ! ( wp_is_post_revision( $post_id) || wp_is_post_autosave( $post_id ) ) ) {
-            $order = new \WC_Order($post);
+        if (wp_is_post_revision( $post_id)) {
+            return;
+        }
 
-            $invoice = new Invoice($order);
-            $invoicePdf = new InvoicePdf();
+        if (wp_is_post_autosave($post_id)) {
+            return;
+        } 
 
-            $action = preg_replace('/\W/', '', $_REQUEST['ispconfig_invoice_action']);
+        $order = new \WC_Order($post);
 
-            switch($action)
-            {
-                case 'preview':
-                    $invoicePdf->BuildInvoice($invoice, false, true);
-                    exit;
-                    break;
-                case 'offer':
-                    $invoicePdf->BuildInvoice($invoice, true, true);
-                    exit;
-                    break;
-                case 'invoice':
-                    $invoice->makeNew();
-                    if($invoice->Save()){
-                        $order->add_order_note("Invoice ".$invoice->invoice_number." created");
-                    }                   
-                    break;
-            }
+        $invoice = new Invoice($order);
+        
+        $invoice->makeNew();
+
+        if ($invoice->Save()) {
+            $order->add_order_note(sprintf(__("Invoice %s successfully created", 'wc-invoice-pdf'),$invoice->invoice_number));
         }
     }
 }

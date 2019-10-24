@@ -109,7 +109,8 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
         $templateID = $this->getISPConfigTemplateID();
 
         if ($templateID >= 1 && $templateID <= 3) {
-            echo "<h3>" . __('Your desired domain', 'wp-ispconfig3') . "</h3>";
+            echo "<h3>" . __('Your desired domain', 'wc-invoice-pdf') . "</h3>";
+            echo '<div><sup>' . __('Please enter a domain you want to host here', 'wc-invoice-pdf') . '</sup></div>';
             woocommerce_form_field(
                 'order_domain',
                 [
@@ -120,9 +121,7 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
                 $checkout->get_value('order_domain')
             );
         }
-        
         echo '<div id="domainMessage" class="ispconfig-msg" style="display:none;"></div>';
-        echo '<div><sup>Bitte beachten Sie das die Domainregistrierung innerhalb von 24 Stunden nach Zahlungseingang erfolgt</sup></div>';
     }
 
     public function OnCheckoutValidate()

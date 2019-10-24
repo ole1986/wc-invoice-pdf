@@ -105,7 +105,7 @@ class InvoicePdf {
         $summary = 0;
         $summaryTax = 0;
 
-	$fees = $order->get_fees();
+        $fees = $order->get_fees();
         $items = array_merge($items, $fees);
 
         foreach($items as $v){
@@ -131,8 +131,7 @@ class InvoicePdf {
                     $next->add(new \DateInterval('P12M'));
                 }
                 $qtyStr = number_format($v['qty'], 0, ',',' ') . ' ' . $product->get_price_suffix('', $v['qty']);
-                //if(!$isOffer)
-                    $product_name .= "\n<strong>Zeitraum: " . $current->format('d.m.Y')." - ".$next->format('d.m.Y') . '</strong>';
+                $product_name .= "\n<strong>Zeitraum: " . $current->format('d.m.Y')." - ".$next->format('d.m.Y') . '</strong>';
             } else if($product instanceof \WC_Product_Hour) {
                 // check if product type is "hour" to output hours instead of Qty
                 $qtyStr = number_format($v['qty'], 1, ',',' ');
@@ -199,39 +198,10 @@ class InvoicePdf {
         $pdf->ezSetDy(-20);
         $pdf->ezText("<strong>" .  \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_condition'] . "</strong>", 8, ['justification' => 'center']);
 
-        if($stream) {
-            $pdf->ezStream();
+        if ($stream) {
+            $pdf->ezStream(['Content-Disposition' => ($isOffer ? $invoice->offer_number : $invoice->invoice_number) . '.pdf' ]);
         } else {
             return $pdf->ezOutput();
         }
-    }
-
-    /**
-     * Used to trigger on specified parameters
-     */
-    public function Trigger(){
-        global $wpdb, $pagenow, $current_user;
-
-        // skip invoice output when no invoice id is defined (and continue with the default page call)
-        if(empty($_GET['invoice'])) return;
-
-        $invoice = new Invoice( intval($_GET['invoice']) );
-        if(!$invoice->ID) die("Invoice not found");
-
-        // invoice has been defined but user does not have the cap to display it
-        if(!current_user_can('ispconfig_invoice')) die("You are not allowed to view invoices: Cap 'ispconfig_invoice' not set");
-        if(!current_user_can('manage_options') && $invoice->customer_id != $current_user->ID) die("You are not allowed to open this invoice (Customer: {$invoice->customer_id} / ID: {$invoice->ID})");
-        
-        if(isset($_GET['preview'])) {
-            //$order = new WC_Order($res['wc_order_id']);
-            
-            echo $this->BuildInvoice($invoice, true,true);
-        } else {
-            header("Content-type: application/pdf");
-            header("Content-Disposition: inline; filename=".$invoice->invoice_number .'.pdf');
-
-            echo $invoice->document;
-        }
-        die;
     }
 }
