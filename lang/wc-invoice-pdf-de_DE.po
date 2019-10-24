@@ -212,3 +212,9 @@ msgstr "Arbeitszeiten"
 
 msgid "Webspace"
 msgstr "Webspeicher"
+
+msgid "Please enter a domain you want to host here"
+msgstr "Bitte gebe hier eine gewünschte Domain ein"
+
+msgid "Your desired domain"
+msgstr "Ihre Wunschdomain"
