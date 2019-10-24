@@ -111,9 +111,9 @@ class InvoiceMenu {
             <h1><?php _e('WC-Invoice Settings', 'wc-invoice-pdf' );?></h1>
 
             <?php if( wp_get_schedule( 'invoice_reminder' )): ?>
-                <div class="notice notice-info"><p>The schedule is properly installed and running</p></div>
+                <div class="notice notice-info"><p><?php _e('The schedule is properly installed and running', 'wc-invoice-pdf') ?></p></div>
             <?php else: ?>
-                <div class="notice notice-error"><p>The scheduled task is NOT INSTALLED - Try to reactivate the plugin</p></div>
+                <div class="notice notice-error"><p><?php _e('The scheduled task is not installed - Please try to reenable the plugin','wc-invoice-pdf') ?></p></div>
             <?php endif; ?>
             <?php
                 if(!empty($oldConf) && isset($oldConf['wc_pdf_title'])):
@@ -134,12 +134,12 @@ class InvoiceMenu {
                             <div id="wcinvoicepdf-invoice" class="inside tabs-panel" style="display: none;">
                                 <h3><?php _e('Invoice template (PDF)', 'wc-invoice-pdf') ?></h3>
                                 <?php
-                                WCInvoicePdf::addField('wc_pdf_title', 'Document Title');
-                                WCInvoicePdf::addField('wc_pdf_logo', 'Logo Image', 'media');
-                                WCInvoicePdf::addField('wc_pdf_addressline', 'Address line');
-                                WCInvoicePdf::addField('wc_pdf_condition', 'Conditions', 'textarea');
+                                WCInvoicePdf::addField('wc_pdf_title', __('Document Title', 'wc-invoice-pdf'));
+                                WCInvoicePdf::addField('wc_pdf_logo', 'Logo', 'media');
+                                WCInvoicePdf::addField('wc_pdf_addressline', __('Address line', 'wc-invoice-pdf'));
+                                WCInvoicePdf::addField('wc_pdf_condition', __('Payment terms', 'wc-invoice-pdf'), 'textarea');
                                 WCInvoicePdf::addField('wc_pdf_info', 'Info Block', 'textarea');
-                                WCInvoicePdf::addField('wc_pdf_keeprows', '<strong>Protect rows from splitting</strong><br />Keep rows together on page break','checkbox');
+                                WCInvoicePdf::addField('wc_pdf_keeprows', '<strong>' . __('Protect rows from splitting', 'wc-invoice-pdf') . '</strong><br />' . __('Keep rows together when page breaks','wc-invoice-pdf'),'checkbox');
 
                                 WCInvoicePdf::addField('wc_pdf_block1', 'Block #1', 'rte', ['container' => 'div', 'input_attr' => ['style'=>'width: 350px;display:inline-block;'] ]);
                                 WCInvoicePdf::addField('wc_pdf_block2', 'Block #2', 'rte', ['container' => 'div', 'input_attr' => ['style'=>'width: 350px;display:inline-block;'] ]);
@@ -171,11 +171,11 @@ class InvoiceMenu {
                                 ?>
                                 <h3><?php _e('Payments', 'wc-invoice-pdf') ?></h3>
                                 <?php
-                                WCInvoicePdf::addField('wc_recur_test', '<span style="color: red; font-weight: bold">Test Mode</span><br />Enable test mode and replace all recipients with the admin email address.','checkbox');
-                                WCInvoicePdf::addField('wc_payment_reminder', '<strong>'. __('Payment report', 'wc-invoice-pdf') .'</strong><br />send a daily report of unpaid invoices to "Admin Email"','checkbox');
-                                WCInvoicePdf::addField('wc_recur', '<strong>' . __('Automate invoice submission', 'wc-invoice-pdf').'</strong><br />Enable automate invoice submission to customers on a daily schedule','checkbox');
-                                WCInvoicePdf::addField('wc_recur_reminder', '<strong>'. __('Payment reminder', 'wc-invoice-pdf').'</strong><br />Send payment reminders to customer when invoice is due','checkbox');
-                                WCInvoicePdf::addField('wc_recur_reminder_age', '<strong>' . __('First reminder (days)', 'wc-invoice-pdf') . '</strong><br />The number of days (after due date) when a reminder should be sent to customer');
+                                WCInvoicePdf::addField('wc_recur_test', '<span style="color: red; font-weight: bold">Test Mode</span><br />' . __('Enable test mode and replace all recipients with the admin email address', 'wc-invoice-pdf'),'checkbox');
+                                WCInvoicePdf::addField('wc_payment_reminder', '<strong>'. __('Payment report', 'wc-invoice-pdf') .'</strong><br />Send a daily report of unpaid invoices to "Admin Email"','checkbox');
+                                WCInvoicePdf::addField('wc_recur', '<strong>' . __('Automate invoice submission', 'wc-invoice-pdf').'</strong><br />' . __('Enable automate invoice submission to customers on a daily schedule', 'wc-invoice-pdf'),'checkbox');
+                                WCInvoicePdf::addField('wc_recur_reminder', '<strong>'. __('Payment reminder', 'wc-invoice-pdf').'</strong><br />' . __('Send payment reminders to customer when invoice is due', 'wc-invoice-pdf'),'checkbox');
+                                WCInvoicePdf::addField('wc_recur_reminder_age', '<strong>' . __('First reminder (days)', 'wc-invoice-pdf') . '</strong><br />' . __('The number of days (after due) when the first payment reminder should be sent to the customer', 'wc-invoice-pdf'));
                                 WCInvoicePdf::addField('wc_recur_reminder_interval', '<strong>'. __('Reminder interval', 'wc-invoice-pdf') .'</strong><br />The number of days (after first occurence) a reminder should be resent to customer');
                                 WCInvoicePdf::addField('wc_recur_reminder_max', '<strong>'. __('Max reminders', 'wc-invoice-pdf') .'</strong><br />How many reminders should be sent for a single invoice to the customer');
                                 ?>

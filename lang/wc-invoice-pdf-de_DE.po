@@ -39,6 +39,12 @@ msgstr "Alle Rechnungen anzeigen"
 msgid "Task Scheduler"
 msgstr "Aufgabenplaner"
 
+msgid "The schedule is properly installed and running"
+msgstr "Der Aufgabenplaner ist korrekt installiert und bereit"
+
+msgid "The scheduled task is not installed - Please try to reenable the plugin"
+msgstr "Der Aufgabenplaner ist nicht korrekt installiert - Bitte versuche das plugin erneut zu aktivieren"
+
 msgid "Run commands"
 msgstr "Kommandos ausführen"
 
@@ -57,6 +63,21 @@ msgstr "Zahlungen"
 msgid "Invoice template (PDF)"
 msgstr "Rechnungsvorlage (PDF)"
 
+msgid "Document Title"
+msgstr "Dokumenten Titel"
+
+msgid "Address line"
+msgstr "Adresszeile"
+
+msgid "Payment terms"
+msgstr "Zahlungsbedingungen"
+
+msgid "Protect rows from splitting"
+msgstr "Zeilenaufteilung vermeiden"
+
+msgid "Keep rows together when page breaks"
+msgstr "Behalte die Zeilen zusammen bei Seitenumbrüchen"
+
 msgid "Payment reminder"
 msgstr "Zahlungserinnerung"
 
@@ -66,11 +87,20 @@ msgstr "%s Erinnerungen versendet"
 msgid "Recurring payments"
 msgstr "Regelmäßige Zahlungen"
 
+msgid "Enable test mode and replace all recipients with the admin email address"
+msgstr "Aktiviert den Test modus und ersetzt alle Empfänger mit der E - Mail des Administrators"
+
+msgid "Send payment reminders to customer when invoice is due"
+msgstr "Verschickt Zahlungserinnerungen an den Kunden, nachdem eine Zahlung überfällig ist"
+
 msgid "Recurring invoice %s has been created"
 msgstr "Wiederkehrende Rechnung %s wurde erstellt"
 
 msgid "Automate invoice submission"
 msgstr "Rechnungen automatisert versenden"
+
+msgid "Enable automate invoice submission to customers on a daily schedule"
+msgstr "Aktiviert das automatische versenden von Rechnung (täglich)"
 
 msgid "The next automated invoice submission is scheduled for %s"
 msgstr "Die nächste automatisierte Rechnungszustellung erfolgt am %s"
@@ -86,6 +116,9 @@ msgstr "Zahlungsbericht"
 
 msgid "First reminder (days)"
 msgstr "Erste Erinnerung (tage)"
+
+msgid "The number of days (after due) when the first payment reminder should be sent to the customer"
+msgstr "Die Anzahl der Tage (nach Fälligkeit) an dem die erste Zahlungserinnerung an den Kunden geschickt werden soll"
 
 msgid "Reminder interval"
 msgstr "Erinnerungsinterval"
