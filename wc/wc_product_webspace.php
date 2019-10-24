@@ -122,7 +122,7 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
         }
         
         echo '<div id="domainMessage" class="ispconfig-msg" style="display:none;"></div>';
-        echo '<div><sup>Bitte beachten Sie das die Domainregistrierung innerhalb von 24 Stunden nach Zahlungseingang erfolgt</sup></div>';
+        echo '<div><sup>Enter the doman you want to host here</sup></div>';
     }
 
     public function OnCheckoutValidate()
