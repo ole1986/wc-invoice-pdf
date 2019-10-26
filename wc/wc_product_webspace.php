@@ -132,7 +132,11 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
         if ($templateID >= 1 && $templateID <= 3) {
             try {
                 $dom = Ispconfig::validateDomain($_POST['order_domain']);
-                $available = Ispconfig::isDomainAvailable($dom);
+
+                $available = Ispconfig::$Self->withSoap()->IsDomainAvailable($dom);
+
+                Ispconfig::$Self->closeSoap();
+
                 if ($available == 0) {
                     wc_add_notice(__("The domain is not available", 'wp-ispconfig3'), 'error');
                 } elseif ($available == -1) {
