@@ -82,6 +82,11 @@ class WCInvoicePdf
             include_once WCINVOICEPDF_PLUGIN_DIR . 'wc/wc_product_service.php';
         }
 
+        if (file_exists(WCINVOICEPDF_PLUGIN_DIR . 'wc/wc_ispconfig.php')) {
+            include_once WCINVOICEPDF_PLUGIN_DIR . 'wc/wc_ispconfig.php';
+            \WcIspconfig::init();
+        }
+
         self::load_options();
 
         // enable changing the due date through ajax

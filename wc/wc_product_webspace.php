@@ -70,7 +70,10 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
 
     public static function ispconfig_product_data_fields()
     {
-        if (!class_exists("Ispconfig")) return;
+        if (!class_exists("Ispconfig")) {
+            return;
+        }
+        
         echo '<div id="ispconfig_data_tab" class="panel woocommerce_options_panel">';
         try {
             $templates = Ispconfig::$Self->withSoap()->GetClientTemplates();
