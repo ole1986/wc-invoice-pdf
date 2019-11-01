@@ -134,7 +134,7 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
         // all products require a DOMAIN to be entered
         if ($templateID >= 1 && $templateID <= 3) {
             try {
-                $dom = Ispconfig::validateDomain($_POST['order_domain']);
+                $dom = Ispconfig::$Self->validateDomain($_POST['order_domain']);
 
                 $available = Ispconfig::$Self->withSoap()->IsDomainAvailable($dom);
 
