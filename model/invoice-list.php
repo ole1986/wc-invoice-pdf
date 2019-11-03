@@ -1,29 +1,35 @@
 <?php
 namespace WCInvoicePdf\Model;
+
 // Prevent loading this file directly
-defined( 'ABSPATH' ) || exit;
+defined('ABSPATH') || exit;
 
 // load the wordpress list table class
-if( ! class_exists( 'WP_List_Table' ) )
-    require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
+if (! class_exists('WP_List_Table')) {
+    require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
+}
 
-add_action( 'admin_head', array( 'WCInvoicePdf\Model\InvoiceList', 'admin_header' ) );
+add_action('admin_head', array( 'WCInvoicePdf\Model\InvoiceList', 'admin_header' ));
 
-class InvoiceList extends \WP_List_Table {
+class InvoiceList extends \WP_List_Table
+{
 
     private $rows_per_page = 15;
     private $total_rows = 0;
 
     public $total_trash_rows = 0;
 
-    public function __construct(){
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public static function admin_header() {
-        $page = ( isset($_GET['page'] ) ) ? esc_attr( $_GET['page'] ) : false;
-        if( 'wcinvoicepdf_invoices' != $page )
-            return; 
+    public static function admin_header()
+    {
+        $page = ( isset($_GET['page']) ) ? esc_attr($_GET['page']) : false;
+        if ('wcinvoicepdf_invoices' != $page) {
+            return;
+        }
 
         echo '<style type="text/css">';
         echo '.wp-list-table .column-ID { width: 40px; }';
@@ -34,7 +40,8 @@ class InvoiceList extends \WP_List_Table {
         echo '</style>';
     }
 
-    public function get_sortable_columns(){
+    public function get_sortable_columns()
+    {
         $sortable = [
             'customer_name' => ['customer_name', true],
             'status' => ['status', true],
@@ -45,7 +52,8 @@ class InvoiceList extends \WP_List_Table {
         return $sortable;
     }
 
-    public function get_columns(){
+    public function get_columns()
+    {
         $columns = [
             'cb' => '<input type="checkbox" />',
             'ID' => 'ID',
@@ -60,8 +68,9 @@ class InvoiceList extends \WP_List_Table {
         return $columns;
     }
     
-    function column_default( $item, $column_name ) {
-        switch( $column_name ) { 
+    public function column_default($item, $column_name)
+    {
+        switch ($column_name) {
             case 'ID':
             case 'customer_name':
             case 'created':
@@ -71,92 +80,106 @@ class InvoiceList extends \WP_List_Table {
             case 'status':
                 return Invoice::GetStatus($item->$column_name);
             default:
-                return print_r( $item, true ) ; //Show the whole array for troubleshooting purposes
+                return print_r($item, true) ; //Show the whole array for troubleshooting purposes
         }
     }
 
-    function column_cb($item) {
+    public function column_cb($item)
+    {
         return sprintf('<input type="checkbox" name="invoice[]" value="%s" />', $item->ID);
     }
 
-    function column_status($item) {
-        $page = ( isset($_REQUEST['page'] ) ) ? urlencode( $_REQUEST['page'] ) : '';
+    public function column_status($item)
+    {
+        $page = ( isset($_REQUEST['page']) ) ? urlencode($_REQUEST['page']) : '';
         $action = [];
 
-        if(!$item->deleted) {
+        if (!$item->deleted) {
             $actions = [
-                'sent' => sprintf('<a href="?page=%s&action=%s&id=%s">'. __('Sent', 'wc-invoice-pdf').'</a>', $page,'sent',$item->ID),
-                'paid' => sprintf('<a href="?page=%s&action=%s&id=%s">'. __('Paid', 'wc-invoice-pdf').'</a>', $page,'paid',$item->ID),
-                'cancel' => sprintf('<a href="?page=%s&action=%s&id=%s">'. __('Canceled', 'wc-invoice-pdf').'</a>', $page,'cancel',$item->ID),
+                'sent' => sprintf('<a href="?page=%s&action=%s&id=%s">'. __('Sent', 'wc-invoice-pdf').'</a>', $page, 'sent', $item->ID),
+                'paid' => sprintf('<a href="?page=%s&action=%s&id=%s">'. __('Paid', 'wc-invoice-pdf').'</a>', $page, 'paid', $item->ID),
+                'cancel' => sprintf('<a href="?page=%s&action=%s&id=%s">'. __('Canceled', 'wc-invoice-pdf').'</a>', $page, 'cancel', $item->ID),
             ];
         }
         
-        return sprintf('%s %s', Invoice::GetStatus($item->status, true), $this->row_actions($actions) );
+        return sprintf('%s %s', Invoice::GetStatus($item->status, true), $this->row_actions($actions));
     }
 
-    function column_order_id($item){
+    public function column_order_id($item)
+    {
         $stat = wc_get_order_statuses();
         $recurr = '';
-        if(!empty($item->ispconfig_period))
+        if (!empty($item->ispconfig_period)) {
             $recurr = __('Payment period', 'wc-invoice-pdf') .': ' . __(Invoice::$PERIOD[$item->ispconfig_period], 'wc-invoice-pdf');
+        }
         return '<a href="post.php?post='.$item->order_id. '&action=edit" >#' . $item->order_id. ' ('.$stat[$item->post_status].')</a><br />' . $recurr;
     }
 
-    function column_customer_name($item){
+    public function column_customer_name($item)
+    {
         $res = sprintf('<a href="user-edit.php?user_id=%d">%s</a>', $item->user_id, $item->customer_name);
         $res.="<br /> ". $item->user_email;
         return $res;
     }
     
-    function column_invoice_number($item) {
-        $page = ( isset($_REQUEST['page'] ) ) ? urlencode( $_REQUEST['page'] ) : '';
+    public function column_invoice_number($item)
+    {
+        $page = ( isset($_REQUEST['page']) ) ? urlencode($_REQUEST['page']) : '';
         $action = [];
         
-        if(!$item->deleted) {
+        if (!$item->deleted) {
             $actions = [
-                'delete'=> sprintf('<a href="?page=%s&action=%s&id=%s" onclick="WCInvoicePdfAdmin.ConfirmDelete(this)" data-name="%s">Delete</a>',$page,'delete',$item->ID, $item->invoice_number),
-                'quote' => sprintf('<a href="?page=wcinvoicepdf_invoice&order=%s&offer=1" target="_blank">%s</a>',$item->order_id, __('Offer', 'wc-invoice-pdf')),
+                'delete'=> sprintf('<a href="?page=%s&action=%s&id=%s" onclick="WCInvoicePdfAdmin.ConfirmDelete(this)" data-name="%s">Delete</a>', $page, 'delete', $item->ID, $item->invoice_number),
+                'quote' => sprintf('<a href="?page=wcinvoicepdf_invoice&order=%s&offer=1" target="_blank">%s</a>', $item->order_id, __('Offer', 'wc-invoice-pdf')),
             ];
         }
         
-        return sprintf('<a target="_blank" href="?page=wcinvoicepdf_invoice&invoice=%s">%s</a> %s', $item->ID, $item->invoice_number, $this->row_actions($actions) );
+        return sprintf('<a target="_blank" href="?page=wcinvoicepdf_invoice&invoice=%s">%s</a> %s', $item->ID, $item->invoice_number, $this->row_actions($actions));
     }
 
-    function column_due_date($item){
+    public function column_due_date($item)
+    {
         if ($item->deleted) {
             return $item->due_date;
         }
         $result = '<a href="javascript:void(0)" data-id="'.$item->ID.'" onclick="WCInvoicePdfAdmin.EditDueDate(this)">'.$item->due_date.'</a>';
-        if($item->reminder_sent > 0)
-        $result.= "<br />" . sprintf(__('%s reminders sent', 'wc-invoice-pdf'), $item->reminder_sent);
+        if ($item->reminder_sent > 0) {
+            $result.= "<br />" . sprintf(__('%s reminders sent', 'wc-invoice-pdf'), $item->reminder_sent);
+        }
         return $result;
     }
 
-    function column_paid_date($item) {
+    public function column_paid_date($item)
+    {
         return '<a href="javascript:void(0)" data-id="'.$item->ID.'" onclick="WCInvoicePdfAdmin.EditPaidDate(this)">'.$item->paid_date.'</a>';
     }
     
-    function get_bulk_actions() {
+    public function get_bulk_actions()
+    {
         $actions = [
           'export' => __('Export', 'wc-invoice-pdf')
         ];
         return $actions;
-      }
+    }
 
-    function process_bulk_actions() {
-        if(!empty($_POST['action']) && $_POST['action'] == 'export'){
-            if(empty($_POST['invoice'])) {
+    public function process_bulk_actions()
+    {
+        if (!empty($_POST['action']) && $_POST['action'] == 'export') {
+            if (empty($_POST['invoice'])) {
                 echo '<div class="wrap"><div class="notice notice-info"><p>Nothing to export</p></div></div>';
                 return;
             }
 
-            $invoiceIds = array_map(function($value){ return intval($value); }, $_POST['invoice']);
+            $invoiceIds = array_map(function ($value) {
+                return intval($value);
+            }, $_POST['invoice']);
             $exp = new InvoiceExport($invoiceIds);
             $exp->GnuCash();
         }
     }
 
-    public function prepare_items() {
+    public function prepare_items()
+    {
         global $wpdb;
 
         $this->process_bulk_actions();
@@ -182,12 +205,12 @@ class InvoiceList extends \WP_List_Table {
         $action = preg_replace('/\W/', '', isset($_GET['action']) ? $_GET['action'] : '');
         $invoiceId = isset($_GET['id']) ? intval($_GET['id']) : null;
 
-        if(isset($_GET['page']) && $_GET['page'] == 'wcinvoicepdf_invoices' && !empty($action)) {
-            if($invoiceId !== null) {
-                $invoice = new Invoice( $invoiceId );
+        if (isset($_GET['page']) && $_GET['page'] == 'wcinvoicepdf_invoices' && !empty($action)) {
+            if ($invoiceId !== null) {
+                $invoice = new Invoice($invoiceId);
             }
             
-            switch($action) {
+            switch ($action) {
                 case 'delete':
                     $invoice->Delete();
                     break;
@@ -204,10 +227,12 @@ class InvoiceList extends \WP_List_Table {
                     $invoice->Save();
                     break;
                 case 'filter':
-                    if(!empty($_GET['customer_id']))
+                    if (!empty($_GET['customer_id'])) {
                         $query = $wpdb->prepare($query . " AND i.customer_id = %d", intval($_GET['customer_id']));
-                    if(!empty($_GET['recur_only']))
+                    }
+                    if (!empty($_GET['recur_only'])) {
                         $query.= " AND pm.meta_value IS NOT NULL";
+                    }
                     break;
             }
         }
@@ -221,12 +246,15 @@ class InvoiceList extends \WP_List_Table {
         $this->postPaging();
     }
 
-    private function applySorting(&$query){
-        if(!isset($_GET['orderby']))
+    private function applySorting(&$query)
+    {
+        if (!isset($_GET['orderby'])) {
             $_GET['orderby'] = 'created';
+        }
         
-        if(!isset($_GET['order']))
+        if (!isset($_GET['order'])) {
             $_GET['order'] = 'desc';
+        }
 
         $_GET['orderby'] = $orderby = preg_replace('/\W/', '', $_GET['orderby']);
         $_GET['order'] = $order = preg_replace('/\W/', '', $_GET['order']);
@@ -234,25 +262,26 @@ class InvoiceList extends \WP_List_Table {
         $query .= " ORDER BY $orderby $order";
     }
 
-    private function applyPaging(&$query){
+    private function applyPaging(&$query)
+    {
         // paging settings
         $page = $this->get_pagenum();
         $offset = $this->rows_per_page * $page - $this->rows_per_page;
 
         $query = str_replace('SELECT ', 'SELECT SQL_CALC_FOUND_ROWS ', $query);
         $query.= " LIMIT {$this->rows_per_page} OFFSET {$offset}";
-   }
+    }
 
-    private function postPaging(){
+    private function postPaging()
+    {
         global $wpdb;
         $total_rows = $wpdb->get_var("SELECT FOUND_ROWS();");
 
-        $this->set_pagination_args( [
-            'total_items' => $total_rows,	//WE have to calculate the total number of items
+        $this->set_pagination_args([
+            'total_items' => $total_rows,   //WE have to calculate the total number of items
             'per_page'    => $this->rows_per_page      //WE have to determine how many items to show on a page
-        ] );
+        ]);
 
         return $total_rows;
     }
 }
-?>

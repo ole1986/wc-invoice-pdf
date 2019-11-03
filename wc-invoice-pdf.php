@@ -41,7 +41,6 @@ class WCInvoicePdf
     const OPTION_KEY = 'wc-invoice-pdf';
 
     public static $OPTIONS = [
-        'wc_enable' => 0,
         'wc_payment_reminder' => 1,
         'wc_payment_message' => "Dear Administrator,\n\nThe following invoices are not being paid yet: %s\n\nPlease remind the customer(s) for payment",
         'wc_recur' => 0,
@@ -82,10 +81,10 @@ class WCInvoicePdf
             include_once WCINVOICEPDF_PLUGIN_DIR . 'wc/wc_product_service.php';
         }
 
-        if (file_exists(WCINVOICEPDF_PLUGIN_DIR . 'wc/wc_ispconfig.php')) {
+        /*if (file_exists(WCINVOICEPDF_PLUGIN_DIR . 'wc/wc_ispconfig.php')) {
             include_once WCINVOICEPDF_PLUGIN_DIR . 'wc/wc_ispconfig.php';
             \WcIspconfig::init();
-        }
+        }*/
 
         self::load_options();
 

@@ -8,6 +8,9 @@ add_filter('woocommerce_product_data_tabs', ['WC_Product_Webspace','ispconfig_pr
 add_action('woocommerce_product_data_panels', ['WC_Product_Webspace','ispconfig_product_data_fields']);
 add_action('woocommerce_process_product_meta_webspace', ['WC_Product_Webspace', 'webspace_metadata_save']);
 
+// display the domain inside WC-InvoicePdf metabox
+add_action('wcinvoicepdf_invoice_metabox', ['WC_Product_Webspace', 'Metabox']);
+
 add_action('admin_footer', ['WC_Product_Webspace', 'jsRegister']);
 
 add_filter('product_type_selector', ['WC_Product_Webspace','register']);
@@ -24,7 +27,7 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
         self::$OPTIONS = ['m' => __('monthly', 'wc-invoice-pdf'), 'y' => __('yearly', 'wc-invoice-pdf') ];
 
         $this->supports[]   = 'ajax_add_to_cart';
-        //$this->product_type = "webspace";
+
         parent::__construct($product);
     }
 
@@ -92,6 +95,22 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
         echo '</div>';
     }
 
+    public static function Metabox($post_id)
+    {
+        $domain = get_post_meta($post_id, 'Domain', true);
+        
+        if (empty($domain)) {
+            return;
+        }
+
+        ?>
+        <p>
+            <label class="post-attributes-label">Domain: </label>
+            <?php echo $domain ?>
+        </p>
+        <?php
+    }
+
     /**
      * BACKEND: Used to save the template ID for later use (Cart/Order)
      */
@@ -107,7 +126,7 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
         return get_post_meta($this->get_id(), '_ispconfig_template_id', true);
     }
 
-    public function OnCheckout($checkout)
+    public function OnProductCheckoutFields(&$checkout)
     {
         $templateID = $this->getISPConfigTemplateID();
 
@@ -127,7 +146,7 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
         echo '<div id="domainMessage" class="ispconfig-msg" style="display:none;"></div>';
     }
 
-    public function OnCheckoutValidate()
+    public function OnProductCheckoutValidate()
     {
         $templateID = $this->getISPConfigTemplateID();
         
@@ -151,7 +170,7 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
         }
     }
 
-    public function OnCheckoutSubmit($order_id, $item_key, $item)
+    public function OnProductCheckoutSubmit($order_id, $item_key, $item)
     {
         if (! empty($_POST['order_domain'])) {
             update_post_meta($order_id, 'Domain', sanitize_text_field($_POST['order_domain']));

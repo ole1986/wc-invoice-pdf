@@ -2,7 +2,8 @@
 
 namespace WCInvoicePdf\Model;
 
-class Invoice {
+class Invoice
+{
     /**
      * database table without WP prefix
      */
@@ -14,7 +15,7 @@ class Invoice {
     const CANCELED = 128;
 
     /**
-     * Possible status flags 
+     * Possible status flags
      */
     public static $STATUS = [
         1 => 'Sent',
@@ -32,7 +33,7 @@ class Invoice {
     /**
      * allowed db columns
      */
-     protected static $columns = [
+    protected static $columns = [
          'customer_id' => 'bigint(20) NOT NULL DEFAULT 0',
          'wc_order_id' => 'bigint(20) NOT NULL',
          'offer_number'=> 'VARCHAR(50) NOT NULL',
@@ -49,54 +50,64 @@ class Invoice {
 
     /**
      * constructor call with various load options given in parameter $id
-     * @param {mixed} $id ID | WC_Order | stdClass 
+     * @param {mixed} $id ID | WC_Order | stdClass
      */
-    public function __construct($id = null){
+    public function __construct($id = null)
+    {
         $ok = false;
-        if(!empty($id) && is_integer($id))
+        if (!empty($id) && is_integer($id)) {
             $ok = $this->load($id);
-        else if(!empty($id) && is_object($id) && get_class($id) == 'WC_Order')
+        } elseif (!empty($id) && is_object($id) && get_class($id) == 'WC_Order') {
             $ok = $this->loadFromOrder($id);
-        else if(!empty($id) && is_object($id) && (get_class($id) == 'stdClass' || $id instanceof Invoice))
+        } elseif (!empty($id) && is_object($id) && (get_class($id) == 'stdClass' || $id instanceof Invoice)) {
             $ok = $this->loadFromStd($id);
+        }
         
-        if(!$ok)
+        if (!$ok) {
             $this->makeNew();
+        }
     }
 
     /**
      * mark current invoice as paid
      */
-    public function Paid($withDate = true){
+    public function Paid($withDate = true)
+    {
         $this->status |= self::PAID;
-        if($withDate)
+        if ($withDate) {
             $this->paid_date = date('Y-m-d H:i:s');
+        }
     }
 
     /**
      * mark current invoice as submitted
      */
-    public function Submitted(){
+    public function Submitted()
+    {
         $this->status |= self::SUBMITTED;
     }
 
-    public function Recurring(){
+    public function Recurring()
+    {
         $this->status |= self::RECURRING;
     }
 
-    public function Exported(){
+    public function Exported()
+    {
         $this->status |= self::EXPORTED;
     }
 
-    public function Cancel(){
+    public function Cancel()
+    {
         $this->status = self::CANCELED;
     }
 
     /**
      * dynamic property loader to lazy load objects
      */
-    public function __get($name){
-        if($name == 'order' && !empty($this->wc_order_id)) {
+    public function __get($name)
+    {
+        if ($name == 'order' && !empty($this->wc_order_id)) {
             $this->$name = new \WC_Order($this->wc_order_id);
         }
         return $this->$name;
@@ -105,32 +116,39 @@ class Invoice {
     /**
      * fetch the associated WC_Order through dynamic property 'order'
      */
-    public function Order(){
+    public function Order()
+    {
         return $this->order;
     }
 
     /**
      * save the current invoice or overwrite when $this->ID is defined
      */
-    public function Save(){
+    public function Save()
+    {
         global $wpdb;
 
         // check for order status
-        if($this->order->get_status() == 'pending' && in_array($this->order->payment_method, ['paypal']) ) {
+        if ($this->order->get_status() == 'pending' && in_array($this->order->payment_method, ['paypal'])) {
             $this->order->add_order_note("skipped invoice creation because paypal payment is not yet completed");
             return false;
         }
 
         $item = [];
-        foreach(self::$columns as $k => $v){
-            if($k == 'deleted') continue;
-            if(!empty($this->ID) && $k == 'document') continue;
-            if(isset($this->$k))
+        foreach (self::$columns as $k => $v) {
+            if ($k == 'deleted') {
+                continue;
+            }
+            if (!empty($this->ID) && $k == 'document') {
+                continue;
+            }
+            if (isset($this->$k)) {
                 $item[$k] = $this->$k;
+            }
         }
 
         $result = false;
-        if(!empty($this->ID)) {
+        if (!empty($this->ID)) {
             // do not update the document only the meta data
             $result = $wpdb->update("{$wpdb->prefix}". self::TABLE, $item, ['ID' => $this->ID]);
         } else {
@@ -144,14 +162,17 @@ class Invoice {
     /**
      * mark the current invoice as deleted
      */
-    public function Delete() {
+    public function Delete()
+    {
         global $wpdb;
 
-        if(!empty($this->ID))
-            $wpdb->query( $wpdb->prepare("UPDATE {$wpdb->prefix}".self::TABLE." SET deleted = 1 WHERE ID = %s", $this->ID ) );
+        if (!empty($this->ID)) {
+            $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}".self::TABLE." SET deleted = 1 WHERE ID = %s", $this->ID));
+        }
     }
 
-    private function load($id){
+    private function load($id)
+    {
         global $wpdb;
 
         $query = "SELECT * FROM {$wpdb->prefix}" . self::TABLE . " WHERE ID = %d LIMIT 1";
@@ -164,13 +185,13 @@ class Invoice {
         return (!empty($this->ID))?true:false;
     }
 
-    public function makeNew(){
+    public function makeNew()
+    {
         unset($this->ID);
 
         $d = new \DateTime();
 
-        if(!empty($this->order) && is_object($this->order))
-        {
+        if (!empty($this->order) && is_object($this->order)) {
             $this->invoice_number = $d->format('Ym') . '-' . $this->order->get_id() . '-R';
             $this->offer_number = $d->format('Ym') . '-' . $this->order->get_id() . '-A';
             $this->wc_order_id = $this->order->get_id();
@@ -191,24 +212,26 @@ class Invoice {
         $this->document = $invoicePdf->BuildInvoice($this);
     }
 
-    public function makeRecurring(){
+    public function makeRecurring()
+    {
         $this->Recurring();
-        if(!empty($this->order) && is_object($this->order))
-        {
+        if (!empty($this->order) && is_object($this->order)) {
             // reset the payment status for recurring invoices (customer has to pay first)
             unset($this->order->_paid_date);
         }
         $this->makeNew();
     }
 
-    private function loadFromStd($std){
-        foreach(get_object_vars($std) as $k => $v){
+    private function loadFromStd($std)
+    {
+        foreach (get_object_vars($std) as $k => $v) {
             $this->{$k} = $v;
         }
         return (!empty($this->ID))?true:false;
     }
 
-    private function loadFromOrder($order){
+    private function loadFromOrder($order)
+    {
         global $wpdb;
 
         $this->order = $order;
@@ -223,7 +246,7 @@ class Invoice {
         $query = "SELECT * FROM {$wpdb->prefix}" . self::TABLE . " WHERE wc_order_id = %d AND deleted = 0 ORDER BY created DESC LIMIT 1";
         $item = $wpdb->get_row($wpdb->prepare($query, $order->get_id()), OBJECT);
 
-        if($item != null) {
+        if ($item != null) {
             foreach (get_object_vars($item) as $key => $value) {
                 $this->$key = $value;
             }
@@ -235,28 +258,33 @@ class Invoice {
         return false;
     }
 
-    public static function GetStatus($s, $lang = false){
+    public static function GetStatus($s, $lang = false)
+    {
         $s = intval($s);
         $res = '';
         foreach (self::$STATUS as $key => $value) {
-            if($s > 0 && ($key & $s)) {
-                if($lang)
+            if ($s > 0 && ($key & $s)) {
+                if ($lang) {
                     $res .= __($value, 'wc-invoice-pdf') . ' | ';
-                else
+                } else {
                     $res .= $value . ' | ';
+                }
             }
         }
         return rtrim($res, ' | ');
     }
 
-    public static function DoAjax(){       
+    public static function DoAjax()
+    {
         $result = '';
-        if(!empty($_POST['invoice_id'])) {
+        if (!empty($_POST['invoice_id'])) {
             $invoice = new self(intval($_POST['invoice_id']));
-            if(!empty($_POST['due_date']))
+            if (!empty($_POST['due_date'])) {
                 $invoice->due_date = $result = date('Y-m-d H:i:s', strtotime($_POST['due_date']));
-            if(!empty($_POST['paid_date']))
+            }
+            if (!empty($_POST['paid_date'])) {
                 $invoice->paid_date = $result = date('Y-m-d H:i:s', strtotime($_POST['paid_date']));
+            }
 
             $invoice->Save();
         }
@@ -265,28 +293,30 @@ class Invoice {
         wp_die();
     }
 
-    public static function install(){
+    public static function install()
+    {
         global $wpdb;
 
         $charset_collate = $wpdb->get_charset_collate();
 
         $sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}".self::TABLE." (
             ID mediumint(9) NOT NULL AUTO_INCREMENT,";
-        foreach(self::$columns as $col => $dtype) {
+        foreach (self::$columns as $col => $dtype) {
             $sql.= "$col $dtype,\n";
         }
 
         $sql.= "UNIQUE KEY id (id) ) $charset_collate;";
 
-        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-        dbDelta( $sql );
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
 
         // update the ispconfig_period meta data to be hidden
         $version = get_option('_ispconfig_invoice_version', 0);
-        if($version <= 0)
+        if ($version <= 0) {
             $wpdb->query("UPDATE wp_postmeta SET meta_key = '_ispconfig_period' WHERE meta_key = 'ispconfig_period';");
+        }
 
-        if($version <= 1) {
+        if ($version <= 1) {
             $wpdb->query("ALTER TABLE {$wpdb->prefix}".self::TABLE." ADD `reminder_sent` tinyint(4) NOT NULL DEFAULT 0 AFTER `paid_date`;");
         }
         
