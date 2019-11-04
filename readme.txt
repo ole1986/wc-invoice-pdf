@@ -3,7 +3,7 @@ Contributors: ole1986
 Tags:  woocommerce, WC, invoicing, billing, recurring, order, pdf, automation, read-only, law
 Donate link: https://www.paypal.com/cgi-bin/webscr?item_name=Donation+WC+Recurring+Invoice+Pdf&cmd=_donations&business=ole.k@web.de
 Requires at least: 3.1
-Tested up to: 5.1
+Tested up to: 5.2
 Stable tag: trunk
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
