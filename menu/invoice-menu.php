@@ -147,7 +147,7 @@ class InvoiceMenu
             <form action="" method="POST">
                 <div style="margin-top: 1em">
                     <?php if (isset($_GET['post_status'])) : ?>
-                        <a href="/wp-admin/admin.php?page=wcinvoicepdf_invoices">Alle</a>
+                        <a href="/wp-admin/admin.php?page=wcinvoicepdf_invoices"><?php _e('All') ?></a>
                     <?php else : ?>
                         <?php _e('All') ?>
                     <?php endif; ?>
@@ -155,7 +155,7 @@ class InvoiceMenu
                     <?php if (!isset($_GET['post_status'])) : ?>
                         <a href="<?php echo $_REQUEST['URL'] . '?' . $_SERVER['QUERY_STRING'] . '&post_status=deleted'; ?>"><?php printf(__('Trash <span class="count">(%s)</span>'), $invList->total_trash_rows) ?></a>
                     <?php else : ?>
-                        Papierkorb
+                        <?php printf(__('Trash <span class="count">(%s)</span>'), $invList->total_trash_rows) ?>
                     <?php endif; ?>
                 </div>
                 <?php $invList->display(); ?>
@@ -169,22 +169,6 @@ class InvoiceMenu
      */
     public function DisplaySettings()
     {
-        $oldConf = get_option('WPISPConfig3_Options');
-
-        if (!empty($_GET['migrate']) && isset($oldConf['wc_pdf_title'])) {
-            foreach (WCInvoicePdf::$OPTIONS as $k => &$v) {
-                if (!empty($oldConf[$k])) {
-                    $v = $oldConf[$k];
-                    unset($oldConf[$k]);
-                }
-            }
-
-            if (WCInvoicePdf::save_options()) {
-                ?><div class="updated"><p>ISPConfig settings migrated</p></div><?php
-                update_option('WPISPConfig3_Options', $oldConf);
-            }
-        }
-
         if ('POST' === $_SERVER[ 'REQUEST_METHOD' ]) {
             WCInvoicePdf::$OPTIONS = $_POST;
             if (WCInvoicePdf::save_options()) {
@@ -200,19 +184,12 @@ class InvoiceMenu
             <?php else : ?>
                 <div class="notice notice-error"><p><?php _e('The scheduled task is not installed - Please try to reenable the plugin', 'wc-invoice-pdf') ?></p></div>
             <?php endif; ?>
-            <?php
-            if (!empty($oldConf) && isset($oldConf['wc_pdf_title'])) :
-                ?>
-                <div class="notice notice-info"><p>ISPCONFIG Settings found - <a href="?page=wcinvoicepdf_settings&migrate=1">Click here</a> to migrate relevant data</p></div>
-            <?php endif; ?>
-
             <h2 id="wcinvoicepdf-tabs" class="nav-tab-wrapper">
                 <a href="#wcinvoicepdf-invoice" class="nav-tab nav-tab-active"><?php _e('Invoice template (PDF)', 'wc-invoice-pdf') ?></a>
                 <a href="#wcinvoicepdf-scheduler" class="nav-tab"><?php _e('Task Scheduler', 'wc-invoice-pdf') ?></a>
                 <a href="#wcinvoicepdf-template" class="nav-tab"><?php _e('Templates', 'wc-invoice-pdf') ?></a>
                 <a href="#wcinvoicepdf-export" class="nav-tab"><?php _e('Export', 'wc-invoice-pdf') ?></a>
             </h2>
-
             <form method="post" action="">
                 <div id="wcinvoicepdf-invoice" class="inside tabs-panel" style="display: none;">
                     <?php
