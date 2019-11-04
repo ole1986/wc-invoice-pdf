@@ -157,7 +157,7 @@ class InvoiceList extends \WP_List_Table
     public function get_bulk_actions()
     {
         $actions = [
-          'export' => __('Export', 'wc-invoice-pdf')
+          'export' => __('Export', 'wc-invoice-pdf') . ' (GnuCash)'
         ];
         return $actions;
     }

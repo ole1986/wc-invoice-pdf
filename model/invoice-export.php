@@ -70,7 +70,7 @@ class InvoiceExport
                     '', /* action */
                     utf8_decode(WCInvoicePdf::$OPTIONS['wc_export_account']), /* account */
                     $item->get_quantity(), /* qty */
-                    number_format($item->get_total(), 2, $locale['decimal_point'], ''), /* total incl. tax  */
+                    number_format($item->get_total() / $item->get_quantity(), 2, $locale['decimal_point'], ''), /* single price excl. tax  */
                     '', /* disc_type */
                     '', /* disc_how */
                     '', /* discount */
