@@ -206,121 +206,115 @@ class InvoiceMenu
                 <div class="notice notice-info"><p>ISPCONFIG Settings found - <a href="?page=wcinvoicepdf_settings&migrate=1">Click here</a> to migrate relevant data</p></div>
             <?php endif; ?>
 
-            <form method="post" action="">
-                <div id="poststuff" class="metabox-holder has-right-sidebar">
-                    <div id="post-body">
-                        <ul id="wcinvoicepdf-tabs" class="category-tabs">
-                            <li class="hide-if-no-js"><a href="#wcinvoicepdf-invoice"><?php _e('Invoices', 'wc-invoice-pdf')?></a></li>
-                            <li class="hide-if-no-js"><a href="#wcinvoicepdf-scheduler"><?php _e('Task Scheduler', 'wc-invoice-pdf') ?></a></li>
-                            <li class="hide-if-no-js"><a href="#wcinvoicepdf-template"><?php _e('Templates', 'wc-invoice-pdf') ?></a></li>
-                            <li class="hide-if-no-js"><a href="#wcinvoicepdf-export"><?php _e('Export', 'wc-invoice-pdf') ?></a></li>
-                        </ul>
-                        <div class="postbox inside">
-                            <div id="wcinvoicepdf-invoice" class="inside tabs-panel" style="display: none;">
-                                <h3><?php _e('Invoice template (PDF)', 'wc-invoice-pdf') ?></h3>
-                                <?php
-                                WCInvoicePdf::addField('wc_pdf_title', __('Document Title', 'wc-invoice-pdf'));
-                                WCInvoicePdf::addField('wc_pdf_logo', 'Logo', 'media');
-                                WCInvoicePdf::addField('wc_pdf_addressline', __('Address line', 'wc-invoice-pdf'));
-                                WCInvoicePdf::addField('wc_pdf_condition', __('Payment terms', 'wc-invoice-pdf'), 'textarea');
-                                WCInvoicePdf::addField('wc_pdf_info', 'Info Block', 'textarea');
-                                WCInvoicePdf::addField('wc_pdf_keeprows', '<strong>' . __('Protect rows from splitting', 'wc-invoice-pdf') . '</strong><br />' . __('Keep rows together when page breaks', 'wc-invoice-pdf'), 'checkbox');
+            <h2 id="wcinvoicepdf-tabs" class="nav-tab-wrapper">
+                <a href="#wcinvoicepdf-invoice" class="nav-tab nav-tab-active"><?php _e('Invoice template (PDF)', 'wc-invoice-pdf') ?></a>
+                <a href="#wcinvoicepdf-scheduler" class="nav-tab"><?php _e('Task Scheduler', 'wc-invoice-pdf') ?></a>
+                <a href="#wcinvoicepdf-template" class="nav-tab"><?php _e('Templates', 'wc-invoice-pdf') ?></a>
+                <a href="#wcinvoicepdf-export" class="nav-tab"><?php _e('Export', 'wc-invoice-pdf') ?></a>
+            </h2>
 
-                                WCInvoicePdf::addField('wc_pdf_block1', 'Block #1', 'rte', ['container' => 'div', 'input_attr' => ['style'=>'width: 350px;display:inline-block;'] ]);
-                                WCInvoicePdf::addField('wc_pdf_block2', 'Block #2', 'rte', ['container' => 'div', 'input_attr' => ['style'=>'width: 350px;display:inline-block;'] ]);
-                                WCInvoicePdf::addField('wc_pdf_block3', 'Block #3', 'rte', ['container' => 'div', 'input_attr' => ['style'=>'width: 350px;display:inline-block;'] ]);
-                                ?>
-                            </div>
-                            <div id="wcinvoicepdf-scheduler" class="inside tabs-panel" style="display: none;">
-                                <h3><?php _e('Run commands', 'wc-invoice-pdf') ?></h3>
-                                <p>
-                                    <a href="javascript:void(0)" onclick="WCInvoicePdfAdmin.RunTask(this, 'notify')" class="button">Run Payment Notification</a><br />
-                                    Run the payment notifier now and submit outstanding invoice information to <strong>Admin Email</strong>.
-                                </p>
-                                <p>
-                                    <a href="javascript:void(0)" onclick="WCInvoicePdfAdmin.RunTask(this, 'recur')" class="button" style="background-color: #bd0000; color: white">Generate recurring invoices</a><br />
-                                    Generate all recurring invoices for today. Please be careful with this as it may generate (and later submit) duplicates to the recipients
-                                </p>
-                                <p>
-                                    <a href="javascript:void(0)" onclick="WCInvoicePdfAdmin.RunTask(this, 'submit')" class="button" style="background-color: #bd0000; color: white">Run invoice submission</a><br />
-                                    Submit all outstanding invoices to their recipients
-                                </p>
-                                <p>
-                                    <a href="javascript:void(0)" onclick="WCInvoicePdfAdmin.RunTask(this, 'reminder')" class="button" style="background-color: #bd0000; color: white">Run invoice Reminder</a><br />
-                                    Submit all reminder for invoice which are due. Please be careful with this as it will re-submit the reminders and increase the counter
-                                </p>
-                                <h3><?php _e('Sender info', 'wc-invoice-pdf') ?></h3>
-                                <?php
-                                WCInvoicePdf::addField('wc_mail_reminder', '<strong>Admin Email</strong><br />used for payment reminders and testing purposes');
-                                WCInvoicePdf::addField('wc_mail_sender', '<strong>Sender Email</strong><br />Customer will see this address');
-                                ?>
-                                <h3><?php _e('Payments', 'wc-invoice-pdf') ?></h3>
-                                <?php
-                                WCInvoicePdf::addField('wc_recur_test', '<span style="color: red; font-weight: bold">Test Mode</span><br />' . __('Enable test mode and replace all recipients with the admin email address', 'wc-invoice-pdf'), 'checkbox');
-                                WCInvoicePdf::addField('wc_payment_reminder', '<strong>'. __('Payment report', 'wc-invoice-pdf') .'</strong><br />Send a daily report of unpaid invoices to "Admin Email"', 'checkbox');
-                                WCInvoicePdf::addField('wc_recur', '<strong>' . __('Automate invoice submission', 'wc-invoice-pdf').'</strong><br />' . __('Enable automate invoice submission to customers on a daily schedule', 'wc-invoice-pdf'), 'checkbox');
-                                WCInvoicePdf::addField('wc_recur_reminder', '<strong>'. __('Payment reminder', 'wc-invoice-pdf').'</strong><br />' . __('Send payment reminders to customer when invoice is due', 'wc-invoice-pdf'), 'checkbox');
-                                WCInvoicePdf::addField('wc_recur_reminder_age', '<strong>' . __('First reminder (days)', 'wc-invoice-pdf') . '</strong><br />' . __('The number of days (after due) when the first payment reminder should be sent to the customer', 'wc-invoice-pdf'));
-                                WCInvoicePdf::addField('wc_recur_reminder_interval', '<strong>'. __('Reminder interval', 'wc-invoice-pdf') .'</strong><br />The number of days (after first occurence) a reminder should be resent to customer');
-                                WCInvoicePdf::addField('wc_recur_reminder_max', '<strong>'. __('Max reminders', 'wc-invoice-pdf') .'</strong><br />How many reminders should be sent for a single invoice to the customer');
-                                ?>
-                            </div>
-                            <div id="wcinvoicepdf-template" class="inside tabs-panel" style="display: none;">
-                                <p>
-                                    Customize your templates being sent internally or to the customer<br />
-                                </p>
-                                <h3><?php _e('Payment report', 'wc-invoice-pdf')  ?></h3>
-                                <?php
-                                $attr = [
-                                    'label_attr' => [ 'style' => 'width: 200px; display:inline-block;vertical-align:top;'],
-                                    'input_attr' => ['style' => 'margin-left: 1em; width:50em;height: 200px']
-                                ];
-                                WCInvoicePdf::addField('wc_payment_message', '<strong>'. __('Payment report', 'wc-invoice-pdf') .'</strong><br />Inform the administrator (see "Admin Email") about outstanding invoices', 'textarea', $attr);
-                                ?>
-                                <h3><?php _e('Payments', 'wc-invoice-pdf') ?></h3>
-                                <?php
-                                WCInvoicePdf::addField('wc_recur_message', '<strong>' . __('Automate invoice submission', 'wc-invoice-pdf').'</strong><br />Submit the recurring invoice to the customer containing this message', 'textarea', $attr);
-                                ?>
-                                <div style="font-size: smaller; margin-left: 220px;">
-                                    Placeholder: 
-                                    <strong>{CUSTOMER_NAME}</strong> |
-                                    <strong>{INVOICE_NO}</strong> |
-                                    <strong>{DUE_DATE}</strong> |
-                                    <strong>{DUE_DAYS}</strong>
-                                </div>
-                                <?php
-                                WCInvoicePdf::addField('wc_recur_reminder_message', '<strong>'. __('Payment reminder', 'wc-invoice-pdf').'</strong><br />Submit the recurring invoice to the customer containing this message', 'textarea', $attr);
-                                ?>
-                                <div style="font-size: smaller;margin-left: 220px;">
-                                    Placeholder: 
-                                    <strong>{CUSTOMER_NAME}</strong> |
-                                    <strong>{INVOICE_NO}</strong> |
-                                    <strong>{DUE_DATE}</strong> |
-                                    <strong>{DUE_DAYS}</strong> |
-                                    <strong>{NEXT_DUE_DAYS}</strong>
-                                </div>
-                            </div>
-                            <div id="wcinvoicepdf-export" class="inside tabs-panel" style="display: none;">
-                                <p>
-                                    The export feature currently supports GnuCash *.csv format to import invoices.</br />
-                                    Please make sure the CUSTOMER ID (in GnuCash) matches the user id in wordpress
-                                </p>
-                                <?php
-                                WCInvoicePdf::addField('wc_export_locale', '<strong>Locale</strong><br />Example: de_DE en_US');
-                                WCInvoicePdf::addField('wc_export_notes', '<strong>Notes</strong><br />Invoice notes');
-                                WCInvoicePdf::addField('wc_export_account', '<strong>Account name</strong><br />Name of the account an invoce is booked');
-                                WCInvoicePdf::addField('wc_export_account_posted', '<strong>Account name</strong><br />Name of the account invoce is posted');
-                                WCInvoicePdf::addField('wc_export_account_tax', '<strong>Tax Account (optional)</strong><br />Name of the tax account');
-                                ?>
-                            </div>
-                        </div>
-                        <div class="inside">
-                            <p></p>
-                            <p><input type="submit" class="button-primary" name="submit" value="<?php _e('Save', 'wc-invoice-pdf');?>" /></p>
-                            <p></p>
-                        </div>
+            <form method="post" action="">
+                <div id="wcinvoicepdf-invoice" class="inside tabs-panel" style="display: none;">
+                    <?php
+                    WCInvoicePdf::addField('wc_pdf_title', __('Document Title', 'wc-invoice-pdf'));
+                    WCInvoicePdf::addField('wc_pdf_logo', 'Logo', 'media');
+                    WCInvoicePdf::addField('wc_pdf_addressline', __('Address line', 'wc-invoice-pdf'));
+                    WCInvoicePdf::addField('wc_pdf_condition', __('Payment terms', 'wc-invoice-pdf'), 'textarea');
+                    WCInvoicePdf::addField('wc_pdf_info', 'Info Block', 'textarea');
+                    WCInvoicePdf::addField('wc_pdf_keeprows', '<strong>' . __('Protect rows from splitting', 'wc-invoice-pdf') . '</strong><br />' . __('Keep rows together when page breaks', 'wc-invoice-pdf'), 'checkbox');
+
+                    WCInvoicePdf::addField('wc_pdf_block1', 'Block #1', 'rte', ['container' => 'div', 'input_attr' => ['style'=>'width: 350px;display:inline-block;'] ]);
+                    WCInvoicePdf::addField('wc_pdf_block2', 'Block #2', 'rte', ['container' => 'div', 'input_attr' => ['style'=>'width: 350px;display:inline-block;'] ]);
+                    WCInvoicePdf::addField('wc_pdf_block3', 'Block #3', 'rte', ['container' => 'div', 'input_attr' => ['style'=>'width: 350px;display:inline-block;'] ]);
+                    ?>
+                </div>
+                <div id="wcinvoicepdf-scheduler" class="inside tabs-panel" style="display: none;">
+                    <h3><?php _e('Run commands', 'wc-invoice-pdf') ?></h3>
+                    <p>
+                        <a href="javascript:void(0)" onclick="WCInvoicePdfAdmin.RunTask(this, 'notify')" class="button">Run Payment Notification</a><br />
+                        Run the payment notifier now and submit outstanding invoice information to <strong>Admin Email</strong>.
+                    </p>
+                    <p>
+                        <a href="javascript:void(0)" onclick="WCInvoicePdfAdmin.RunTask(this, 'recur')" class="button" style="background-color: #bd0000; color: white">Generate recurring invoices</a><br />
+                        Generate all recurring invoices for today. Please be careful with this as it may generate (and later submit) duplicates to the recipients
+                    </p>
+                    <p>
+                        <a href="javascript:void(0)" onclick="WCInvoicePdfAdmin.RunTask(this, 'submit')" class="button" style="background-color: #bd0000; color: white">Run invoice submission</a><br />
+                        Submit all outstanding invoices to their recipients
+                    </p>
+                    <p>
+                        <a href="javascript:void(0)" onclick="WCInvoicePdfAdmin.RunTask(this, 'reminder')" class="button" style="background-color: #bd0000; color: white">Run invoice Reminder</a><br />
+                        Submit all reminder for invoice which are due. Please be careful with this as it will re-submit the reminders and increase the counter
+                    </p>
+                    <h3><?php _e('Sender info', 'wc-invoice-pdf') ?></h3>
+                    <?php
+                    WCInvoicePdf::addField('wc_mail_reminder', '<strong>Admin Email</strong><br />used for payment reminders and testing purposes');
+                    WCInvoicePdf::addField('wc_mail_sender', '<strong>Sender Email</strong><br />Customer will see this address');
+                    ?>
+                    <h3><?php _e('Payments', 'wc-invoice-pdf') ?></h3>
+                    <?php
+                    WCInvoicePdf::addField('wc_recur_test', '<span style="color: red; font-weight: bold">Test Mode</span><br />' . __('Enable test mode and replace all recipients with the admin email address', 'wc-invoice-pdf'), 'checkbox');
+                    WCInvoicePdf::addField('wc_payment_reminder', '<strong>'. __('Payment report', 'wc-invoice-pdf') .'</strong><br />Send a daily report of unpaid invoices to "Admin Email"', 'checkbox');
+                    WCInvoicePdf::addField('wc_recur', '<strong>' . __('Automate invoice submission', 'wc-invoice-pdf').'</strong><br />' . __('Enable automate invoice submission to customers on a daily schedule', 'wc-invoice-pdf'), 'checkbox');
+                    WCInvoicePdf::addField('wc_recur_reminder', '<strong>'. __('Payment reminder', 'wc-invoice-pdf').'</strong><br />' . __('Send payment reminders to customer when invoice is due', 'wc-invoice-pdf'), 'checkbox');
+                    WCInvoicePdf::addField('wc_recur_reminder_age', '<strong>' . __('First reminder (days)', 'wc-invoice-pdf') . '</strong><br />' . __('The number of days (after due) when the first payment reminder should be sent to the customer', 'wc-invoice-pdf'));
+                    WCInvoicePdf::addField('wc_recur_reminder_interval', '<strong>'. __('Reminder interval', 'wc-invoice-pdf') .'</strong><br />The number of days (after first occurence) a reminder should be resent to customer');
+                    WCInvoicePdf::addField('wc_recur_reminder_max', '<strong>'. __('Max reminders', 'wc-invoice-pdf') .'</strong><br />How many reminders should be sent for a single invoice to the customer');
+                    ?>
+                </div>
+                <div id="wcinvoicepdf-template" class="inside tabs-panel" style="display: none;">
+                    <p>
+                        Customize your templates being sent internally or to the customer<br />
+                    </p>
+                    <h3><?php _e('Payment report', 'wc-invoice-pdf')  ?></h3>
+                    <?php
+                    $attr = [
+                        'label_attr' => [ 'style' => 'width: 200px; display:inline-block;vertical-align:top;'],
+                        'input_attr' => ['style' => 'margin-left: 1em; width:50em;height: 200px']
+                    ];
+                    WCInvoicePdf::addField('wc_payment_message', '<strong>'. __('Payment report', 'wc-invoice-pdf') .'</strong><br />Inform the administrator (see "Admin Email") about outstanding invoices', 'textarea', $attr);
+                    ?>
+                    <h3><?php _e('Payments', 'wc-invoice-pdf') ?></h3>
+                    <?php
+                    WCInvoicePdf::addField('wc_recur_message', '<strong>' . __('Automate invoice submission', 'wc-invoice-pdf').'</strong><br />Submit the recurring invoice to the customer containing this message', 'textarea', $attr);
+                    ?>
+                    <div style="font-size: smaller; margin-left: 220px;">
+                        Placeholder: 
+                        <strong>{CUSTOMER_NAME}</strong> |
+                        <strong>{INVOICE_NO}</strong> |
+                        <strong>{DUE_DATE}</strong> |
+                        <strong>{DUE_DAYS}</strong>
+                    </div>
+                    <?php
+                    WCInvoicePdf::addField('wc_recur_reminder_message', '<strong>'. __('Payment reminder', 'wc-invoice-pdf').'</strong><br />Submit the recurring invoice to the customer containing this message', 'textarea', $attr);
+                    ?>
+                    <div style="font-size: smaller;margin-left: 220px;">
+                        Placeholder: 
+                        <strong>{CUSTOMER_NAME}</strong> |
+                        <strong>{INVOICE_NO}</strong> |
+                        <strong>{DUE_DATE}</strong> |
+                        <strong>{DUE_DAYS}</strong> |
+                        <strong>{NEXT_DUE_DAYS}</strong>
                     </div>
                 </div>
+                <div id="wcinvoicepdf-export" class="inside tabs-panel" style="display: none;">
+                    <p>
+                        The export feature currently supports GnuCash *.csv format to import invoices.</br />
+                        Please make sure the CUSTOMER ID (in GnuCash) matches the user id in wordpress
+                    </p>
+                    <?php
+                    WCInvoicePdf::addField('wc_export_locale', '<strong>Locale</strong><br />Example: de_DE en_US');
+                    WCInvoicePdf::addField('wc_export_notes', '<strong>Notes</strong><br />Invoice notes');
+                    WCInvoicePdf::addField('wc_export_account', '<strong>Account name</strong><br />Name of the account an invoce is booked');
+                    WCInvoicePdf::addField('wc_export_account_posted', '<strong>Account name</strong><br />Name of the account invoce is posted');
+                    WCInvoicePdf::addField('wc_export_account_tax', '<strong>Tax Account (optional)</strong><br />Name of the tax account');
+                    ?>
+                </div>
+            <div class="inside">
+                <p></p>
+                <p><input type="submit" class="button-primary" name="submit" value="<?php _e('Save', 'wc-invoice-pdf');?>" /></p>
+                <p></p>
+            </div>
             </form>
         </div>
         <?php

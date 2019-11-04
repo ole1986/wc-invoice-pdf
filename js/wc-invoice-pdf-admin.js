@@ -199,16 +199,18 @@ function WCInvoicePdfAdminClass() {
             var other_id = $(this).attr('href');
             $(other_id).hide();
         })
-        $('#wcinvoicepdf-tabs > li').removeClass('tabs');
+        $('#wcinvoicepdf-tabs > a').removeClass('nav-tab-active');
     };
 
     var initTabs = function(){
-        $('#wcinvoicepdf-tabs a').click(function(event){
+        $('#wcinvoicepdf-tabs > a').click(function(event){
             event.preventDefault();
 
             var id = $(this).attr('href');
-            hideTabs();           
-            $(this).closest('li').addClass('tabs');
+
+            hideTabs();
+
+            $(this).addClass('nav-tab-active');
             $(id).show();
         })
 
@@ -216,11 +218,9 @@ function WCInvoicePdfAdminClass() {
         $('#wcinvoicepdf-tabs a:first').trigger('click');
     };
 
-    var _constructor = function () {
+    $(function(){
         initTabs();
-    }();
+    })
 }
 
-jQuery(function () {
-    var WCInvoicePdfAdmin = window['WCInvoicePdfAdmin'] = new WCInvoicePdfAdminClass();
-});
+window['WCInvoicePdfAdmin'] = new WCInvoicePdfAdminClass();
