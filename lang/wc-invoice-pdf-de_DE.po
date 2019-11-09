@@ -257,3 +257,6 @@ msgstr "Bitte gebe hier eine gewünschte Domain ein"
 
 msgid "Your desired domain"
 msgstr "Ihre Wunschdomain"
+
+msgid "All"
+msgstr "Alle"

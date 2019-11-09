@@ -1,7 +1,10 @@
 <?php
 add_filter('woocommerce_cart_item_quantity', ['WC_Product_Webspace', 'Period'], 10, 3);
-add_filter('woocommerce_update_cart_action_cart_updated', ['WC_Product_Webspace', 'CartUpdated']);
+add_filter('woocommerce_update_cart_action_cart_updated', ['WC_Product_Webspace', 'CartUpdated'], 20, 1);
+add_filter('woocommerce_add_cart_item', ['WC_Product_Webspace', 'AddItemToCart'], 20, 2);
+
 add_action('woocommerce_webspace_add_to_cart', ['WC_ISPConfigProduct', 'add_to_cart'], 30);
+
 
 add_filter('woocommerce_product_data_tabs', ['WC_Product_Webspace','ispconfig_product_data_tab']);
 
@@ -62,7 +65,7 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
 
         if (class_exists("Ispconfig")) {
             $product_data_tabs['ispconfig_tab'] = array(
-                'label' => __('ISPConfig 3', 'wp-ispconfig3'),
+                'label' => __('Webspace', 'wc-invoice-pdf'),
                 'target' => 'ispconfig_data_tab',
                 'class' => 'show_if_webspace'
             );
@@ -73,26 +76,33 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
 
     public static function ispconfig_product_data_fields()
     {
-        if (!class_exists("Ispconfig")) {
-            return;
-        }
-        
-        echo '<div id="ispconfig_data_tab" class="panel woocommerce_options_panel">';
-        try {
-            $templates = Ispconfig::$Self->withSoap()->GetClientTemplates();
-          
-            $options = [0 => 'None'];
-            foreach ($templates as $v) {
-                $options[$v['template_id']] = $v['template_name'];
-            }
-            woocommerce_wp_select(['id' => '_ispconfig_template_id', 'label' => '<strong>Client Limit Template</strong>', 'options' => $options]);
+        ?>
+        <div id="ispconfig_data_tab" class="panel woocommerce_options_panel">
+        <?php
+        if (class_exists("Ispconfig")) {
+            // display ISPConfig templates
+            try {
+                $templates = Ispconfig::$Self->withSoap()->GetClientTemplates();
+            
+                $options = [0 => 'None'];
+                foreach ($templates as $v) {
+                    $options[$v['template_id']] = $v['template_name'];
+                }
+                woocommerce_wp_select(['id' => '_ispconfig_template_id', 'label' => '<strong>Client Limit Template</strong>', 'options' => $options]);
 
-            Ispconfig::$Self->closeSoap();
-        } catch (SoapFault $e) {
-            echo "<div style='color:red; margin: 1em;'>ISPConfig SOAP Request failed: " . $e->getMessage() . '</div>';
+                Ispconfig::$Self->closeSoap();
+            } catch (SoapFault $e) {
+                echo "<div style='color:red; margin: 1em;'>ISPConfig SOAP Request failed: " . $e->getMessage() . '</div>';
+            }
         }
-  
-        echo '</div>';
+
+        $optPeriods = ["" => __('All', 'wc-invoice-pdf')] + self::$OPTIONS;
+
+        woocommerce_wp_select(['id' => '_webspace_allowed_periods', 'label' => '<strong>' . __('Payment period', 'wc-invoice-pdf') .'</strong>', 'options' => $optPeriods]);
+
+        ?>
+        </div>
+        <?php
     }
 
     public static function Metabox($post_id)
@@ -118,6 +128,13 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
     {
         if (!empty($_POST['_ispconfig_template_id'])) {
             update_post_meta($post_id, '_ispconfig_template_id', $_POST['_ispconfig_template_id']);
+        }
+        if (isset($_POST['_webspace_allowed_periods'])) {
+            if (!empty($_POST['_webspace_allowed_periods'])) {
+                update_post_meta($post_id, '_webspace_allowed_periods', $_POST['_webspace_allowed_periods']);
+            } else {
+                delete_post_meta($post_id, '_webspace_allowed_periods');
+            }
         }
     }
 
@@ -200,7 +217,14 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
 
     public function get_price_html($price = '')
     {
-        $price = wc_price(wc_get_price_to_display($this, array( 'price' => $this->get_regular_price() ))) . '&nbsp;' . __('per month', 'wc-invoice-pdf');
+        $allowed_periods = $this->get_meta('_webspace_allowed_periods');
+
+        if (!empty($allowed_periods) && $allowed_periods == 'y') {
+            $price = wc_price(wc_get_price_to_display($this, array( 'price' => $this->get_regular_price() * 12))) . '&nbsp;' . __('per year', 'wc-invoice-pdf');
+        } else {
+            $price = wc_price(wc_get_price_to_display($this, array( 'price' => $this->get_regular_price() ))) . '&nbsp;' . __('per month', 'wc-invoice-pdf');
+        }
+        
         return apply_filters('woocommerce_get_price_html', $price, $this);
     }
 
@@ -215,6 +239,20 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
         return $item;
     }
 
+    public static function AddItemToCart($item, $item_key)
+    {
+        if (get_class($item['data']) != 'WC_Product_Webspace') {
+            return $item;
+        }
+
+        $allowed_period = get_post_meta($item['product_id'], '_webspace_allowed_periods', true);
+
+        if (!empty($allowed_period)) {
+            $item['quantity'] = $allowed_period == 'y' ? 12 : 1;
+        }
+        
+        return $item;
+    }
     /**
      * Display a DropDown (per webspace product) for selecting the period (month / year / ...)
      * Can be customized in $OPTIONS property
@@ -227,6 +265,13 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
         
         $period = ($item['quantity'] == 12)?'y':'m';
 
+        $allowed_period = get_post_meta($item['product_id'], '_webspace_allowed_periods', true);
+
+        if (!empty($allowed_period)) {
+            echo self::$OPTIONS[$allowed_period];
+            return;
+        }
+        
         ?>
         <select style="width:70%;margin-right: 0.3em" name="period[<?php echo $item_key?>]" onchange="jQuery('input[name=\'update_cart\']').prop('disabled', false).trigger('click');">
         <?php foreach (self::$OPTIONS as $k => $v) { ?>
@@ -242,7 +287,6 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
      */
     public static function CartUpdated($isUpdated)
     {
-        
         if (!isset($_POST['period'])) {
             return $isUpdated;
         }
