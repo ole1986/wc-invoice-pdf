@@ -71,5 +71,4 @@ You should have received a copy of the GNU General Public License along with WP 
 
 == Changelog ==
 
-Please click on "Plugin Homepage" for release notes.
-You will be redirected to the github project page.
+Release notes are provided by the [Github project page](https://github.com/ole1986/wc-invoice-pdf/releases)
