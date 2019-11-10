@@ -2,12 +2,8 @@
 add_filter('woocommerce_cart_item_quantity', ['WC_Product_Webspace', 'Period'], 10, 3);
 add_filter('woocommerce_update_cart_action_cart_updated', ['WC_Product_Webspace', 'CartUpdated'], 20, 1);
 add_filter('woocommerce_add_cart_item', ['WC_Product_Webspace', 'AddItemToCart'], 20, 2);
-
 add_action('woocommerce_webspace_add_to_cart', ['WC_ISPConfigProduct', 'add_to_cart'], 30);
-
-
 add_filter('woocommerce_product_data_tabs', ['WC_Product_Webspace','ispconfig_product_data_tab']);
-
 add_action('woocommerce_product_data_panels', ['WC_Product_Webspace','ispconfig_product_data_fields']);
 add_action('woocommerce_process_product_meta_webspace', ['WC_Product_Webspace', 'webspace_metadata_save']);
 
@@ -143,15 +139,17 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
         return get_post_meta($this->get_id(), '_ispconfig_template_id', true);
     }
 
-    public function OnProductCheckoutFields(&$checkout)
+    public function OnProductCheckoutFields($item_key, $item)
     {
+        $checkout = WC()->checkout();
+
         $templateID = $this->getISPConfigTemplateID();
 
         if ($templateID >= 1 && $templateID <= 3) {
-            echo "<h3>" . __('Your desired domain', 'wc-invoice-pdf') . "</h3>";
+            echo "<div>". $this->get_name() ."</div>";
             echo '<div><sup>' . __('Please enter a domain you want to host here', 'wc-invoice-pdf') . '</sup></div>';
             woocommerce_form_field(
-                'order_domain',
+                'order_domain['. $item_key .']',
                 [
                 'type'              => 'text',
                 'placeholder'       => '',
@@ -163,34 +161,34 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
         echo '<div id="domainMessage" class="ispconfig-msg" style="display:none;"></div>';
     }
 
-    public function OnProductCheckoutValidate()
+    public function OnProductCheckoutValidate($item_key, $item)
     {
         $templateID = $this->getISPConfigTemplateID();
         
         // all products require a DOMAIN to be entered
         if ($templateID >= 1 && $templateID <= 3) {
             try {
-                $dom = Ispconfig::$Self->validateDomain($_POST['order_domain']);
+                $dom = Ispconfig::$Self->validateDomain($_POST['order_domain'][$item_key]);
 
                 $available = Ispconfig::$Self->withSoap()->IsDomainAvailable($dom);
 
                 Ispconfig::$Self->closeSoap();
 
                 if ($available == 0) {
-                    wc_add_notice(__("The domain is not available", 'wp-ispconfig3'), 'error');
+                    wc_add_notice(__("The domain is not available", 'wp-ispconfig3') . ' - ' . $this->get_name(), 'error');
                 } elseif ($available == -1) {
                     wc_add_notice(__("The domain might not be available", 'wp-ispconfig3'), 'notice');
                 }
             } catch (Exception $e) {
-                wc_add_notice($e->getMessage(), 'error');
+                wc_add_notice($e->getMessage() . ' - ' . $this->get_name(), 'error');
             }
         }
     }
 
     public function OnProductCheckoutSubmit($order_id, $item_key, $item)
     {
-        if (! empty($_POST['order_domain'])) {
-            update_post_meta($order_id, 'Domain', sanitize_text_field($_POST['order_domain']));
+        if (!empty($_POST['order_domain'][$item_key])) {
+            update_post_meta($order_id, 'Domain', sanitize_text_field($_POST['order_domain'][$item_key]));
 
             $templateID = $this->getISPConfigTemplateID();
             // no ispconfig product found in order - so skip doing ispconfig related stuff
@@ -206,6 +204,7 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
             }
         }
     }
+
 
     public function get_price_suffix($price = '', $qty = 1)
     {
@@ -226,17 +225,6 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
         }
         
         return apply_filters('woocommerce_get_price_html', $price, $this);
-    }
-
-    public static function AddToCart($item, $item_key)
-    {
-        if (get_class($item['data']) != 'WC_Product_Webspace') {
-            return $item;
-        }
-        // empty cart when a webspace product is being added
-        // ONLY ONE webspace product is allowed in cart
-        WC()->cart->empty_cart();
-        return $item;
     }
 
     public static function AddItemToCart($item, $item_key)

@@ -6,23 +6,22 @@ if (!class_exists('WC_Product')) {
     return;
 }
 
+add_action('woocommerce_checkout_before_customer_details', ['WC_ISPConfigProduct', 'OnCheckoutFields']);
+add_action('woocommerce_checkout_process', ['WC_ISPConfigProduct', 'OnCheckoutValidate']);
+add_action('woocommerce_checkout_order_processed', ['WC_ISPConfigProduct', 'OnCheckoutSubmit']);
+
+// ORDER-PAID: When an order is marked as paid and contain any WC_ISPConfigProduct
+add_filter('woocommerce_payment_complete_order_status', ['WC_ISPConfigProduct', 'OnPaymentCompleted'], 10, 3);
+
 abstract class WC_ISPConfigProduct extends WC_Product
 {
-    abstract public function OnProductCheckoutFields(&$checkout);
-    abstract public function OnProductCheckoutValidate();
+    abstract public function OnProductCheckoutFields($item_key, $item);
+    abstract public function OnProductCheckoutValidate($item_key, $item);
     abstract public function OnProductCheckoutSubmit($order_id, $item_key, $item);
 
     public function __construct($product = 0)
     {
         parent::__construct($product);
-        // ORDER-PAID: When Order has been paid (can also happen manually as ADMIN)
-        add_filter('woocommerce_payment_complete_order_status', array( $this, 'OnPaymentCompleted' ), 10, 3);
-
-        if (!is_admin()) {
-            add_action('woocommerce_checkout_before_customer_details', array($this, 'OnCheckoutFields'));
-            add_action('woocommerce_checkout_process', array($this, 'OnCheckoutValidate'));
-            add_action('woocommerce_checkout_order_processed', array($this, 'OnCheckoutSubmit'));
-        }
     }
 
     public static function add_to_cart()
@@ -33,63 +32,85 @@ abstract class WC_ISPConfigProduct extends WC_Product
     /**
      * CHECKOUT: Add an additional field for the domain name being entered by customer (incl. validation check)
      */
-    public function OnCheckoutFields()
+    public static function OnCheckoutFields()
     {
         if (WC()->cart->is_empty()) {
             return 0;
         }
         $items =  WC()->cart->get_cart();
 
-        $checkout = WC()->checkout();
-
-        foreach ($items as $p) {
-            if (is_subclass_of($p['data'], 'WC_ISPConfigProduct')) {
-                $p['data']->OnProductCheckoutFields($checkout);
+        foreach ($items as $current) {
+            if (!is_subclass_of($current['data'], 'WC_ISPConfigProduct')) {
+                continue;
             }
+            $current['data']->OnProductCheckoutFields($current['key'], $current);
         }
     }
 
     /**
      * CHECKOUT: Validate the domain entered by the customer
      */
-    public function OnCheckoutValidate()
+    public static function OnCheckoutValidate()
     {
         if (WC()->cart->is_empty()) {
             return 0;
         }
+
         $items =  WC()->cart->get_cart();
 
-        foreach ($items as $p) {
-            if (is_subclass_of($p['data'], 'WC_ISPConfigProduct')) {
-                $p['data']->OnProductCheckoutValidate();
+        foreach ($items as $current) {
+            if (!is_subclass_of($current['data'], 'WC_ISPConfigProduct')) {
+                continue;
             }
+            $current['data']->OnProductCheckoutValidate($current['key'], $current);
         }
     }
 
     /**
      * CHECKOUT: Save the domain field entered by the customer
      */
-    public function OnCheckoutSubmit($order_id)
+    public static function OnCheckoutSubmit($order_id)
     {
         if (WC()->cart->is_empty()) {
             return 0;
         }
+
         $items =  WC()->cart->get_cart();
-        
-        foreach ($items as $item_key => $item) {
-            if (is_subclass_of($item['data'], 'WC_ISPConfigProduct')) {
-                $item['data']->OnProductCheckoutSubmit($order_id, $item_key, $item);
+
+        foreach ($items as $current) {
+            if (!is_subclass_of($current['data'], 'WC_ISPConfigProduct')) {
+                continue;
             }
+            $current['data']->OnProductCheckoutSubmit($order_id, $current['key'], $current);
         }
     }
 
     /**
-     * ORDER: When order has changed to status to "processing" assume its payed and REGISTER the user in ISPCONFIG (through SOAP)
+     * Whenever an order is marked as paid and contains at least one WC_ISPConfigProduct product
+     * use ISPConfig3 to register the client and website given by the checkout process
      */
-    public function registerFromOrder($order)
+    public static function OnPaymentCompleted($processing, $order_id, $order)
     {
+        if (!in_array($processing, ['processing', 'completed'])) {
+            return $processing;
+        }
+
+        $payment_method = $order->get_payment_method();
+
+        if ($payment_method == 'bacs' && $order->get_status() == 'on-hold') {
+            return $processing;
+        }
+
         $items = $order->get_items();
+        // get the first product from order items
         $product = $order->get_product_from_item(array_pop($items));
+
+        // check if its a webspace product
+        // as we currently only support this
+        if (get_class($product) !==  'WC_Product_Webspace') {
+            return $processing;
+        }
+
         $templateID = $product->getISPConfigTemplateID();
         
         if (empty($templateID)) {
@@ -188,38 +209,30 @@ abstract class WC_ISPConfigProduct extends WC_Product
             
             Ispconfig::$Self->closeSoap();
 
-            return true;
+            // create the actual invoice for this order
+            $invoice = new Invoice($order);
+            $invoice->Paid();
+            $invoice->Save();
+
+            return $processing;
         } catch (SoapFault $e) {
             $order->add_order_note('<span style="color: red">ISPCONFIG SOAP ERROR (payment): ' . $e->getMessage() . '</span>');
         } catch (Exception $e) {
             $order->add_order_note('<span style="color: red">ISPCONFIG ERROR (payment): ' . $e->getMessage() . '</span>');
         }
 
-        return false;
+        $order->set_status('on-hold');
+        return;
     }
 
-    public function OnPaymentCompleted($processing, $order_id, $order)
+    /**
+     * ORDER: When order has changed to status to "processing" assume its payed and REGISTER the user in ISPCONFIG (through SOAP)
+     */
+    public static function registerFromOrder($order)
     {
-        if (!in_array($processing, ['processing', 'completed'])) {
-            return $processing;
-        }
+        
 
-        $payment_method = $order->get_payment_method();
-
-        if ($payment_method == 'bacs' && $order->get_status() == 'on-hold') {
-            return $processing;
-        }
-
-        if ($this->registerFromOrder($order)) {
-            $invoice = new Invoice($order);
-            $invoice->Paid();
-            $invoice->Save();
-
-            return $processing;
-        } else {
-            $order->set_status('on-hold');
-            return;
-        }
+        return false;
     }
 
     public function is_purchasable()
