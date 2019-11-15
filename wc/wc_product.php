@@ -248,34 +248,28 @@ abstract class WC_ISPConfigProduct extends WC_Product
             return $processing;
         }
 
-        $items = $order->get_items();
-        // get the first product from order items
-        $product = $order->get_product_from_item(array_pop($items));
-
-        // check if its a webspace product
-        // as we currently only support this
-        if (get_class($product) !==  'WC_Product_Webspace') {
+        // there is nothing to do when no wp-ispconfig3 plugin is installed
+        if (!class_exists('Ispconfig')) {
             return $processing;
         }
 
-        $templateID = $product->getISPConfigTemplateID();
-        
-        if (empty($templateID)) {
-            $order->add_order_note('<span style="font-weight:bold;">ISPCONFIG NOTICE: No ISPConfig template found - registration skipped</span>');
-            return;
+        $items = $order->get_items();
+
+        // filter out the products only inherited by WC_ISPConfigProduct
+        $items = array_filter($items, function ($item) {
+            return is_subclass_of($item->get_product(), 'WC_ISPConfigProduct');
+        });
+
+        if (empty($items)) {
+            // no known products, so skip it
+            return $processing;
         }
         
         if ($order->get_customer_id() == 0) {
-            $order->add_order_note('<span style="color: red">ISPCONFIG ERROR: Guest account is not supported. User action required!</span>');
+            $order->add_order_note('<span style="color: red">ISPCONFIG: Guest account is not supported. User action required!</span>');
             return;
         }
-        
-        if ($order->get_item_count() <= 0) {
-            $order->add_order_note('<span style="color: red">ISPCONFIG ERROR: No product found</span>');
-            wp_update_post(array( 'ID' => $order->id, 'post_status' => 'wc-cancelled' ));
-            return;
-        }
-        
+               
         try {
             $userObj = get_user_by('ID', $order->get_customer_id());
             $password = substr(str_shuffle('!@#$%*&abcdefghijklmnpqrstuwxyzABCDEFGHJKLMNPQRSTUWXYZ23456789'), 0, 12);
@@ -283,34 +277,28 @@ abstract class WC_ISPConfigProduct extends WC_Product
             $username = $userObj->get('user_login');
             $email =  $userObj->get('user_email');
             
-            $domain = get_post_meta($order->id, 'Domain', true);
             $client = $order->get_formatted_billing_full_name();
             
-            // overwrite the domain part for free users to only have subdomains
-            if ($templateID == 4) {
-                if (empty(WPISPConfig3::$OPTIONS['default_domain'])) {
-                    throw new Exception("Failed to create free account on template ID: $templateID");
+            // ISPCONFIG SOAP: Connect
+            Ispconfig::$Self->withSoap();
+
+            $templateID = intval(WCInvoicePdf::$OPTIONS['wc_ispconfig_client_template']);
+
+            if (!empty($templateID)) {
+                // when a limite client template is configured in the setting, use it
+                // ISPCONFIG SOAP: fetch all templates from ISPConfig
+                $limitTemplates = Ispconfig::$Self->GetClientTemplates();
+
+                // filter for only the TemplateID defined in self::$TemplateID
+                $limitTemplate = array_pop(array_filter($limitTemplates, function ($v) use ($templateID) {
+                    return $templateID == $v['template_id'];
+                }));
+
+                if (empty($limitTemplate)) {
+                    throw new Exception("No client template found with ID '{$templateID}'");
                 }
-                $domain = "free{$order->id}." . WPISPConfig3::$OPTIONS['default_domain'];
-                $username = "free{$order->id}";
             }
 
-            // fetch all templates from ISPConfig
-            $limitTemplates = Ispconfig::$Self->withSoap()->GetClientTemplates();
-            // filter for only the TemplateID defined in self::$TemplateID
-            $limitTemplates = array_filter(
-                $limitTemplates,
-                function ($v, $k) use ($templateID) {
-                    return ($templateID == $v['template_id']);
-                },
-                ARRAY_FILTER_USE_BOTH
-            );
-            
-            if (empty($limitTemplates)) {
-                throw new Exception("No client template found with ID '{$templateID}'");
-            }
-            $foundTemplate = array_pop($limitTemplates);
-            
             $opt = ['company_name' => '',
                     'contact_name' => $client,
                     'street' => '',
@@ -323,37 +311,41 @@ abstract class WC_ISPConfigProduct extends WC_Product
                     'template_master' => $templateID
             ];
 
-            $webOpt = [ 'domain' => $domain, 'password' => $password,
-                        'hd_quota' => $foundTemplate['limit_web_quota'],
-                        'traffic_quota' => $foundTemplate['limit_traffic_quota'] ];
-            
-            if (isset(self::$WEBTEMPLATE_PARAMS[$templateID])) {
-                foreach (self::$WEBTEMPLATE_PARAMS as $k => $v) {
-                    $webOpt[$k] = $v;
-                }
-            }
-            
+            // ISPCONFIG SOAP: check if the client user already exist
             $client = Ispconfig::$Self->GetClientByUser($opt['username']);
             
-            // TODO: skip this error when additional packages are being bought (like extra webspace or more email adresses, ...)
-            if (!empty($client)) {
-                throw new Exception("The user " . $opt['username'] . ' already exists in ISPConfig');
+            if (empty($client)) {
+                // ISPCONFIG SOAP: create the ISPConfig client if it does not exist yet
+                Ispconfig::$Self->AddClient($opt);
+                $order->add_order_note('<span style="color: green">ISPCONFIG: Client '. $username .' with password '. $password .' added using limit template '. $limitTemplate['template_name'] .'</span>');
             }
-            
-            // ISPCONFIG SOAP: add the customer and website for the same client id
-            Ispconfig::$Self->AddClient($opt)->AddWebsite($webOpt);
 
-            // ISPCONFIG SOAP: give the user a shell (only for non-free products)
-            if ($templateID != 4) {
-                Ispconfig::$Self->AddShell(['username' => $opt['username'] . '_shell', 'username_prefix' => $opt['username'] . '_', 'password' => $password ]);
+            foreach ($items as $item) {
+                $product = $item->get_product();
+                $product_className = get_class($product);
+
+
+                switch ($product_className) {
+                    case 'WC_Product_Webspace':
+                        // fetch the given domain from WC_Order_Item for a website product
+                        $domain = $item->get_meta('Domain');
+
+                        $webOpt = ['domain' => $domain];
+
+                        // when a limit template is found, apply the qouta and traffic limits to the website
+                        if (!empty($limitTemplate)) {
+                            $webOpt['hd_quota'] = $limitTemplate['limit_web_quota'];
+                            $webOpt['traffic_quota'] = $limitTemplate['limit_traffic_quota'];
+                        }
+                        Ispconfig::$Self->AddWebsite($webOpt);
+
+                        $order->add_order_note('<span style="color: green">ISPCONFIG: Website '. $domain .' added to client '. $opt['username'] .'</span>');
+                        break;
+                }
             }
-            
+
             // TODO: Submit possible information to customer through email or WC_Order note
-            
-            $order->add_order_note('<span style="color: green">ISPCONFIG: User '.$username.' added using limit template '. $foundTemplate['template_name'] .'</span>');
-
-            wp_update_post(array( 'ID' => $order->id, 'post_status' => 'wc-on-hold' ));
-            
+           
             Ispconfig::$Self->closeSoap();
 
             // create the actual invoice for this order
@@ -363,9 +355,9 @@ abstract class WC_ISPConfigProduct extends WC_Product
 
             return $processing;
         } catch (SoapFault $e) {
-            $order->add_order_note('<span style="color: red">ISPCONFIG SOAP ERROR (payment): ' . $e->getMessage() . '</span>');
+            $order->add_order_note('<span style="color: red">ISPCONFIG ERROR: ' . $e->getMessage() . '</span>');
         } catch (Exception $e) {
-            $order->add_order_note('<span style="color: red">ISPCONFIG ERROR (payment): ' . $e->getMessage() . '</span>');
+            $order->add_order_note('<span style="color: red">ISPCONFIG ERROR: ' . $e->getMessage() . '</span>');
         }
 
         $order->set_status('on-hold');
