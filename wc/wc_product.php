@@ -1,5 +1,6 @@
 <?php
 
+use WCInvoicePdf\WCInvoicePdf;
 use WCInvoicePdf\Model\Invoice;
 
 if (!class_exists('WC_Product')) {
@@ -27,8 +28,6 @@ add_filter('woocommerce_payment_complete_order_status', ['WC_ISPConfigProduct', 
 
 abstract class WC_ISPConfigProduct extends WC_Product
 {
-    public static $SUBSCRIPTIONS;
-
     abstract public function OnProductCheckoutFields($item_key, $item);
     abstract public function OnProductCheckoutValidate($item_key, $item);
     /**
@@ -41,8 +40,6 @@ abstract class WC_ISPConfigProduct extends WC_Product
     public function __construct($product = 0)
     {
         parent::__construct($product);
-
-        self::$SUBSCRIPTIONS = ['m' => __('monthly', 'wc-invoice-pdf'), 'y' => __('yearly', 'wc-invoice-pdf') ];
     }
 
     public static function add_to_cart()
@@ -74,7 +71,14 @@ abstract class WC_ISPConfigProduct extends WC_Product
             wc_print_notice(__("All non-subscribed products will be removed with the next step", 'wc-recurring-pdf'), 'notice');
         }
         
+        if (!empty(WCInvoicePdf::$OPTIONS['wc_order_subscriptions'])) {
+            // skip the below as the subscription has been fixed
+            return;
+        }
+
         $period = WC()->session->get('wc-recurring-subscription', 'm');
+
+
 
         ?>
         <script>
@@ -86,7 +90,7 @@ abstract class WC_ISPConfigProduct extends WC_Product
             <td colspan="6" style="text-align: right">
                 <label><?php _e('Payment interval', 'wc-invoice-pdf') ?></label>
                 <select name="wc-recurring-subscription" onchange="updateCartFromSubscriptionChange()">
-                <?php foreach (self::$SUBSCRIPTIONS as $key => $value) {
+                <?php foreach (WCInvoicePdf::$SUBSCRIPTIONS as $key => $value) {
                     $selected = $period == $key ? 'selected' : '';
                     echo "<option value='$key' $selected>$value</option>";
                 }
@@ -137,7 +141,7 @@ abstract class WC_ISPConfigProduct extends WC_Product
         }
 
         $period = WC()->session->get('wc-recurring-subscription', 'm');
-        $periodName = self::$SUBSCRIPTIONS[$period];
+        $periodName = WCInvoicePdf::$SUBSCRIPTIONS[$period];
 
         echo $value;
         echo "<br />" . $periodName;
@@ -146,10 +150,16 @@ abstract class WC_ISPConfigProduct extends WC_Product
 
     public static function AddItemToCart($item, $item_key)
     {
-        if (is_subclass_of($item['data'], 'WC_ISPConfigProduct')) {
-            $period = WC()->session->get('wc-recurring-subscription', 'm');
-            $item['quantity'] = $period == 'y' ? 12 : 1;
+        if (!is_subclass_of($item['data'], 'WC_ISPConfigProduct')) {
+            return $item;
         }
+
+        if (!empty(WCInvoicePdf::$OPTIONS['wc_order_subscriptions'])) {
+            WC()->session->set('wc-recurring-subscription', WCInvoicePdf::$OPTIONS['wc_order_subscriptions']);
+        }
+
+        $period = WC()->session->get('wc-recurring-subscription', 'm');
+        $item['quantity'] = $period == 'y' ? 12 : 1;
 
         return $item;
     }
