@@ -4,13 +4,16 @@ namespace WCInvoicePdf\Menu;
 use WCInvoicePdf\Model\Invoice;
 use WCInvoicePdf\Menu\InvoiceMenu;
 
-class AccountInvoice {
-    public static function permalink(){
-        add_rewrite_endpoint( 'invoices', EP_PERMALINK | EP_PAGES );
+class AccountInvoice
+{
+    public static function permalink()
+    {
+        add_rewrite_endpoint('invoices', EP_PERMALINK | EP_PAGES);
     }
-    public function __construct(){
+    public function __construct()
+    {
         self::permalink();
-        if(!is_admin()) {
+        if (!is_admin()) {
             add_filter('woocommerce_account_menu_items', [$this, 'wc_invoice_menu']);
             add_action('woocommerce_account_invoices_endpoint', [$this, 'wc_invoice_content']);
 
@@ -22,16 +25,18 @@ class AccountInvoice {
         }
     }
 
-    public function wc_invoice_menu($items){
+    public function wc_invoice_menu($items)
+    {
         $result = array_slice($items, 0, 2);
         $result['invoices'] = __('Invoices', 'wc-invoice-pdf');
         
-        $result = array_merge($result, array_slice($items, 2) );
+        $result = array_merge($result, array_slice($items, 2));
 
         return $result;
     }
 
-    public function wc_invoice_content(){
+    public function wc_invoice_content()
+    {
         global $wpdb, $current_user;
         
         if (isset($_GET['payment'])) {
@@ -59,18 +64,18 @@ class AccountInvoice {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach($result as $k => $v) { ?>
+                <?php foreach ($result as $k => $v) { ?>
                 <tr>
                     <td><a href="<?php echo '?invoice=' . $v['ID'] ?>"><?php echo $v['invoice_number'] ?></a></td>
-                    <td><a href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id')). 'view-order/' . $v['order_id'] ?>"><?php echo '#' . $v['order_id'] ?></a></td>
+                    <td><a href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')). 'view-order/' . $v['order_id'] ?>"><?php echo '#' . $v['order_id'] ?></a></td>
                     <td><?php echo strftime("%Y-%m-%d", strtotime($v['created'])) ?></td>
                     <td>
-                        <?php if($v['status'] == Invoice::CANCELED): ?>
+                        <?php if ($v['status'] == Invoice::CANCELED) : ?>
                             <?php _e('Canceled', 'wc-invoice-pdf') ?>
-                        <?php elseif(($v['status'] & Invoice::PAID) == 0): ?>
+                        <?php elseif (($v['status'] & Invoice::PAID) == 0) : ?>
                             <a href="<?php echo '?payment='.$v['ID']; ?>" class="button view"><?php _e('Pay Now', 'wc-invoice-pdf') ?></a>
-                        <?php elseif(($v['status'] & Invoice::PAID) != 0): ?>
-                            <strong><?php echo __('Paid at', 'wc-invoice-pdf') . ' ' . strftime("%x",strtotime($v['paid_date'])) ?> </strong>
+                        <?php elseif (($v['status'] & Invoice::PAID) != 0) : ?>
+                            <strong><?php echo __('Paid at', 'wc-invoice-pdf') . ' ' . strftime("%x", strtotime($v['paid_date'])) ?> </strong>
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -80,7 +85,8 @@ class AccountInvoice {
         <?php
     }
 
-    public function showPaymentForInvoice($invoiceID){
+    public function showPaymentForInvoice($invoiceID)
+    {
         $invoice = new Invoice($invoiceID);
         $order = $invoice->Order();
         ?>
@@ -88,24 +94,30 @@ class AccountInvoice {
         Zahlung via <?php echo $order->get_payment_method_title() ?>
         <p><?php _e('Order', 'woocommerce') ?># <?php echo $invoice->invoice_number ?></p>
 
-        <?php if($invoice->status & Invoice::PAID): ?>
-        <h4 style="text-align:center;"><?php echo __('Paid at', 'wc-invoice-pdf') . ' ' . strftime("%x",strtotime($invoice->paid_date)) ?></h4>
-        <?php return; endif; ?>
+        <?php if ($invoice->status & Invoice::PAID) : ?>
+        <h4 style="text-align:center;"><?php echo __('Paid at', 'wc-invoice-pdf') . ' ' . strftime("%x", strtotime($invoice->paid_date)) ?></h4>
+            <?php return;
+        endif; ?>
 
-        <?php if($order->get_payment_method() == 'bacs'): $bacs = new \WC_Gateway_BACS(); ?>      
+        <?php if ($order->get_payment_method() == 'bacs') :
+            $bacs = new \WC_Gateway_BACS(); ?>      
             <?php $bacs->thankyou_page($order->get_id()); ?>
             <h3>Betrag: <?php echo $order->get_total() .' ' . $order->get_currency(); ?></h3>
-        <?php elseif($order->get_payment_method() == 'paypal'): 
-        
+        <?php elseif ($order->get_payment_method() == 'paypal') :
             // overwrite order number to use invoice number instead
-            add_filter('woocommerce_order_number', function() use($invoice) { return $invoice->invoice_number; });
-            add_filter('woocommerce_paypal_args', function($args) use($invoice) { $args['custom'] = json_encode(array('invoice_id' => $invoice->ID) ); return $args; });
+            add_filter('woocommerce_order_number', function () use ($invoice) {
+                return $invoice->invoice_number;
+            });
+            add_filter('woocommerce_paypal_args', function ($args) use ($invoice) {
+                $args['custom'] = json_encode(array('invoice_id' => $invoice->ID));
+                return $args;
+            });
 
             $paypal = new \WC_Gateway_Paypal();
             $result = $paypal->process_payment($order->get_id());
             //include_once(WPISPCONFIG3_PLUGIN_DIR . '../woocommerce/includes/gateways/paypal/includes/class-wc-gateway-paypal-request.php');
             //$paypal_request = new WC_Gateway_Paypal_Request( $paypal );
-        ?>
+            ?>
             <div style="text-align: center;">
                 <a href="<?php echo get_site_url() . '/wp-admin/admin.php?invoice=' . $invoiceID; ?>" class="button view"><?php  _e('Show');  ?></a>
                 &nbsp;&nbsp;&nbsp;
