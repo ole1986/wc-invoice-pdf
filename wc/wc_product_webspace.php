@@ -1,8 +1,10 @@
 <?php
+
+use WCInvoicePdf\WCInvoicePdf;
+
 // when adding 'webspace' product to cart
 add_action('woocommerce_webspace_add_to_cart', ['WC_ISPConfigProduct', 'add_to_cart'], 30);
 add_filter('woocommerce_product_data_tabs', ['WC_Product_Webspace','ispconfig_product_data_tab']);
-add_action('woocommerce_product_data_panels', ['WC_Product_Webspace','ispconfig_product_data_fields']);
 add_action('woocommerce_process_product_meta_webspace', ['WC_Product_Webspace', 'webspace_metadata_save']);
 
 // display the domain inside WC-InvoicePdf metabox
@@ -55,42 +57,8 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
         $product_data_tabs['linked_product']['class'][] = 'hide_if_webspace';
         $product_data_tabs['attribute']['class'][] = 'hide_if_webspace';
         $product_data_tabs['advanced']['class'][] = 'hide_if_webspace';
-
-        if (class_exists("Ispconfig")) {
-            $product_data_tabs['ispconfig_tab'] = array(
-                'label' => __('Webspace', 'wc-invoice-pdf'),
-                'target' => 'ispconfig_data_tab',
-                'class' => 'show_if_webspace'
-            );
-        }
-        
+       
         return $product_data_tabs;
-    }
-
-    public static function ispconfig_product_data_fields()
-    {
-        ?>
-        <div id="ispconfig_data_tab" class="panel woocommerce_options_panel">
-        <?php
-        if (class_exists("Ispconfig")) {
-            // display ISPConfig templates
-            try {
-                $templates = Ispconfig::$Self->withSoap()->GetClientTemplates();
-            
-                $options = [0 => 'None'];
-                foreach ($templates as $v) {
-                    $options[$v['template_id']] = $v['template_name'];
-                }
-                woocommerce_wp_select(['id' => '_ispconfig_template_id', 'label' => '<strong>Client Limit Template</strong>', 'options' => $options]);
-
-                Ispconfig::$Self->closeSoap();
-            } catch (SoapFault $e) {
-                echo "<div style='color:red; margin: 1em;'>ISPConfig SOAP Request failed: " . $e->getMessage() . '</div>';
-            }
-        }
-        ?>
-        </div>
-        <?php
     }
 
     public static function Metabox($post_id)
@@ -119,54 +87,40 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
         }
     }
 
-    public function getISPConfigTemplateID()
-    {
-        return get_post_meta($this->get_id(), '_ispconfig_template_id', true);
-    }
-
     public function OnProductCheckoutFields($item_key, $item)
     {
         $checkout = WC()->checkout();
 
-        $templateID = $this->getISPConfigTemplateID();
-
-        if ($templateID >= 1 && $templateID <= 3) {
-            echo "<div>". $this->get_name() ."</div>";
-            echo '<div><sup>' . __('Please enter the domain to host here', 'wc-invoice-pdf') . '</sup></div>';
-            woocommerce_form_field(
-                'order_domain['. $item_key .']',
-                [
-                'type'              => 'text',
-                'placeholder'       => 'E.g. mydomain.net',
-                'custom_attributes' => ['data-ispconfig-checkdomain'=>'1']
-                 ],
-                $checkout->get_value('order_domain')
-            );
-        }
+        echo "<div>". $this->get_name() ."</div>";
+        echo '<div><sup>' . __('Please enter the domain to host here', 'wc-invoice-pdf') . '</sup></div>';
+        woocommerce_form_field(
+            'order_domain['. $item_key .']',
+            [
+            'type'              => 'text',
+            'placeholder'       => 'E.g. mydomain.net',
+            'custom_attributes' => ['data-ispconfig-checkdomain'=>'1']
+                ],
+            $checkout->get_value('order_domain')
+        );
         echo '<div id="domainMessage" class="ispconfig-msg" style="display:none;"></div>';
     }
 
     public function OnProductCheckoutValidate($item_key, $item)
     {
-        $templateID = $this->getISPConfigTemplateID();
-        
-        // all products require a DOMAIN to be entered
-        if ($templateID >= 1 && $templateID <= 3) {
-            try {
-                $dom = Ispconfig::$Self->validateDomain($_POST['order_domain'][$item_key]);
+        try {
+            $dom = Ispconfig::$Self->validateDomain($_POST['order_domain'][$item_key]);
 
-                $available = Ispconfig::$Self->withSoap()->IsDomainAvailable($dom);
+            $available = Ispconfig::$Self->withSoap()->IsDomainAvailable($dom);
 
-                Ispconfig::$Self->closeSoap();
+            Ispconfig::$Self->closeSoap();
 
-                if ($available == 0) {
-                    wc_add_notice(__("The domain is not available", 'wp-ispconfig3') . ' - ' . $this->get_name(), 'error');
-                } elseif ($available == -1) {
-                    wc_add_notice(__("The domain might not be available", 'wp-ispconfig3'), 'notice');
-                }
-            } catch (Exception $e) {
-                wc_add_notice($e->getMessage() . ' - ' . $this->get_name(), 'error');
+            if ($available == 0) {
+                wc_add_notice(__("The domain is not available", 'wp-ispconfig3') . ' - ' . $this->get_name(), 'error');
+            } elseif ($available == -1) {
+                wc_add_notice(__("The domain might not be available", 'wp-ispconfig3'), 'notice');
             }
+        } catch (Exception $e) {
+            wc_add_notice($e->getMessage() . ' - ' . $this->get_name(), 'error');
         }
     }
 
@@ -192,9 +146,9 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
 
     public function get_price_html($price = '')
     {
-        $allowed_periods = $this->get_meta('_webspace_allowed_periods');
+        $allowed_subscriptions = WCInvoicePdf::$OPTIONS['wc_order_subscriptions'];
 
-        if (!empty($allowed_periods) && $allowed_periods == 'y') {
+        if (!empty($allowed_subscriptions) && $allowed_subscriptions == 'y') {
             $price = wc_price(wc_get_price_to_display($this, array( 'price' => $this->get_regular_price() * 12))) . '&nbsp;' . __('per year', 'wc-invoice-pdf');
         } else {
             $price = wc_price(wc_get_price_to_display($this, array( 'price' => $this->get_regular_price() ))) . '&nbsp;' . __('per month', 'wc-invoice-pdf');
