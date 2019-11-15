@@ -126,7 +126,7 @@ class InvoicePdf
                 $v['qty'] = 1;
             }
            
-            if ($product instanceof \WC_Product_Webspace) {
+            if (\is_subclass_of($product, 'WC_ISPConfigProduct')) {
                 // if its an ISPCONFIG Template product
                 $current = new \DateTime($invoice->created);
                 $next = clone $current;
@@ -137,7 +137,7 @@ class InvoicePdf
                     $next->add(new \DateInterval('P12M'));
                 }
                 $qtyStr = number_format($v['qty'], 0, ',', ' ') . ' ' . $product->get_price_suffix('', $v['qty']);
-                $product_name .= "\n<strong>Zeitraum: " . $current->format('d.m.Y')." - ".$next->format('d.m.Y') . '</strong>';
+                $product_name .= "\n<strong>" . __('Period', 'wc-invoice-pdf') . ": " . \strftime('%x', $current->getTimestamp()) ." - ". \strftime('%x', $next->getTimestamp()) . '</strong>';
             } elseif ($product instanceof \WC_Product_Hour) {
                 // check if product type is "hour" to output hours instead of Qty
                 $qtyStr = number_format($v['qty'], 1, ',', ' ');
@@ -150,13 +150,12 @@ class InvoicePdf
             $unitprice = $total / intval($v['qty']);
             $tax = round($v['total_tax'], 2);
 
-
             $mdcontent = '';
             if ($v instanceof \WC_Order_Item_Product) {
                 $meta = $v->get_meta_data();
                 if (!empty($meta)) {
                     $mdcontent.= implode('', array_map(function ($m) {
-                        return "\n<strong>".$m->key.":</strong> ".$m->value."\n";
+                        return "\n<strong>".$m->key.":</strong> ".$m->value;
                     }, $meta));
                 }
             }
