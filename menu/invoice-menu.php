@@ -185,12 +185,49 @@ class InvoiceMenu
                 <div class="notice notice-error"><p><?php _e('The scheduled task is not installed - Please try to reenable the plugin', 'wc-invoice-pdf') ?></p></div>
             <?php endif; ?>
             <h2 id="wcinvoicepdf-tabs" class="nav-tab-wrapper">
-                <a href="#wcinvoicepdf-invoice" class="nav-tab nav-tab-active"><?php _e('Invoice template (PDF)', 'wc-invoice-pdf') ?></a>
+                <a href="#wcinvoicepdf-order" class="nav-tab nav-tab-active"><?php _e('Order', 'woocommerce') ?></a>
+                <a href="#wcinvoicepdf-invoice" class="nav-tab"><?php _e('Invoice template (PDF)', 'wc-invoice-pdf') ?></a>
                 <a href="#wcinvoicepdf-scheduler" class="nav-tab"><?php _e('Task Scheduler', 'wc-invoice-pdf') ?></a>
                 <a href="#wcinvoicepdf-template" class="nav-tab"><?php _e('Templates', 'wc-invoice-pdf') ?></a>
                 <a href="#wcinvoicepdf-export" class="nav-tab"><?php _e('Export', 'wc-invoice-pdf') ?></a>
             </h2>
             <form method="post" action="">
+                <div id="wcinvoicepdf-order" class="inside tabs-panel" style="display: none;">
+                    <p>
+                    <label style="width: 220px; display:inline-block;vertical-align:top;">
+                        <strong><?php _e('Subscription option', 'wc-invoice-pdf')  ?></strong><br />
+                        <?php _e('Allow the customer to choose between the subscriptions during checkout or fix a value', 'wc-invoice-pdf') ?>
+                    </label>
+                    <select name="wc_order_subscriptions">
+                        <option value=""><?php _e('Customer choose', 'wc-invoice-pdf') ?></option>
+                        <?php
+                        foreach (WCInvoicePdf::$SUBSCRIPTIONS as $key => $value) {
+                            $selected = WCInvoicePdf::$OPTIONS['wc_order_subscriptions'] == $key ? 'selected' : '';
+                            echo '<option value="'. $key . '" '. $selected .'>'. $value .'</option>';
+                        }
+                        ?>
+                    </select>
+                    </p>
+                    <?php if (\class_exists('Ispconfig')) : ?>
+                    <p>
+                    <label style="width: 220px; display:inline-block;vertical-align:top;">
+                        <strong>ISPConfig client template</strong><br />
+                        Choose a ISPConfig client template for new orders containing WC_ISPConfig_Products (E.g Webspace)
+                    </label>
+                    <select name="wc_ispconfig_client_template">
+                        <option value="0">None</option>
+                        <?php
+                        $templates = \Ispconfig::$Self->withSoap()->GetClientTemplates();
+                        foreach ($templates as $v) {
+                            $selected = WCInvoicePdf::$OPTIONS['wc_ispconfig_client_template'] == $v['template_id'] ? 'selected' : '';
+                            echo '<option value="'. $v['template_id'] . '" '. $selected .'>'. $v['template_name'] .'</option>';
+                        }
+                        \Ispconfig::$Self->closeSoap();
+                        ?>
+                    </select>
+                    </p>
+                    <?php endif ?>
+                </div>
                 <div id="wcinvoicepdf-invoice" class="inside tabs-panel" style="display: none;">
                     <?php
                     WCInvoicePdf::addField('wc_pdf_title', __('Document Title', 'wc-invoice-pdf'));

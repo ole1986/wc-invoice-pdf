@@ -68,8 +68,12 @@ class WCInvoicePdf
         'wc_export_notes' => 'Rechnung %s',
         'wc_export_account' => 'Erlöse u. Erträge 2/8:Erlöskonten 8:8400 Erlöse USt. 19%',
         'wc_export_account_posted' => 'Aktiva:Finanzkonten 1:1400 Ford. a. Lieferungen und Leistungen',
-        'wc_export_account_tax' => 'Umsatzsteuer'
+        'wc_export_account_tax' => 'Umsatzsteuer',
+        'wc_order_subscriptions' => '',
+        'wc_ispconfig_client_template' => 0
     ];
+
+    public static $SUBSCRIPTIONS = [];
 
     /**
      * initialize the text domain and load the constructor
@@ -77,6 +81,8 @@ class WCInvoicePdf
     public static function init()
     {
         self::load_textdomain_file();
+
+        self::$SUBSCRIPTIONS = ['m' => __('monthly', 'wc-invoice-pdf'), 'y' => __('yearly', 'wc-invoice-pdf') ];
 
         if (file_exists(WCINVOICEPDF_PLUGIN_DIR . 'wc/wc_product.php')) {
             include_once WCINVOICEPDF_PLUGIN_DIR . 'wc/wc_product.php';
