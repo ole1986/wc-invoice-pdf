@@ -29,6 +29,9 @@ require_once 'model/invoice-task.php';
 require_once 'wc/wc_order_invoice_metabox.php';
 
 add_action('init', ['\WCInvoicePdf\WCInvoicePdf', 'init']);
+add_action('upgrader_process_complete', ['\WCInvoicePdf\WCInvoicePdf', 'upgrade'], 10, 2);
+add_action('admin_notices', ['\WCInvoicePdf\WCInvoicePdf', 'migrate'], 10, 2);
+
 add_filter('plugin_row_meta', array( '\WCInvoicePdf\WCInvoicePdf', 'plugin_meta' ), 10, 2);
 
 register_activation_hook(plugin_basename(__FILE__), ['\WCInvoicePdf\WCInvoicePdf', 'install' ]);
@@ -80,11 +83,6 @@ class WCInvoicePdf
             include_once WCINVOICEPDF_PLUGIN_DIR . 'wc/wc_product_webspace.php';
             include_once WCINVOICEPDF_PLUGIN_DIR . 'wc/wc_product_service.php';
         }
-
-        /*if (file_exists(WCINVOICEPDF_PLUGIN_DIR . 'wc/wc_ispconfig.php')) {
-            include_once WCINVOICEPDF_PLUGIN_DIR . 'wc/wc_ispconfig.php';
-            \WcIspconfig::init();
-        }*/
 
         self::load_options();
 
@@ -142,10 +140,8 @@ class WCInvoicePdf
 
         if (empty($period)) {
             $success = delete_post_meta($order_id, '_ispconfig_period');
-        } elseif ($period[0] == 'm') {
-            $success = update_post_meta($order_id, '_ispconfig_period', 'm');
-        } elseif ($period[0] == 'y') {
-            $success = update_post_meta($order_id, '_ispconfig_period', 'y');
+        } else {
+            $success = update_post_meta($order_id, '_ispconfig_period', \strtolower($period[0]));
         }
 
         return $success;
@@ -255,11 +251,95 @@ class WCInvoicePdf
         if (substr(__FILE__, -$l) == $file) {
             $row_meta = array(
                 'bug'    => '<a href="https://github.com/ole1986/wc-invoice-pdf/issues" style="color: #a00" target="_blank">Report Bug</a>',
-                'donate'    => '<a href="https://www.paypal.com/cgi-bin/webscr?item_name=Donation+WC+Recurring+Invoice+Pdf&cmd=_donations&business=ole.k@web.de" target="_blank">Donate</a>'
+                'donate'    => '<a href="https://www.paypal.com/cgi-bin/webscr?item_name=Donation+WC+Recurring+Invoice+Pdf&cmd=_donations&business=ole.k@web.de" target="_blank"><span class="dashicons dashicons-heart"></span> Donate</a>'
             );
             return array_merge($links, $row_meta);
         }
         return (array) $links;
+    }
+
+    public static function migrate()
+    {
+        global $wpdb;
+
+        if (!get_transient('wc-invoice-pdf-migrate')) {
+            return;
+        }
+       
+        // migration
+        $version = get_option('_ispconfig_invoice_version', 0);
+
+        if ($version > 0 && $version <= 2) {
+            // MIGRATION FROM VERSIONS LOWER 1.5.0
+
+            // fetch all orders containing a "Domain" meta data
+            $post_ids = $wpdb->get_col("SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'Domain'");
+            // get all products with product type webspace
+            $webspace_ids = wc_get_products(['limit' => -1, 'type' => 'webspace', 'return' => 'ids']);
+
+            // go through all matching orders with Domain meta data
+            foreach ($post_ids as $order_id) {
+                $order = wc_get_order($order_id);
+                $items = $order->get_items('line_item');
+
+                // fetch the first webspace product (asuming ithas only one)
+                $webspace_product = array_pop(array_filter($items, function ($item) {
+                    return get_class($item) === 'WC_Order_Item_Product';
+                }));
+
+                if (!$webspace_product) {
+                    // skip when no webspace product found
+                    continue;
+                }
+
+                $domain = $order->get_meta('Domain', true);
+                $metadata = $webspace_product->get_meta_data();
+
+                if (!empty($metadata)) {
+                    usort($metadata, function ($a, $b) {
+                        return $a->id <= $b->id ? -1 : 1;
+                    });
+
+                    $newmetadata = [];
+                    // remove all meta data
+                    foreach ($metadata as $meta) {
+                        $newmetadata[] = ["id" => 0, "key" => $meta->key, "value" => $meta->value];
+                        $webspace_product->delete_meta_data($meta->key);
+                    }
+
+                    // put the domain meta at first
+                    array_unshift($newmetadata, ["id" => 0, "key" => "Domain", "value" => $domain]);
+
+                    $webspace_product->set_meta_data($newmetadata);
+                } else {
+                    $webspace_product->add_meta_data('Domain', $domain);
+                }
+
+                $webspace_product->save_meta_data();
+
+                $order->delete_meta_data('Domain');
+                $order->save_meta_data();
+            }
+
+            $plugin = get_plugin_data(__FILE__);
+            
+            delete_option('_ispconfig_invoice_version');
+            update_option('wc-invoice-pdf-version', 3);
+
+            echo '<div class="notice notice-success"><p><strong>' . $plugin['Name'] .':</strong> Successfully migrated products from ' . count($post_ids) .' orders</p></div>';
+        }
+
+        delete_transient('wc-invoice-pdf-migrate');
+    }
+
+    public static function upgrade($upgrader_object, $options)
+    {
+        // The path to our plugin's main file
+        $our_plugin = plugin_basename(__FILE__);
+        // If an update has taken place and the updated type is plugins and the plugins element exists
+        if ($options['action'] == 'update' && $options['type'] == 'plugin' && isset($options['plugins']) && \in_array($our_plugin, $options['plugins'])) {
+            set_transient('wc-invoice-pdf-migrate', 1);
+        }
     }
 
     /**
@@ -271,7 +351,7 @@ class WCInvoicePdf
      */
     public static function install()
     {
-        global $wpdb;
+        set_transient('wc-invoice-pdf-migrate', 1);
 
         Model\Invoice::install();
         // setup the role
