@@ -5,14 +5,17 @@ namespace WCInvoicePdf\Metabox;
 use WCInvoicePdf\Model\InvoicePdf;
 use WCInvoicePdf\Model\Invoice;
 
-class InvoiceMetabox {
-    public function __construct(){
-        add_action('add_meta_boxes', [$this, 'invoice_box'] );
+class InvoiceMetabox
+{
+    public function __construct()
+    {
+        add_action('add_meta_boxes', [$this, 'invoice_box']);
         add_action('post_updated', [$this, 'invoice_submit']);
     }
 
-    public static function DoAjax(){
-        if(!empty($_POST['order_id']) && isset($_POST['period'])) {
+    public static function DoAjax()
+    {
+        if (!empty($_POST['order_id']) && isset($_POST['period'])) {
             $period = esc_attr($_POST['period']);
             do_action('wcinvoicepdf_order_period', intval($_POST['order_id']), $period);
             $result = $period;
@@ -22,11 +25,13 @@ class InvoiceMetabox {
         wp_die();
     }
 
-    public function invoice_box(){
-        add_meta_box( 'ispconfig-invoice-box', __( 'Invoice', 'wc-invoice-pdf'), [$this, 'invoice_box_callback'], 'shop_order', 'side', 'high' );
+    public function invoice_box()
+    {
+        add_meta_box('ispconfig-invoice-box', __('Invoice', 'wc-invoice-pdf'), [$this, 'invoice_box_callback'], 'shop_order', 'side', 'high');
     }
 
-    public function invoice_box_callback() {
+    public function invoice_box_callback()
+    {
         global $post_id, $post;
 
         $period = get_post_meta($post_id, '_ispconfig_period', true);
@@ -35,21 +40,21 @@ class InvoiceMetabox {
         ?>
         <?php do_action('wcinvoicepdf_invoice_metabox', $post_id); ?>
         <p>
-            <label class="post-attributes-label" for="ispconfig_period"><?php _e('Payment period', 'wc-invoice-pdf') ?>:</label>
+            <label class="post-attributes-label" for="ispconfig_period"><?php _e('Payment interval', 'wc-invoice-pdf') ?>:</label>
             <select id="ispconfig_period" data-id="<?php echo $post_id ?>" onchange="WCInvoicePdfAdmin.UpdatePeriod(this)">
                 <option value="">Off</option>
-            <?php foreach(Invoice::$PERIOD as $k => $v) { ?>
+            <?php foreach (Invoice::$PERIOD as $k => $v) { ?>
                 <option value="<?php echo $k ?>" <?php echo ($k == $period)?'selected': '' ?> ><?php _e($v, 'wc-invoice-pdf') ?></option>
             <?php } ?>
             </select>
         </p>
-        <p class="ispconfig_scheduler_info periodinfo-s" style="<?php if($period != '') { echo 'display: none'; } ?>">
-            <?php printf(__("A scheduler will submit the invoice once it has been created using the %s button to '%s'", 'wc-invoice-pdf'), __( 'Invoice', 'wc-invoice-pdf'), $customer_email); ?>
+        <p class="ispconfig_scheduler_info periodinfo-s" style="<?php if ($period != '') { echo 'display: none'; } ?>">
+            <?php printf(__("A scheduler will submit the invoice once it has been created using the %s button to '%s'", 'wc-invoice-pdf'), __('Invoice', 'wc-invoice-pdf'), $customer_email); ?>
         </p>
-        <p class="ispconfig_scheduler_info periodinfo-m" style="<?php if($period != 'm') { echo 'display: none'; } ?>">
+        <p class="ispconfig_scheduler_info periodinfo-m" style="<?php if ($period != 'm') { echo 'display: none'; } ?>">
             <?php printf(__("A scheduler will submit the invoice %s to '%s'", 'wc-invoice-pdf'), __('monthly', 'wc-invoice-pdf'), $customer_email); ?>
         </p>
-        <p class="ispconfig_scheduler_info periodinfo-y" style="<?php if($period != 'y') { echo 'display: none'; } ?>">
+        <p class="ispconfig_scheduler_info periodinfo-y" style="<?php if ($period != 'y') { echo 'display: none'; } ?>">
             <?php printf(__("A scheduler will submit the invoice %s to '%s'", 'wc-invoice-pdf'), __('yearly', 'wc-invoice-pdf'), $customer_email); ?>
         </p>
         <p style="text-align: right">
@@ -59,27 +64,32 @@ class InvoiceMetabox {
             <a href="admin.php?page=wcinvoicepdf_invoice&order=<?php echo $post_id ?>" target="_blank" class="button"><?php printf(__('Preview', 'wc-invoice-pdf'), '') ?></a>
             <a href="admin.php?page=wcinvoicepdf_invoice&order=<?php echo $post_id ?>&offer=1" target="_blank" class="button"><?php _e('Offer', 'wc-invoice-pdf') ?></a>
             <button type="submit" name="ispconfig_invoice_action" class="button button-primary" value="invoice">
-                <?php _e( 'Generate', 'wc-invoice-pdf') ?>
+                <?php _e('Generate', 'wc-invoice-pdf') ?>
             </button>
         </p>
         <?php
     }
 
-    public function invoice_submit($post_id){
+    public function invoice_submit($post_id)
+    {
         global $post;
 
-        if(!isset($_REQUEST['ispconfig_invoice_action'])) return;
-        if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
+        if (!isset($_REQUEST['ispconfig_invoice_action'])) {
+            return;
+        }
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+            return;
+        }
 
-        remove_action( 'post_updated', [$this, 'ispconfig_invoice_submit']);
+        remove_action('post_updated', [$this, 'ispconfig_invoice_submit']);
 
-        if (wp_is_post_revision( $post_id)) {
+        if (wp_is_post_revision($post_id)) {
             return;
         }
 
         if (wp_is_post_autosave($post_id)) {
             return;
-        } 
+        }
 
         $order = new \WC_Order($post);
 
@@ -88,7 +98,7 @@ class InvoiceMetabox {
         $invoice->makeNew();
 
         if ($invoice->Save()) {
-            $order->add_order_note(sprintf(__("Invoice %s successfully created", 'wc-invoice-pdf'),$invoice->invoice_number));
+            $order->add_order_note(sprintf(__("Invoice %s successfully created", 'wc-invoice-pdf'), $invoice->invoice_number));
         }
     }
 }

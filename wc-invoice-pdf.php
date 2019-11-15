@@ -26,7 +26,7 @@ require_once 'model/invoice-list.php';
 require_once 'model/invoice-export.php';
 require_once 'model/invoice-pdf.php';
 require_once 'model/invoice-task.php';
-require_once 'metabox/invoice-metabox.php';
+require_once 'wc/wc_order_invoice_metabox.php';
 
 add_action('init', ['\WCInvoicePdf\WCInvoicePdf', 'init']);
 add_filter('plugin_row_meta', array( '\WCInvoicePdf\WCInvoicePdf', 'plugin_meta' ), 10, 2);
