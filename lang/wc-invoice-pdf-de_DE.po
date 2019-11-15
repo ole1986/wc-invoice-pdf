@@ -175,7 +175,13 @@ msgid "Pay Now"
 msgstr "Bezahlen"
 
 msgid "Payment period"
+msgstr "Zahlungsfrist"
+
+msgid "Payment interval"
 msgstr "Zahlungsinterval"
+
+msgid "Period"
+msgstr "Zeitraum"
 
 msgid "Paid at"
 msgstr "Bezahlt am"
@@ -252,11 +258,14 @@ msgstr "Arbeitszeiten"
 msgid "Webspace"
 msgstr "Webspeicher"
 
-msgid "Please enter a domain you want to host here"
-msgstr "Bitte gebe hier eine gewünschte Domain ein"
-
-msgid "Your desired domain"
-msgstr "Ihre Wunschdomain"
+msgid "Please enter the domain to host here"
+msgstr "Bitte geben Sie hier die gwünschte Domain ein"
 
 msgid "All"
 msgstr "Alle"
+
+msgid "All non-subscribed products will be removed with the next step"
+msgstr "Alle Produkte die kein Abonnement sind werden im nächsten Schritt entfernt"
+
+msgid "Subscription"
+msgstr "Abonnement"
