@@ -107,6 +107,10 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
 
     public function OnProductCheckoutValidate($item_key, $item)
     {
+        if (!class_exists('Ispconfig')) {
+            return;
+        }
+        
         try {
             $dom = Ispconfig::$Self->validateDomain($_POST['order_domain'][$item_key]);
 
