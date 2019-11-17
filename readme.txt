@@ -44,13 +44,17 @@ For testing the recuring payments (submission of invoices) the "Test recuring" s
 
 To set the *recurring state* of an order while receiving a request, an action hook can be used to achieve this
 
-Example:
-
 `
 // call the plugin to mark it as yearly recurring payment order
 do_action('wcinvoicepdf_order_period', $order_id, 'yearly');
 // call the plugin to mark it as monthly recurring payment order
 do_action('wcinvoicepdf_order_period', $order_id, 'monthly');
+`
+
+To add additional info into the invoice metabox located in order, the following hook is availble
+
+`
+do_action('wcinvoicepdf_invoice_metabox', $post_id);
 `
 
 == Screenshots ==
