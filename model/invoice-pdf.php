@@ -193,7 +193,7 @@ class InvoicePdf
         foreach ($order->get_tax_totals() as $tax) {
             $summaryTax += $tax->amount;
             $tax_rate = \WC_Tax::get_rate_percent($tax->rate_id);
-            $summaryData[] = ['<strong>' . $tax_rate . ' '. $tax->label . '</strong>', '<strong>' . $formatter->format($tax->amount) . '</strong>'];
+            $summaryData[] = ['<strong>+ ' . $tax_rate . ' '. $tax->label . '</strong>', '<strong>' . $formatter->format($tax->amount) . '</strong>'];
         }
 
         $summaryData[] = [
