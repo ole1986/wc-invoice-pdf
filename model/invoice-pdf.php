@@ -106,7 +106,6 @@ class InvoicePdf
 
         $i = 1;
         $summary = 0;
-        $summaryTax = 0;
 
         $fees = $order->get_fees();
         $items = array_merge($items, $fees);
@@ -167,7 +166,6 @@ class InvoicePdf
             $row['total'] = $formatter->format($total);
 
             $summary += $total;
-            $summaryTax += $tax;
 
             $data[] = $row;
             $i++;
@@ -187,17 +185,22 @@ class InvoicePdf
             [
                 "<strong>".__('Summary', 'wc-invoice-pdf')."</strong>",
                 "<strong>".$formatter->format($summary)."</strong>"
-            ],
-            [
-                "<strong>+ 19% ".__('Tax', 'wc-invoice-pdf')."</strong>",
-                "<strong>".$formatter->format($summaryTax) ."</strong>"
-            ],
-            [
-                "<strong>".__('Total', 'wc-invoice-pdf')."</strong>",
-                "<strong>".$formatter->format($summary + $summaryTax)."</strong>"
             ]
         ];
 
+        $summaryTax = 0;
+
+        foreach ($order->get_tax_totals() as $tax) {
+            $summaryTax += $tax->amount;
+            $tax_rate = \WC_Tax::get_rate_percent($tax->rate_id);
+            $summaryData[] = ['<strong>' . $tax_rate . ' '. $tax->label . '</strong>', '<strong>' . $formatter->format($tax->amount) . '</strong>'];
+        }
+
+        $summaryData[] = [
+            "<strong>".__('Total', 'wc-invoice-pdf')."</strong>",
+            "<strong>".$formatter->format($summary + $summaryTax)."</strong>"
+        ];
+        
         $pdf->ezSetDy(-20);
 
         $pdf->ezTable($summaryData, null, '', ['width' => 200, 'gridlines' => 0, 'showHeadings' => 0,'shaded' => 0 ,'xPos' => 'right', 'xOrientation' => 'left', 'cols' => $colOptions ]);
