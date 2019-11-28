@@ -91,7 +91,7 @@ class AccountInvoice
         $order = $invoice->Order();
         ?>
         <h3><?php  _e('Invoice', 'wc-invoice-pdf'); ?> <?php echo $invoice->invoice_number ?></h3>
-        Zahlung via <?php echo $order->get_payment_method_title() ?>
+        via <?php echo $order->get_payment_method_title() ?>
         <p><?php _e('Order', 'woocommerce') ?># <?php echo $invoice->invoice_number ?></p>
 
         <?php if ($invoice->status & Invoice::PAID) : ?>
@@ -119,7 +119,16 @@ class AccountInvoice
             //$paypal_request = new WC_Gateway_Paypal_Request( $paypal );
             ?>
             <div style="text-align: center;">
-                <a href="<?php echo get_site_url() . '/wp-admin/admin.php?invoice=' . $invoiceID; ?>" class="button view"><?php  _e('Show');  ?></a>
+                <a href="<?php echo '?invoice=' . $invoiceID; ?>" class="button view"><?php  _e('Show');  ?></a>
+                &nbsp;&nbsp;&nbsp;
+                <a href="<?php echo $result['redirect'] ?>" class="button button-primary"><?php _e('Pay Now', 'wc-invoice-pdf') ?></a>
+            </div>
+        <?php elseif ($order->get_payment_method() == 'paynow') :
+            $paynow = new \WC_Gateway_Paynow();
+            $result = $paynow->process_payment($order->get_id());
+            ?>
+          <div style="text-align: center;">
+                <a href="<?php echo '?invoice=' . $invoiceID; ?>" class="button view"><?php  _e('Show');  ?></a>
                 &nbsp;&nbsp;&nbsp;
                 <a href="<?php echo $result['redirect'] ?>" class="button button-primary"><?php _e('Pay Now', 'wc-invoice-pdf') ?></a>
             </div>
