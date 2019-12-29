@@ -178,18 +178,17 @@ abstract class WC_ISPConfigProduct extends WC_Product
             return !is_subclass_of($item['data'], 'WC_ISPConfigProduct');
         });
 
-        array_map(function ($item) {
-            WC()->cart->remove_cart_item($item['key']);
-            return;
-        }, $otherProducts);
-
         $items = array_diff_key($items, $otherProducts);
 
-        foreach ($items as $current) {
-            if (!is_subclass_of($current['data'], 'WC_ISPConfigProduct')) {
-                continue;
+        if (count($items) > 0) {
+            array_map(function ($item) {
+                WC()->cart->remove_cart_item($item['key']);
+                return;
+            }, $otherProducts);
+
+            foreach ($items as $current) {
+                $current['data']->OnProductCheckoutFields($current['key'], $current);
             }
-            $current['data']->OnProductCheckoutFields($current['key'], $current);
         }
     }
 
