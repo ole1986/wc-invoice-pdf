@@ -220,6 +220,16 @@ abstract class WC_ISPConfigProduct extends WC_Product
             return 0;
         }
 
+        $items = WC()->cart->get_cart();
+
+        $relatedProducts = array_filter($items, function ($item) {
+            return is_subclass_of($item['data'], 'WC_ISPConfigProduct');
+        });
+
+        if (empty($relatedProducts)) {
+            return;
+        }
+
         $period = WC()->session->get('wc-recurring-subscription', 'm');
 
         do_action('wcinvoicepdf_order_period', $order_id, $period);
@@ -227,6 +237,10 @@ abstract class WC_ISPConfigProduct extends WC_Product
 
     public static function OnCreateOrderItem($order_item, $item_key, $item)
     {
+        if (!is_subclass_of($item['data'], 'WC_ISPConfigProduct')) {
+            return $order_item;
+        }
+
         $item['data']->OnProductCheckoutSubmit($order_item, $item_key);
         return $order_item;
     }
