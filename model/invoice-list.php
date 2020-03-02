@@ -201,11 +201,12 @@ class InvoiceList extends \WP_List_Table
         $sortable = $this->get_sortable_columns();
         $this->_column_headers = array($columns, $hidden, $sortable);
 
-        $query = "SELECT i.id AS ID, i.customer_id, i.invoice_number, i.wc_order_id, i.created, i.due_date, i.paid_date, i.status, i.deleted, i.reminder_sent, u.user_login AS customer_name, u.user_email AS user_email, u.ID AS user_id, p.ID AS order_id, p.post_status, pm.meta_value AS ispconfig_period 
+        $query = "SELECT i.id AS ID, i.customer_id, i.invoice_number, i.wc_order_id, i.created, i.due_date, i.paid_date, i.status, i.deleted, i.reminder_sent, u.user_login AS customer_name, pm2.meta_value AS user_email, u.ID AS user_id, p.ID AS order_id, p.post_status, pm.meta_value AS ispconfig_period 
                     FROM {$wpdb->prefix}".Invoice::TABLE." AS i 
                     LEFT JOIN {$wpdb->users} AS u ON u.ID = i.customer_id
                     LEFT JOIN {$wpdb->posts} AS p ON p.ID = i.wc_order_id
                     LEFT JOIN {$wpdb->postmeta} AS pm ON (p.ID = pm.post_id AND pm.meta_key = '_ispconfig_period')
+                    LEFT JOIN {$wpdb->postmeta} AS pm2 ON (p.ID = pm2.post_id AND pm2.meta_key = '_billing_email')
                     WHERE";
         
         if (isset($_GET['post_status']) && $_GET['post_status'] == 'deleted') {
@@ -254,7 +255,7 @@ class InvoiceList extends \WP_List_Table
         $this->applySorting($query);
         $this->applyPaging($query);
         $this->items = $wpdb->get_results($query, OBJECT);
-
+        
         $this->postPaging();
     }
 
