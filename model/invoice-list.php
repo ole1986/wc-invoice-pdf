@@ -32,9 +32,11 @@ class InvoiceList extends \WP_List_Table
         }
         ?>
         <style type="text/css">
+            .wp-list-table .column-invoice_number { width: 150px; }
             .wp-list-table .column-created { width: 150px; }
-            .wp-list-table .column-status { width: 100px; }
+            .wp-list-table .column-status { width: 250px; }
             .wp-list-table .column-due_date { width: 200px; }
+            .wp-list-table .column-paid_date { width: 200px; }
             @media screen and (min-width: 782px) {
                 .sm-visible {
                     display: none;
