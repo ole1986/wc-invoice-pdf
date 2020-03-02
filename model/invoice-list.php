@@ -30,14 +30,25 @@ class InvoiceList extends \WP_List_Table
         if ('wcinvoicepdf_invoices' != $page) {
             return;
         }
-
-        echo '<style type="text/css">';
-        echo '.wp-list-table .column-ID { width: 40px; }';
-        echo '.wp-list-table .column-created { width: 150px; }';
-        //echo '.wp-list-table .column-status { width: 100px; }';
-        echo '.wp-list-table .column-due_date { width: 200px; }';
-        
-        echo '</style>';
+        ?>
+        <style type="text/css">
+            .wp-list-table .column-created { width: 150px; }
+            .wp-list-table .column-status { width: 100px; }
+            .wp-list-table .column-due_date { width: 200px; }
+            @media screen and (min-width: 782px) {
+                .sm-visible {
+                    display: none;
+                }
+            }
+            @media screen and (max-width: 782px) {
+                .sm-visible {
+                    display: inline-block;
+                    margin-left: 1em;
+                }
+            }
+            
+        </style>
+        <?php
     }
 
     public function get_sortable_columns()
@@ -56,7 +67,6 @@ class InvoiceList extends \WP_List_Table
     {
         $columns = [
             'cb' => '<input type="checkbox" />',
-            'ID' => 'ID',
             'invoice_number' => __('Invoice', 'wc-invoice-pdf'),
             'customer_name'  => __('Customer', 'woocommerce'),
             'order_id'   => __('Order', 'woocommerce'),
@@ -134,7 +144,7 @@ class InvoiceList extends \WP_List_Table
             ];
         }
         
-        return sprintf('<a target="_blank" href="?page=wcinvoicepdf_invoice&invoice=%s">%s</a> %s', $item->ID, $item->invoice_number, $this->row_actions($actions));
+        return sprintf('<a target="_blank" href="?page=wcinvoicepdf_invoice&invoice=%s">%s</a> <span class="sm-visible"><strong>'. __('Customer', 'woocommerce') .':</strong> %s</span> %s', $item->ID, $item->invoice_number, $item->customer_name, $this->row_actions($actions));
     }
 
     public function column_due_date($item)
