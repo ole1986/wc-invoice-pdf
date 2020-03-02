@@ -61,11 +61,12 @@ do_action('wcinvoicepdf_invoice_metabox', $post_id);
 
 1. Display the invoices from the admin pane
 2. Show customer all invoices and pending payments
-3. Invoice metabox shown in woocommerce order
-4. Order notes when submitting to customer
-5. Customize PDF Template for invoices
-6. Task planer settings (recurring, reminders, ...)
-7. Email content for payments reminders
+3. Invoice metaboxes shown in woocommerce order
+4. WooCommerce subscription and ISPConfig (optional) settings
+5. Invoice PDF template
+6. Additional invoice pdf blocks
+7. Task scheduler settings (recurring, reminders, ...)
+8. Invoice email reminder and payment templates
 
 == License ==
 
