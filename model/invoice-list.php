@@ -33,8 +33,8 @@ class InvoiceList extends \WP_List_Table
         ?>
         <style type="text/css">
             .wp-list-table .column-invoice_number { width: 150px; }
-            .wp-list-table .column-created { width: 150px; }
-            .wp-list-table .column-status { width: 250px; }
+            .wp-list-table .column-created { width: 160px; }
+            .wp-list-table .column-status { width: 230px; }
             .wp-list-table .column-due_date { width: 200px; }
             .wp-list-table .column-paid_date { width: 200px; }
             @media screen and (min-width: 782px) {
@@ -122,7 +122,7 @@ class InvoiceList extends \WP_List_Table
         $stat = wc_get_order_statuses();
         $recurr = '';
         if (!empty($item->ispconfig_period)) {
-            $recurr = __('Payment period', 'wc-invoice-pdf') .': ' . __(Invoice::$PERIOD[$item->ispconfig_period], 'wc-invoice-pdf');
+            $recurr = __('Payment interval', 'wc-invoice-pdf') .': ' . __(Invoice::$PERIOD[$item->ispconfig_period], 'wc-invoice-pdf');
         }
         return '<a href="post.php?post='.$item->order_id. '&action=edit" >#' . $item->order_id. ' ('.$stat[$item->post_status].')</a><br />' . $recurr;
     }
@@ -141,8 +141,12 @@ class InvoiceList extends \WP_List_Table
         
         if (!$item->deleted) {
             $actions = [
-                'delete'=> sprintf('<a href="?page=%s&action=%s&id=%s" onclick="WCInvoicePdfAdmin.ConfirmDelete(this)" data-name="%s">Delete</a>', $page, 'delete', $item->ID, $item->invoice_number),
+                'delete'=> sprintf('<a href="?page=%s&action=%s&id=%s" onclick="WCInvoicePdfAdmin.ConfirmDelete(this)" data-name="%s">%s</a>', $page, 'delete', $item->ID, $item->invoice_number, _x( 'Trash', 'verb' )),
                 'quote' => sprintf('<a href="?page=wcinvoicepdf_invoice&order=%s&offer=1" target="_blank">%s</a>', $item->order_id, __('Offer', 'wc-invoice-pdf')),
+            ];
+        } else {
+            $actions = [
+                'delete'=> sprintf('<a href="?page=%s&post_status=deleted&action=%s&id=%s" onclick="WCInvoicePdfAdmin.ConfirmDelete(this)" data-name="%s">%s</a>', $page, 'deletefull', $item->ID, $item->invoice_number, __('Delete Permanently'))
             ];
         }
         
@@ -226,6 +230,9 @@ class InvoiceList extends \WP_List_Table
             switch ($action) {
                 case 'delete':
                     $invoice->Delete();
+                    break;
+                case 'deletefull':
+                    $invoice->Delete(true);
                     break;
                 case 'sent':
                     $invoice->Submitted();

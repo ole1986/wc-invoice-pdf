@@ -162,11 +162,17 @@ class Invoice
     /**
      * mark the current invoice as deleted
      */
-    public function Delete()
+    public function Delete($hard = false)
     {
         global $wpdb;
 
-        if (!empty($this->ID)) {
+        if (empty($this->ID)) {
+            return;
+        }
+
+        if ($hard) {
+            $wpdb->query($wpdb->prepare("DELETE FROM {$wpdb->prefix}".self::TABLE." WHERE deleted = 1 AND ID = %s", $this->ID));
+        } else {
             $wpdb->query($wpdb->prepare("UPDATE {$wpdb->prefix}".self::TABLE." SET deleted = 1 WHERE ID = %s", $this->ID));
         }
     }
