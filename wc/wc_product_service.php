@@ -65,7 +65,6 @@ class WC_Product_Hour extends WC_Product
 
     public static function hour_product_data_tab($product_data_tabs)
     {
-        $product_data_tabs['general']['class'][] = 'show_if_hour';
         $product_data_tabs['linked_product']['class'][] = 'hide_if_hour';
         $product_data_tabs['attribute']['class'][] = 'hide_if_hour';
         $product_data_tabs['advanced']['class'][] = 'hide_if_hour';
@@ -84,7 +83,7 @@ class WC_Product_Hour extends WC_Product
     public static function product_data_fields()
     {
         echo '<div id="hour_data_tab" class="panel woocommerce_options_panel">';
-        woocommerce_wp_checkbox(['id' => '_hour_useminute', 'label' => __('minutes', 'wc-invoice-pdf'), 'description' => __("To the minute calculation", 'wc-invoice-pdf')]);  
+        woocommerce_wp_checkbox(['id' => '_hour_useminute', 'label' => __('minutes', 'wc-invoice-pdf'), 'description' => __("To the minute calculation", 'wc-invoice-pdf')]);
         echo '</div>';
     }
 
@@ -102,17 +101,14 @@ class WC_Product_Hour extends WC_Product
 
         $suffix = __('Hour' . $plural, 'wc-invoice-pdf');
 
-        if($shorten)
-        {
+        if ($shorten) {
             $suffix = 'h';
         }
 
         
-        if($this->get_meta('_hour_useminute', true))
-        {
+        if ($this->get_meta('_hour_useminute', true)) {
             $suffix = __('minute' . $plural, 'wc-invoice-pdf');
-            if($shorten)
-            {
+            if ($shorten) {
                 $suffix = 'min';
             }
         }

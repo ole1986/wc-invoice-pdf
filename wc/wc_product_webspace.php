@@ -53,7 +53,6 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
 
     public static function ispconfig_product_data_tab($product_data_tabs)
     {
-        $product_data_tabs['general']['class'][] = 'show_if_webspace';
         $product_data_tabs['linked_product']['class'][] = 'hide_if_webspace';
         $product_data_tabs['attribute']['class'][] = 'hide_if_webspace';
         $product_data_tabs['advanced']['class'][] = 'hide_if_webspace';
