@@ -1,10 +1,13 @@
 <?php
 namespace WCInvoicePdf\Model;
 
-include_once WCINVOICEPDF_PLUGIN_DIR . 'vendor/rospdf/pdf-php/src/Cezpdf.php';
-
 class InvoicePdf
 {
+    public function __construct()
+    {
+        // only load rospdf library when its necessary to avoid class conflicts
+        include_once WCINVOICEPDF_PLUGIN_DIR . 'vendor/rospdf/pdf-php/src/Cezpdf.php';
+    }
     /**
      * Used to build a pdf invoice using the WC_Order object
      * @param {WC_Order} $order - the woocommerce order object
