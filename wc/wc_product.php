@@ -8,13 +8,11 @@ if (!class_exists('WC_Product')) {
 }
 
 // whenever a product should be added to cart, check for subscribable products
-add_action('woocommerce_add_to_cart', ['WC_ISPConfigProduct', 'AddItemToCart'], 20, 2);
-
+add_filter('woocommerce_add_cart_item', ['WC_ISPConfigProduct', 'AddItemToCart'], 20, 2);
 // specify the product as subscription by adding the period next to the subtotal
 add_filter('woocommerce_cart_item_subtotal', ['WC_ISPConfigProduct', 'ItemSubtotal'], 20, 3);
 // use the quantity field to printout "Subscription" instead of the amount
 add_filter('woocommerce_cart_item_quantity', ['WC_ISPConfigProduct', 'ItemQuantity'], 10, 3);
-
 
 // Choice and update subscription
 add_action('woocommerce_cart_contents', ['WC_ISPConfigProduct', 'SubscribeContent'], 20, 0);
@@ -79,6 +77,8 @@ abstract class WC_ISPConfigProduct extends WC_Product
         }
 
         $period = WC()->session->get('wc-recurring-subscription', 'm');
+
+
 
         ?>
         <script>
@@ -147,17 +147,11 @@ abstract class WC_ISPConfigProduct extends WC_Product
         echo "<br />" . $periodName;
     }
 
-    public static function AddItemToCart($cart_item_key, $product_id)
+
+    public static function AddItemToCart($item, $item_key)
     {
-        $items = WC()->cart->get_cart();
-        $item = $items[$cart_item_key];
-
-        if (!isset($item)) {
-            return;
-        }
-
         if (!is_subclass_of($item['data'], 'WC_ISPConfigProduct')) {
-            return;
+            return $item;
         }
 
         if (!empty(WCInvoicePdf::$OPTIONS['wc_order_subscriptions'])) {
@@ -165,9 +159,9 @@ abstract class WC_ISPConfigProduct extends WC_Product
         }
 
         $period = WC()->session->get('wc-recurring-subscription', 'm');
+        $item['quantity'] = $period == 'y' ? 12 : 1;
 
-        // update the quantity to be either 12 (one year) or 1 (one month)
-        WC()->cart->set_quantity($cart_item_key, $period == 'y' ? 12 : 1);
+        return $item;
     }
 
     /**
@@ -343,36 +337,20 @@ abstract class WC_ISPConfigProduct extends WC_Product
                 $product = $item->get_product();
                 $product_className = get_class($product);
 
-                $webOpt = [];
-
-                // fill the product meta into options
-                foreach ($product->get_meta_data() as $meta) {
-                    $metaKey = $meta->get_data()['key'];
-                    $needle = 'ispconfig_';
-                    
-                    if (substr($metaKey, 0, strlen($needle)) !== $needle) {
-                        continue;
-                    }
-
-                    $webOpt[substr($metaKey, strlen($needle))] = $meta->get_data()['value'];
-                }
 
                 switch ($product_className) {
                     case 'WC_Product_Webspace':
                         // fetch the given domain from WC_Order_Item for a website product
                         $domain = $item->get_meta('Domain');
 
-                        $webOpt['domain'] = $domain;
+                        $webOpt = ['domain' => $domain];
 
-                        if (!empty($limitTemplate) && !array_key_exists('hd_quota', $webOpt)) {
+                        // when a limit template is found, apply the qouta and traffic limits to the website
+                        if (!empty($limitTemplate)) {
                             $webOpt['hd_quota'] = $limitTemplate['limit_web_quota'];
-                        }
-
-                        if (!empty($limitTemplate) && !array_key_exists('traffic_quota', $webOpt)) {
                             $webOpt['traffic_quota'] = $limitTemplate['limit_traffic_quota'];
                         }
-
-                        //Ispconfig::$Self->AddWebsite($webOpt);
+                        Ispconfig::$Self->AddWebsite($webOpt);
 
                         $order->add_order_note('<span style="color: green">ISPCONFIG: Website '. $domain .' added to client '. $opt['username'] .'</span>');
                         break;
@@ -397,6 +375,16 @@ abstract class WC_ISPConfigProduct extends WC_Product
 
         $order->set_status('on-hold');
         return;
+    }
+
+    /**
+     * ORDER: When order has changed to status to "processing" assume its payed and REGISTER the user in ISPCONFIG (through SOAP)
+     */
+    public static function registerFromOrder($order)
+    {
+        
+
+        return false;
     }
 
     public function is_purchasable()

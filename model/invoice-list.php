@@ -141,7 +141,7 @@ class InvoiceList extends \WP_List_Table
         
         if (!$item->deleted) {
             $actions = [
-                'delete'=> sprintf('<a href="?page=%s&action=%s&id=%s" onclick="WCInvoicePdfAdmin.ConfirmDelete(this)" data-name="%s">%s</a>', $page, 'delete', $item->ID, $item->invoice_number, _x('Trash', 'verb')),
+                'delete'=> sprintf('<a href="?page=%s&action=%s&id=%s" onclick="WCInvoicePdfAdmin.ConfirmDelete(this)" data-name="%s">%s</a>', $page, 'delete', $item->ID, $item->invoice_number, _x( 'Trash', 'verb' )),
                 'quote' => sprintf('<a href="?page=wcinvoicepdf_invoice&order=%s&offer=1" target="_blank">%s</a>', $item->order_id, __('Offer', 'wc-invoice-pdf')),
             ];
         } else {
