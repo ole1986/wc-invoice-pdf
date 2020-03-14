@@ -8,11 +8,13 @@ if (!class_exists('WC_Product')) {
 }
 
 // whenever a product should be added to cart, check for subscribable products
-add_filter('woocommerce_add_cart_item', ['WC_ISPConfigProduct', 'AddItemToCart'], 20, 2);
+add_action('woocommerce_add_to_cart', ['WC_ISPConfigProduct', 'AddItemToCart'], 20, 2);
+
 // specify the product as subscription by adding the period next to the subtotal
 add_filter('woocommerce_cart_item_subtotal', ['WC_ISPConfigProduct', 'ItemSubtotal'], 20, 3);
 // use the quantity field to printout "Subscription" instead of the amount
 add_filter('woocommerce_cart_item_quantity', ['WC_ISPConfigProduct', 'ItemQuantity'], 10, 3);
+
 
 // Choice and update subscription
 add_action('woocommerce_cart_contents', ['WC_ISPConfigProduct', 'SubscribeContent'], 20, 0);
@@ -77,8 +79,6 @@ abstract class WC_ISPConfigProduct extends WC_Product
         }
 
         $period = WC()->session->get('wc-recurring-subscription', 'm');
-
-
 
         ?>
         <script>
@@ -147,11 +147,17 @@ abstract class WC_ISPConfigProduct extends WC_Product
         echo "<br />" . $periodName;
     }
 
-
-    public static function AddItemToCart($item, $item_key)
+    public static function AddItemToCart($cart_item_key, $product_id)
     {
+        $items = WC()->cart->get_cart();
+        $item = $items[$cart_item_key];
+
+        if (!isset($item)) {
+            return;
+        }
+
         if (!is_subclass_of($item['data'], 'WC_ISPConfigProduct')) {
-            return $item;
+            return;
         }
 
         if (!empty(WCInvoicePdf::$OPTIONS['wc_order_subscriptions'])) {
@@ -159,9 +165,9 @@ abstract class WC_ISPConfigProduct extends WC_Product
         }
 
         $period = WC()->session->get('wc-recurring-subscription', 'm');
-        $item['quantity'] = $period == 'y' ? 12 : 1;
 
-        return $item;
+        // update the quantity to be either 12 (one year) or 1 (one month)
+        WC()->cart->set_quantity($cart_item_key, $period == 'y' ? 12 : 1);
     }
 
     /**
