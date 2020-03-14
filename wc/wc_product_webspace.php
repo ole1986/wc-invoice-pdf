@@ -132,13 +132,22 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
      */
     public static function webspace_metadata_save($post_id)
     {
+        $foundMeta = array_filter(get_post_meta($post_id), function ($k) {
+            $needle = 'ispconfig_';
+            return substr($k, 0, strlen($needle)) === $needle;
+        }, ARRAY_FILTER_USE_KEY);
+
         $webspace_meta = array_filter($_POST, function ($k) {
             $needle = 'ispconfig_';
             return substr($k, 0, strlen($needle)) === $needle;
         }, ARRAY_FILTER_USE_KEY);
 
-        foreach ($webspace_meta as $k => $v) {
-            if (!empty($v)) {
+        $combined = array_merge($foundMeta, $webspace_meta);
+
+        foreach ($combined as $k => $v) {
+            if (!isset($webspace_meta[$k])) {
+                delete_post_meta($post_id, $k);
+            } elseif (!empty($v)) {
                 update_post_meta($post_id, $k, $v);
             } else {
                 delete_post_meta($post_id, $k);
