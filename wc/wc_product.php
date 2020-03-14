@@ -343,20 +343,36 @@ abstract class WC_ISPConfigProduct extends WC_Product
                 $product = $item->get_product();
                 $product_className = get_class($product);
 
+                $webOpt = [];
+
+                // fill the product meta into options
+                foreach ($product->get_meta_data() as $meta) {
+                    $metaKey = $meta->get_data()['key'];
+                    $needle = 'ispconfig_';
+                    
+                    if (substr($metaKey, 0, strlen($needle)) !== $needle) {
+                        continue;
+                    }
+
+                    $webOpt[substr($metaKey, strlen($needle))] = $meta->get_data()['value'];
+                }
 
                 switch ($product_className) {
                     case 'WC_Product_Webspace':
                         // fetch the given domain from WC_Order_Item for a website product
                         $domain = $item->get_meta('Domain');
 
-                        $webOpt = ['domain' => $domain];
+                        $webOpt['domain'] = $domain;
 
-                        // when a limit template is found, apply the qouta and traffic limits to the website
-                        if (!empty($limitTemplate)) {
+                        if (!empty($limitTemplate) && !array_key_exists('hd_quota', $webOpt)) {
                             $webOpt['hd_quota'] = $limitTemplate['limit_web_quota'];
+                        }
+
+                        if (!empty($limitTemplate) && !array_key_exists('traffic_quota', $webOpt)) {
                             $webOpt['traffic_quota'] = $limitTemplate['limit_traffic_quota'];
                         }
-                        Ispconfig::$Self->AddWebsite($webOpt);
+
+                        //Ispconfig::$Self->AddWebsite($webOpt);
 
                         $order->add_order_note('<span style="color: green">ISPCONFIG: Website '. $domain .' added to client '. $opt['username'] .'</span>');
                         break;
@@ -381,16 +397,6 @@ abstract class WC_ISPConfigProduct extends WC_Product
 
         $order->set_status('on-hold');
         return;
-    }
-
-    /**
-     * ORDER: When order has changed to status to "processing" assume its payed and REGISTER the user in ISPCONFIG (through SOAP)
-     */
-    public static function registerFromOrder($order)
-    {
-        
-
-        return false;
     }
 
     public function is_purchasable()
