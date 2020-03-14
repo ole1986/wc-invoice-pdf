@@ -4,7 +4,8 @@ use WCInvoicePdf\WCInvoicePdf;
 
 // when adding 'webspace' product to cart
 add_action('woocommerce_webspace_add_to_cart', ['WC_ISPConfigProduct', 'add_to_cart'], 30);
-add_filter('woocommerce_product_data_tabs', ['WC_Product_Webspace','ispconfig_product_data_tab']);
+add_action('woocommerce_product_data_panels', ['WC_Product_Webspace','product_data_fields']);
+add_filter('woocommerce_product_data_tabs', ['WC_Product_Webspace','product_data_tab']);
 add_action('woocommerce_process_product_meta_webspace', ['WC_Product_Webspace', 'webspace_metadata_save']);
 
 // display the domain inside WC-InvoicePdf metabox
@@ -51,13 +52,63 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
         <?php
     }
 
-    public static function ispconfig_product_data_tab($product_data_tabs)
+    public static function product_data_tab($product_data_tabs)
     {
         $product_data_tabs['linked_product']['class'][] = 'hide_if_webspace';
         $product_data_tabs['attribute']['class'][] = 'hide_if_webspace';
         $product_data_tabs['advanced']['class'][] = 'hide_if_webspace';
        
+        $product_data_tabs['webspace_data_tab'] = array(
+            'label' => __('Webspace', 'wc-invoice-pdf'),
+            'target' => 'webspace_data_tab',
+            'class' => 'show_if_webspace'
+        );
+
         return $product_data_tabs;
+    }
+
+    public static function product_data_fields()
+    {
+        echo '<div id="webspace_data_tab" class="panel woocommerce_options_panel">';
+        echo '<p><strong>ISPConfig3</strong></p>';
+        woocommerce_wp_text_input([
+            'label' => __('Harddisk quota', 'wc-invoice-pdf') . ' (MB)',
+            'id' => 'ispconfig_hd_quota',
+            'name' => 'ispconfig_hd_quota',
+            'data_type' => 'decimal'
+        ]);
+        woocommerce_wp_text_input([
+            'label' => __('Traffic quota', 'wc-invoice-pdf') . ' (MB)',
+            'id' => 'ispconfig_traffic_quota',
+            'name' => 'ispconfig_traffic_quota',
+            'data_type' => 'decimal'
+        ]);
+
+        woocommerce_wp_checkbox([
+            'label' => __('Enable SSL', 'wc-invoice-pdf'),
+            'id' => 'ispconfig_ssl',
+            'name' => 'ispconfig_ssl',
+            'cbvalue' => 'y'
+        ]);
+        woocommerce_wp_checkbox([
+            'label' => __('Enable Letsencrypt', 'wc-invoice-pdf'),
+            'id' => 'ispconfig_ssl_letsencrypt',
+            'name' => 'ispconfig_ssl_letsencrypt',
+            'cbvalue' => 'y'
+        ]);
+        woocommerce_wp_checkbox([
+            'label' => __('Force HTTPS', 'wc-invoice-pdf'),
+            'id' => 'ispconfig_rewrite_to_https',
+            'name' => 'ispconfig_rewrite_to_https',
+            'cbvalue' => 'y'
+        ]);
+        
+        echo '<p style="margin-top: 1em">
+            <i>Other ISPConfig3 properties can be achieved with Client Limit Templates and configured in
+            <a href="admin.php?page=wcinvoicepdf_settings">WC-Invoices -> Settings</a>
+            </i>
+        </p>';
+        echo '</div>';
     }
 
     public static function Metabox($post_id)
@@ -81,8 +132,17 @@ class WC_Product_Webspace extends WC_ISPConfigProduct
      */
     public static function webspace_metadata_save($post_id)
     {
-        if (!empty($_POST['_ispconfig_template_id'])) {
-            update_post_meta($post_id, '_ispconfig_template_id', $_POST['_ispconfig_template_id']);
+        $webspace_meta = array_filter($_POST, function ($k) {
+            $needle = 'ispconfig_';
+            return substr($k, 0, strlen($needle)) === $needle;
+        }, ARRAY_FILTER_USE_KEY);
+
+        foreach ($webspace_meta as $k => $v) {
+            if (!empty($v)) {
+                update_post_meta($post_id, $k, $v);
+            } else {
+                delete_post_meta($post_id, $k);
+            }
         }
     }
 
