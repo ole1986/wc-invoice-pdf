@@ -57,7 +57,7 @@ class Invoice
         $ok = false;
         if (!empty($id) && is_integer($id)) {
             $ok = $this->load($id);
-        } elseif (!empty($id) && is_object($id) && is_subclass_of($id, 'WC_Order')) {
+        } elseif (!empty($id) && is_object($id) && (is_a($id, 'WC_Order') || is_subclass_of($id, 'WC_Order'))) {
             $ok = $this->loadFromOrder($id);
         } elseif (!empty($id) && is_object($id) && (get_class($id) == 'stdClass' || $id instanceof Invoice)) {
             $ok = $this->loadFromStd($id);
