@@ -16,4 +16,4 @@ jobs:
     - name: Write PreRelease Notes
       env:
         GREN_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: gren release --override -P --tags=${{ github.event.ref }}
+      run: gren release --override -d --tags=${{ github.event.ref }}
