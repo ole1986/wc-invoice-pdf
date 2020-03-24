@@ -372,7 +372,7 @@ abstract class WC_ISPConfigProduct extends WC_Product
                             $webOpt['traffic_quota'] = $limitTemplate['limit_traffic_quota'];
                         }
 
-                        //Ispconfig::$Self->AddWebsite($webOpt);
+                        Ispconfig::$Self->AddWebsite($webOpt);
 
                         $order->add_order_note('<span style="color: green">ISPCONFIG: Website '. $domain .' added to client '. $opt['username'] .'</span>');
                         break;
