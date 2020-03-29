@@ -19,6 +19,12 @@ class InvoicePdf
         
         $order = $invoice->Order();
 
+        $isB2C = !empty(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_b2c']) ? true : false;
+
+        if (!empty($order->get_meta('_wc_pdf_b2c'))) {
+            $isB2C = true;
+        }
+
         $formatStyle = \NumberFormatter::DECIMAL;
         $formatter = new \NumberFormatter(get_locale(), $formatStyle);
         $formatter->setPattern("#0.00 " . $order->get_currency());
@@ -151,7 +157,7 @@ class InvoicePdf
             $total = round($v['total'], 2);
             $tax = round($v['total_tax'], 2);
 
-            if (\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_b2c']) {
+            if ($isB2C) {
                 $total += $tax;
             }
 
@@ -202,7 +208,7 @@ class InvoicePdf
             $summaryTax += $tax->amount;
             $tax_rate = \WC_Tax::get_rate_percent($tax->rate_id);
 
-            if (\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_b2c']) {
+            if ($isB2C) {
                 $taxStr = __(sprintf("includes %s %s", $tax_rate, $tax->label), 'wc-invice-pdf');
             } else {
                 $taxStr = __(sprintf("plus %s %s", $tax_rate, $tax->label), 'wc-invice-pdf');
@@ -211,7 +217,7 @@ class InvoicePdf
             $summaryData[] = ['<strong>' . $taxStr . '</strong>', '<strong>' . $formatter->format($tax->amount) . '</strong>'];
         }
 
-        if (empty(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_b2c'])) {
+        if (!$isB2C) {
             $summaryData[] = ["<strong>".__('Total', 'wc-invoice-pdf')."</strong>", "<strong>".$formatter->format($summary + $summaryTax)."</strong>"];
         }
         
