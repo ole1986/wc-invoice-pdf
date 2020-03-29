@@ -222,6 +222,12 @@ msgstr "Gesamt"
 msgid "Tax"
 msgstr "MwSt."
 
+msgid "includes %s %s"
+msgstr "enthält %s %s"
+
+msgid "plus %s %s"
+msgstr "zzgl. %s %s"
+
 msgid "Summary"
 msgstr "Summe"
 
@@ -278,3 +284,10 @@ msgstr "Kunde entscheidet"
 
 msgid "Allow the customer to choose between the subscriptions during checkout or fix a value"
 msgstr "Erlaube dem Kunden die Auswahl eines Abonnement oder setze den Wert fest"
+
+msgid "Enable B2C"
+msgstr "Aktiviere B2C"
+
+msgid "Create invoice compatible for Business to Customer (B2C) relationship"
+msgstr "Erstelle Business to Customer (B2C) kompatible Rechnungen"
+
