@@ -223,7 +223,7 @@ class Invoice
         $this->Recurring();
         if (!empty($this->order) && is_object($this->order)) {
             // reset the payment status for recurring invoices (customer has to pay first)
-            unset($this->order->_paid_date);
+            $this->order->set_date_paid(null);
         }
         $this->makeNew();
     }
