@@ -104,7 +104,7 @@ class InvoiceList extends \WP_List_Table
     public function column_status($item)
     {
         $page = ( isset($_REQUEST['page']) ) ? urlencode($_REQUEST['page']) : '';
-        $action = [];
+        $actions = [];
 
         if (!$item->deleted) {
             $actions = [

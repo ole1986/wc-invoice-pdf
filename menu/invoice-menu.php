@@ -153,7 +153,7 @@ class InvoiceMenu
                     <?php endif; ?>
                     |
                     <?php if (!isset($_GET['post_status'])) : ?>
-                        <a href="<?php echo $_REQUEST['URL'] . '?' . $_SERVER['QUERY_STRING'] . '&post_status=deleted'; ?>"><?php printf(__('Trash <span class="count">(%s)</span>'), $invList->total_trash_rows) ?></a>
+                        <a href="<?php echo '?' . $_SERVER['QUERY_STRING'] . '&post_status=deleted'; ?>"><?php printf(__('Trash <span class="count">(%s)</span>'), $invList->total_trash_rows) ?></a>
                     <?php else : ?>
                         <?php printf(__('Trash <span class="count">(%s)</span>'), $invList->total_trash_rows) ?>
                     <?php endif; ?>
