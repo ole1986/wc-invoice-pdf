@@ -32,11 +32,9 @@ class InvoiceList extends \WP_List_Table
         }
         ?>
         <style type="text/css">
-            .wp-list-table .column-invoice_number { width: 150px; }
-            .wp-list-table .column-created { width: 160px; }
-            .wp-list-table .column-status { width: 230px; }
-            .wp-list-table .column-due_date { width: 200px; }
-            .wp-list-table .column-paid_date { width: 200px; }
+            .wp-list-table .column-invoice_number { width: 125px; }
+            .wp-list-table .column-due_date { width: 168px; }
+            .wp-list-table .column-paid_date { width: 168px; }
             @media screen and (min-width: 782px) {
                 .sm-visible {
                     display: none;
@@ -122,7 +120,7 @@ class InvoiceList extends \WP_List_Table
         $stat = wc_get_order_statuses();
         $recurr = '';
         if (!empty($item->ispconfig_period)) {
-            $recurr = __('Payment interval', 'wc-invoice-pdf') .': ' . __(Invoice::$PERIOD[$item->ispconfig_period], 'wc-invoice-pdf');
+            $recurr = __('Payments', 'wc-invoice-pdf') .': ' . __(Invoice::$PERIOD[$item->ispconfig_period], 'wc-invoice-pdf');
         }
         return '<a href="post.php?post='.$item->order_id. '&action=edit" >#' . $item->order_id. ' ('.$stat[$item->post_status].')</a><br />' . $recurr;
     }

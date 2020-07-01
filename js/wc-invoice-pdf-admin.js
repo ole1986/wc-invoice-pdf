@@ -178,11 +178,11 @@ function WCInvoicePdfAdminClass() {
         var $input = $('<input type="text" style="width: 150px;" />');
         $input.val(defaultValue);
 
-        var btnSave = $('<a />', { href: '#', text: 'Save' }).click(function () {
+        var btnSave = $('<a />', { href: 'javascript:void(0)', text: 'Save' }).click(function () {
             onSaveCallback($input.val());
             container.remove();
         });
-        var btnCancel = $('<a />', { style: 'margin-left: 1em;', href: '#', text: 'Cancel' }).click(function () {
+        var btnCancel = $('<a />', { style: 'margin-left: 1em;', href: 'javascript:void(0)', text: 'Cancel' }).click(function () {
             container.remove();
             onCancelCallback();
         });
