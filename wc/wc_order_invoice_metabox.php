@@ -11,6 +11,9 @@ class InvoiceMetabox
     {
         add_action('add_meta_boxes', [$this, 'invoice_box']);
         add_action('post_updated', [$this, 'invoice_submit']);
+        
+        // fill up the info about recurrence
+        add_action('manage_shop_order_posts_custom_column', [$this, 'fill_orders_recurring_column'], 20, 3);
     }
 
     public static function DoAjax()
@@ -99,6 +102,19 @@ class InvoiceMetabox
 
         if ($invoice->Save()) {
             $order->add_order_note(sprintf(__("Invoice %s successfully created", 'wc-invoice-pdf'), $invoice->invoice_number));
+        }
+    }
+
+    public function fill_orders_recurring_column($column)
+    {
+        global $post;
+
+        if ($column === 'order_number') {
+            $period = get_post_meta($post->ID, '_ispconfig_period', true);
+            $customer_email = get_post_meta($post->ID, '_billing_email', true, '');
+            if ($period) {
+                echo "<div style='font-size: 85%'>" . __('Payments', 'wc-invoice-pdf') . ': ' . __(Invoice::$PERIOD[$period], 'wc-invoice-pdf') .'</div>';
+            }
         }
     }
 }
