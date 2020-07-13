@@ -58,6 +58,9 @@ class InvoiceMetabox
         <p>
             <label class="post-attributes-label" for="wc_pdf_b2c"><?php _e('Enable B2C', 'wc-invoice-pdf') ?></label>
             <input id="wc_pdf_b2c" type="checkbox" data-id="<?php echo $post_id ?>" value="1" onclick="WCInvoicePdfAdmin.UpdateB2C(this)" <?php echo !empty($b2c) ? 'checked' : '' ?> />
+            <div>
+                <?php _e('Create invoice compatible for Business to Customer (B2C) relationship', 'wc-invoice-pdf') ?>
+            </div>
         </p>
         <p>
             <label class="post-attributes-label" for="ispconfig_period"><?php _e('Payment interval', 'wc-invoice-pdf') ?>:</label>
