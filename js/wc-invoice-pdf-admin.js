@@ -74,6 +74,21 @@ function WCInvoicePdfAdminClass() {
         $(obj).after(container);
     }
 
+    this.UpdateB2C = function(obj){
+        var order_id = parseInt($(obj).data('id'));
+        var value = $(obj).prop('checked');
+
+        var loading = $('<img />');
+        loading.attr('src', '/wp-admin/images/loading.gif');
+
+        $(obj).after(loading);
+
+        jsonRequest({ order_id: order_id, b2c: value}, 'InvoiceMetabox').done(function(resp){
+            
+        }).fail(function(){
+            alert('An error occured');
+        }).always(function () { loading.remove(); });
+    }
     /**
      * allow changing the recurring period from the invoice metabox in any order
      * @param {Object} obj sender object

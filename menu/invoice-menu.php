@@ -193,6 +193,9 @@ class InvoiceMenu
             </h2>
             <form method="post" action="">
                 <div id="wcinvoicepdf-order" class="inside tabs-panel" style="display: none;">
+                    <?php
+                        WCInvoicePdf::addField('wc_pdf_b2c', '<strong>' . __('Enable B2C', 'wc-invoice-pdf') . '</strong><br />' . __('Create invoice compatible for Business to Customer (B2C) relationship', 'wc-invoice-pdf'), 'checkbox');
+                    ?>
                     <p>
                     <label style="width: 220px; display:inline-block;vertical-align:top;">
                         <strong><?php _e('Subscription option', 'wc-invoice-pdf')  ?></strong><br />

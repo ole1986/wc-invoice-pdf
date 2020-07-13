@@ -18,10 +18,22 @@ class InvoiceMetabox
 
     public static function DoAjax()
     {
-        if (!empty($_POST['order_id']) && isset($_POST['period'])) {
+        $order_id = intval($_POST['order_id']);
+
+        if (empty($order_id)) {
+            wp_die();
+        }
+
+        if (isset($_POST['period'])) {
             $period = esc_attr($_POST['period']);
-            do_action('wcinvoicepdf_order_period', intval($_POST['order_id']), $period);
+            do_action('wcinvoicepdf_order_period', $order_id, $period);
             $result = $period;
+        } elseif (isset($_POST['b2c'])) {
+            if ($_POST['b2c'] == 'true') {
+                update_post_meta($order_id, '_wc_pdf_b2c', '1');
+            } else {
+                delete_post_meta($order_id, '_wc_pdf_b2c');
+            }
         }
 
         echo json_encode($result);
@@ -37,11 +49,19 @@ class InvoiceMetabox
     {
         global $post_id, $post;
 
+        $b2c = get_post_meta($post_id, '_wc_pdf_b2c', true);
         $period = get_post_meta($post_id, '_ispconfig_period', true);
         $customer_email = get_post_meta($post_id, '_billing_email', true, '');
 
         ?>
         <?php do_action('wcinvoicepdf_invoice_metabox', $post_id); ?>
+        <p>
+            <label class="post-attributes-label" for="wc_pdf_b2c"><?php _e('Enable B2C', 'wc-invoice-pdf') ?></label>
+            <input id="wc_pdf_b2c" type="checkbox" data-id="<?php echo $post_id ?>" value="1" onclick="WCInvoicePdfAdmin.UpdateB2C(this)" <?php echo !empty($b2c) ? 'checked' : '' ?> />
+            <div>
+                <?php _e('Create invoice compatible for Business to Customer (B2C) relationship', 'wc-invoice-pdf') ?>
+            </div>
+        </p>
         <p>
             <label class="post-attributes-label" for="ispconfig_period"><?php _e('Payment interval', 'wc-invoice-pdf') ?>:</label>
             <select id="ispconfig_period" data-id="<?php echo $post_id ?>" onchange="WCInvoicePdfAdmin.UpdatePeriod(this)">
