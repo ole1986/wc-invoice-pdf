@@ -117,7 +117,6 @@ class InvoiceMetabox
         $order = new \WC_Order($post);
 
         $invoice = new Invoice($order);
-        
         $invoice->makeNew();
 
         if ($invoice->Save()) {

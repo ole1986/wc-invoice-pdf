@@ -10,7 +10,6 @@ class Invoice
     const TABLE = 'ispconfig_invoice';
     const SUBMITTED = 1;
     const PAID = 2;
-    const RECURRING = 4;
     const EXPORTED = 8;
     const CANCELED = 128;
 
@@ -20,7 +19,6 @@ class Invoice
     public static $STATUS = [
         1 => 'Sent',
         2 => 'Paid',
-        4 => 'Recur.Task',
         8 => 'Exported',
         128 => 'Canceled'
     ];
@@ -54,17 +52,54 @@ class Invoice
      */
     public function __construct($id = null)
     {
-        $ok = false;
         if (!empty($id) && is_integer($id)) {
-            $ok = $this->load($id);
+            $this->load($id);
         } elseif (!empty($id) && is_object($id) && (is_a($id, 'WC_Order') || is_subclass_of($id, 'WC_Order'))) {
-            $ok = $this->loadFromOrder($id);
+            $this->loadFromOrder($id);
         } elseif (!empty($id) && is_object($id) && (get_class($id) == 'stdClass' || $id instanceof Invoice)) {
-            $ok = $this->loadFromStd($id);
-        }
-        
-        if (!$ok) {
+            $this->loadFromStd($id);
+        } else {
             $this->makeNew();
+        }
+    }
+
+    private function load($id)
+    {
+        global $wpdb;
+
+        $query = "SELECT * FROM {$wpdb->prefix}" . self::TABLE . " WHERE ID = %d LIMIT 1";
+        $item = $wpdb->get_row($wpdb->prepare($query, $id), OBJECT);
+
+        foreach (get_object_vars($item) as $key => $value) {
+            $this->$key = $value;
+        }
+    }
+    
+    private function loadFromStd($std)
+    {
+        foreach (get_object_vars($std) as $k => $v) {
+            $this->{$k} = $v;
+        }
+    }
+
+    private function loadFromOrder($order)
+    {
+        global $wpdb;
+
+        $this->order = $order;
+
+        $this->order->_ispconfig_period = get_post_meta($order->get_id(), "_ispconfig_period", true);
+
+        // get the latest actual from when WC_Order is defined
+        $query = "SELECT * FROM {$wpdb->prefix}" . self::TABLE . " WHERE wc_order_id = %d AND deleted = 0 ORDER BY created DESC LIMIT 1";
+        $item = $wpdb->get_row($wpdb->prepare($query, $order->get_id()), OBJECT);
+
+        if ($item != null) {
+            foreach (get_object_vars($item) as $key => $value) {
+                $this->$key = $value;
+            }
+        } else {
+            $this->isFirst = true;
         }
     }
 
@@ -87,11 +122,6 @@ class Invoice
         $this->status |= self::SUBMITTED;
     }
 
-    public function Recurring()
-    {
-        $this->status |= self::RECURRING;
-    }
-
     public function Exported()
     {
         $this->status |= self::EXPORTED;
@@ -111,14 +141,6 @@ class Invoice
             $this->$name = new \WC_Order($this->wc_order_id);
         }
         return $this->$name;
-    }
-
-    /**
-     * fetch the associated WC_Order through dynamic property 'order'
-     */
-    public function Order()
-    {
-        return $this->order;
     }
 
     /**
@@ -177,23 +199,43 @@ class Invoice
         }
     }
 
-    private function load($id)
-    {
-        global $wpdb;
-
-        $query = "SELECT * FROM {$wpdb->prefix}" . self::TABLE . " WHERE ID = %d LIMIT 1";
-        $item = $wpdb->get_row($wpdb->prepare($query, $id), OBJECT);
-
-        foreach (get_object_vars($item) as $key => $value) {
-            $this->$key = $value;
-        }
-
-        return (!empty($this->ID))?true:false;
-    }
-
     public function makeNew()
     {
         unset($this->ID);
+        
+        if (!empty($this->order) && is_object($this->order)) {
+            $Ym = $this->order->get_date_created()->date('Ym');
+            $this->invoice_number = $Ym . '-' . $this->order->get_id() . '-R';
+            $this->offer_number = $Ym . '-' . $this->order->get_id() . '-A';
+            $this->wc_order_id = $this->order->get_id();
+            $this->customer_id = $this->order->get_customer_id();
+        } else {
+            $this->invoice_number = 'YYYYMM-' . $this->order->get_id() . '-R';
+            $this->offer_number = 'YYYYMM-' . $this->order->get_id() . '-A';
+        }
+
+        $d = new \DateTime();
+
+        $this->created = $d->format('Y-m-d H:i:s');
+        // due date
+        $d->add(new \DateInterval('P14D'));
+        $this->due_date = $d->format('Y-m-d H:i:s');
+        $this->paid_date = null;
+        $this->status = 0;
+
+        // (re)create the pdf
+        $invoicePdf = new InvoicePdf();
+        $this->document = $invoicePdf->BuildInvoice($this);
+    }
+
+    public function makeRecurring()
+    {
+        unset($this->ID);
+
+        if (!empty($this->order) && is_object($this->order)) {
+            // reset the payment status for recurring invoices (customer has to pay first)
+            $this->order->set_date_paid(null);
+        }
 
         $d = new \DateTime();
 
@@ -216,52 +258,6 @@ class Invoice
         // (re)create the pdf
         $invoicePdf = new InvoicePdf();
         $this->document = $invoicePdf->BuildInvoice($this);
-    }
-
-    public function makeRecurring()
-    {
-        $this->Recurring();
-        if (!empty($this->order) && is_object($this->order)) {
-            // reset the payment status for recurring invoices (customer has to pay first)
-            $this->order->set_date_paid(null);
-        }
-        $this->makeNew();
-    }
-
-    private function loadFromStd($std)
-    {
-        foreach (get_object_vars($std) as $k => $v) {
-            $this->{$k} = $v;
-        }
-        return (!empty($this->ID))?true:false;
-    }
-
-    private function loadFromOrder($order)
-    {
-        global $wpdb;
-
-        $this->order = $order;
-
-        // load additional payment info
-        //$this->order->_paid_date = get_post_meta($order->get_id(), '_paid_date', true);
-
-        $this->order->_ispconfig_period = get_post_meta($order->get_id(), "_ispconfig_period", true);
-
-
-        // get the latest actual from when WC_Order is defined
-        $query = "SELECT * FROM {$wpdb->prefix}" . self::TABLE . " WHERE wc_order_id = %d AND deleted = 0 ORDER BY created DESC LIMIT 1";
-        $item = $wpdb->get_row($wpdb->prepare($query, $order->get_id()), OBJECT);
-
-        if ($item != null) {
-            foreach (get_object_vars($item) as $key => $value) {
-                $this->$key = $value;
-            }
-            return true;
-        } else {
-            $this->isFirst = true;
-        }
-
-        return false;
     }
 
     public static function GetStatus($s, $lang = false)

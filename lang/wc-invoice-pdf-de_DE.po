@@ -291,3 +291,5 @@ msgstr "Aktiviere B2C"
 msgid "Create invoice compatible for Business to Customer (B2C) relationship"
 msgstr "Erstelle Business to Customer (B2C) kompatible Rechnungen"
 
+msgid "Refund from %s"
+msgstr "Rückerstattung vom %s"

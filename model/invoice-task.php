@@ -243,7 +243,7 @@ class InvoiceTask
                 $v->reminder_sent++;
 
                 $invoice = new Invoice($v);
-                $order = $invoice->Order();
+                $order = $invoice->order;
 
                 if (!empty(WCInvoicePdf::$OPTIONS['wc_recur_test'])) {
                     $recipient = WCInvoicePdf::$OPTIONS['wc_mail_reminder'];
@@ -284,7 +284,7 @@ class InvoiceTask
      */
     private function parsePlaceHolder($message, $invoice)
     {
-        $customer = $invoice->Order()->get_user();
+        $customer = $invoice->order->get_user();
 
         $dueDate = new \DateTime($invoice->due_date);
         $today = new \DateTime();

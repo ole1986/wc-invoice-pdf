@@ -17,7 +17,7 @@ class InvoicePdf
     {
         setlocale(LC_ALL, get_locale());
         
-        $order = $invoice->Order();
+        $order = $invoice->order;
 
         $isB2C = !empty(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_b2c']) ? true : false;
 
@@ -35,8 +35,6 @@ class InvoicePdf
         if ($invoice->isFirst) {
             $items = array_merge($items, $order->get_items('shipping'));
         }
-
-        //error_log(print_r($items, true));
 
         $billing_info = str_replace('<br/>', "\n", $order->get_formatted_billing_address());
 
@@ -185,6 +183,17 @@ class InvoicePdf
             $i++;
         }
 
+        foreach ($order->get_refunds() as $v) {
+            $data[] = [
+                "num" => "",
+                "desc" => "\n<strong>" .sprintf(__('Refund from %s', 'wc-invoice-pdf'), \strftime('%x', $v->get_date_created()->getTimestamp())) . ":</strong>\n" . $v->reason . "\n",
+                "qty" => "",
+                "price" => "",
+                "total" => "\n" . $formatter->format($v->total),
+            ];
+
+            $summary -= $v->amount;
+        }
         
         $pdf->ezSetDy(-30);
 
@@ -209,9 +218,9 @@ class InvoicePdf
             $tax_rate = \WC_Tax::get_rate_percent($tax->rate_id);
 
             if ($isB2C) {
-                $taxStr = __(sprintf("includes %s %s", $tax_rate, $tax->label), 'wc-invice-pdf');
+                $taxStr = sprintf(__("includes %s %s", 'wc-invoice-pdf'), $tax_rate, $tax->label);
             } else {
-                $taxStr = __(sprintf("plus %s %s", $tax_rate, $tax->label), 'wc-invice-pdf');
+                $taxStr = sprintf(__("plus %s %s", 'wc-invoice-pdf'), $tax_rate, $tax->label);
             }
 
             $summaryData[] = ['<strong>' . $taxStr . '</strong>', '<strong>' . $formatter->format($tax->amount) . '</strong>'];
