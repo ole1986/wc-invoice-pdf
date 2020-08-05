@@ -183,6 +183,17 @@ class InvoicePdf
             $i++;
         }
 
+        foreach ($order->get_refunds() as $v) {
+            $data[] = [
+                "num" => "",
+                "desc" => "\n<strong>" .sprintf(__('Refund from %s', 'wc-invoice-pdf'), \strftime('%x', $v->get_date_created()->getTimestamp())) . ":</strong>\n" . $v->reason . "\n",
+                "qty" => "",
+                "price" => "",
+                "total" => "\n" . $formatter->format($v->total),
+            ];
+
+            $summary -= $v->amount;
+        }
         
         $pdf->ezSetDy(-30);
 
