@@ -261,6 +261,10 @@ abstract class WC_ISPConfigProduct extends WC_Product
             return $processing;
         }
 
+        if ($order->get_status() == 'pending') {
+            return $processing;
+        }
+
         $payment_method = $order->get_payment_method();
 
         if ($payment_method == 'bacs' && $order->get_status() == 'on-hold') {
@@ -382,11 +386,6 @@ abstract class WC_ISPConfigProduct extends WC_Product
             // TODO: Submit possible information to customer through email or WC_Order note
            
             Ispconfig::$Self->closeSoap();
-
-            // create the actual invoice for this order
-            $invoice = new Invoice($order);
-            $invoice->Paid();
-            $invoice->Save();
 
             return $processing;
         } catch (SoapFault $e) {

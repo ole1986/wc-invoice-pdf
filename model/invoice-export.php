@@ -52,7 +52,7 @@ class InvoiceExport
             $crDate  = strftime('%x', strtotime($i->created));
             $dueDate = strftime('%x', strtotime($i->due_date));
 
-            $combined = array_merge($invoice->Order()->get_items());
+            $combined = array_merge($invoice->order->get_items());
 
             foreach ($combined as $item) {
                 if (get_class($item) != 'WC_Order_Item_Product') {
