@@ -41,6 +41,7 @@ class Invoice
          'status' => 'smallint(6) NOT NULL DEFAULT 0',
          'due_date' => 'datetime NULL',
          'paid_date' => 'datetime NULL',
+         'reminder_sent' => 'tinyint(4) NOT NULL',
          'deleted' => 'BOOLEAN NOT NULL DEFAULT FALSE'
     ];
 
