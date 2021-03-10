@@ -2,6 +2,10 @@
 
 use WCInvoicePdf\WCInvoicePdf;
 
+if (!class_exists('WC_ISPConfigProduct')) {
+    return;
+}
+
 // when adding 'webspace' product to cart
 add_action('woocommerce_webspace_add_to_cart', ['WC_ISPConfigProduct', 'add_to_cart'], 30);
 add_action('woocommerce_product_data_panels', ['WC_Product_Webspace','product_data_fields']);

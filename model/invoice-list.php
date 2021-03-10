@@ -117,6 +117,10 @@ class InvoiceList extends \WP_List_Table
 
     public function column_order_id($item)
     {
+        if (!\function_exists('wc_get_order_statuses')) {
+            return 'WooCoomerce unavailable';
+        }
+
         $stat = wc_get_order_statuses();
         $recurr = '';
         if (!empty($item->ispconfig_period)) {

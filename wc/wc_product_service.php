@@ -1,4 +1,9 @@
 <?php
+
+if (!class_exists('WC_Product')) {
+    return;
+}
+
 add_filter('woocommerce_product_data_tabs', ['WC_Product_Hour','hour_product_data_tab']);
 
 add_action('woocommerce_product_data_panels', ['WC_Product_Hour','product_data_fields']);
