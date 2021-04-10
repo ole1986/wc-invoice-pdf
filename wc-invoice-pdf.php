@@ -222,7 +222,7 @@ class WCInvoicePdf
         } elseif ($type == 'email') {
             echo '<input type="'.$type.'" class="regular-text" name="'.$name.'" value="'.$optValue.'"'.$attrStr.' />';
         } elseif ($type == 'textarea') {
-            echo '<textarea name="'.$name.'" '.$attrStr.'>'  . strip_tags($optValue) . '</textarea>';
+            echo '<textarea name="'.$name.'" '.$attrStr.'>'  . esc_attr($optValue) . '</textarea>';
         } elseif ($type == 'checkbox') {
             echo '<input type="'.$type.'" name="'.$name.'" value="1"' . (($optValue == '1')?'checked':'') .' />';
         } elseif ($type == 'rte') {
