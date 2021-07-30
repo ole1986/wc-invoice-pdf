@@ -197,7 +197,13 @@ class InvoicePdf
         
         $pdf->ezSetDy(-30);
 
-        $pdf->ezTable($data, $cols, '', ['width' => '500','splitRows' => !boolval(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_keeprows'] ?? 0),'gridlines' => EZ_GRIDLINE_HEADERONLY, 'cols' => $colOptions]);
+        $pdf->ezTable($data, $cols, '', ['width' => '500',
+                                         'shaded' => 1,
+                                         'shadeHeadingCol'=> [0.8,0.8,0.8],
+                                         'shadeCol' => [0.94,0.94,0.94],
+                                         'splitRows' => !boolval(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_keeprows'] ?? 0),
+                                         'gridlines' => EZ_GRIDLINE_HEADERONLY + EZ_GRIDLINE_COLUMNS,
+                                         'cols' => $colOptions]);
     
         $colOptions = [
             ['justification' => 'right'],
