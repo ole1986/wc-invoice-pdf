@@ -64,13 +64,18 @@ class InvoiceMenu
 
             $invoice = new Invoice($order);
 
-            $invoicepdf = new InvoicePdf();
+            //$invoicepdf = new InvoicePdf();
 
             if (!$this->userHasAccess($invoice)) {
                 wp_die("You do not have access to generate invoices");
             }
 
-            $invoicepdf->BuildInvoice($invoice, $offer, true);
+            $invoice->makeNew($offer);
+
+            header("Content-type: application/pdf");
+            header("Content-Disposition: inline; filename=".$invoice->invoice_number .'.pdf');
+
+            echo $invoice->document;
         } elseif (!empty($_GET['invoice'])) {
             $invoice = new Invoice(intval($_GET['invoice']));
 

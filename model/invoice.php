@@ -200,7 +200,7 @@ class Invoice
         }
     }
 
-    public function makeNew()
+    public function makeNew($isOffer = false)
     {
         unset($this->ID);
         
@@ -226,7 +226,7 @@ class Invoice
 
         // (re)create the pdf
         $invoicePdf = new InvoicePdf();
-        $this->document = $invoicePdf->BuildInvoice($this);
+        $this->document = $invoicePdf->BuildInvoice($this, $isOffer);
     }
 
     public function makeRecurring()
