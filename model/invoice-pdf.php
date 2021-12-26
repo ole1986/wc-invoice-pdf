@@ -104,7 +104,7 @@ class InvoicePdf
         $colOptions = [
             'num' => ['width' => 30],
             'desc' => [],
-            'qty' => ['justification' => 'right', 'width' => 60],
+            'qty' => ['justification' => 'right', 'width' => 62],
             'price' => ['justification' => 'right', 'width' => 70],
             'total' => ['justification' => 'right', 'width' => 80],
         ];
