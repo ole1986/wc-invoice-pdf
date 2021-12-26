@@ -1,5 +1,5 @@
 # ignore visual studio code configuration
-.vscode
+.vscode/launch.json
 # ignore .svn
 .svn
 
