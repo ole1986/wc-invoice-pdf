@@ -224,14 +224,13 @@ class InvoiceTask
         if (!empty($res)) {
             foreach ($res as $v) {
                 $due_date = new \DateTime($v->due_date);
-                $due_date->add(new \DateInterval("P{$age}D"));
 
                 $diff  = $due_date->diff(new \DateTime());
                 $diffDays = intval($diff->format("%a"));
 
-                $acceptableDays = $age + ($interval * $v->reminder_sent);
+                $acceptableDays = $age + ($interval * intval($v->reminder_sent));
 
-                if ($v->reminder_sent >= 1 && $diffDays <= $acceptableDays) {
+                if ($diffDays <= $acceptableDays) {
                     // age: 2 days, interval: 2 days
                     // 4 days later for the second reminder
                     // 6 days later for the third reminder
