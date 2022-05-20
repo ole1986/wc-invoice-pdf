@@ -36,6 +36,9 @@ msgstr "Der Aufgabenplaner ist für das automatisierte versenden von Rechnungen 
 msgid "Show all invoices"
 msgstr "Alle Rechnungen anzeigen"
 
+msgid "Reset order paid status"
+msgstr "Zahlungsstatus der Bestellung zurücksetzen"
+
 msgid "Task Scheduler"
 msgstr "Aufgabenplaner"
 
