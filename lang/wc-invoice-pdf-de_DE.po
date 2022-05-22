@@ -39,6 +39,12 @@ msgstr "Alle Rechnungen anzeigen"
 msgid "Reset order paid status"
 msgstr "Zahlungsstatus der Bestellung zurücksetzen"
 
+msgid "Due date in days"
+msgstr "Fälligkeitsdatum in Tage"
+
+msgid "The number of days an invoice becomes due"
+msgstr "Die Anzahl der Tage nachdem eine Rechnung fällig wird"
+
 msgid "Task Scheduler"
 msgstr "Aufgabenplaner"
 
