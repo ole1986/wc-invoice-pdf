@@ -201,6 +201,9 @@ class InvoiceMenu
                     <?php
                         WCInvoicePdf::addField('wc_pdf_b2c', '<strong>' . __('Enable B2C', 'wc-invoice-pdf') . '</strong><br />' . __('Create invoice compatible for Business to Customer (B2C) relationship', 'wc-invoice-pdf'), 'checkbox');
                     ?>
+                    <?php
+                        WCInvoicePdf::addField('wc_invoice_due_days', '<strong>' . __('Due date in days', 'wc-invoice-pdf') . '</strong><br />' . __('The number of days an invoice becomes due, when created from an order', 'wc-invoice-pdf'), 'number');
+                    ?>
                     <p>
                     <label style="width: 220px; display:inline-block;vertical-align:top;">
                         <strong><?php _e('Subscription option', 'wc-invoice-pdf')  ?></strong><br />

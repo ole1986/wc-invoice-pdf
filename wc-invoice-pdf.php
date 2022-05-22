@@ -57,9 +57,10 @@ class WCInvoicePdf
         'wc_mail_sender' => 'Invoice <invoice@domain.tld>',
         'wc_mail_reminder' => 'yourmail@domain.tld',
         'wc_pdf_title' => 'YourCompany - %s',
+        'wc_invoice_due_days' => 14,
         'wc_pdf_logo' => '/plugins/wc-invoice-pdf/logo.png',
         'wc_pdf_addressline' => 'Your address in a single line',
-        'wc_pdf_condition' => "Some conditional things related to invoices\nLine breaks supported",
+        'wc_pdf_condition' => "Payment within %s days after invoice date.",
         'wc_pdf_info' => 'Info block containing created date here: %s',
         'wc_pdf_block1' => 'BLOCK #1',
         'wc_pdf_block2' => 'BLOCK #2',
@@ -127,7 +128,7 @@ class WCInvoicePdf
     {
         $opt = get_option(self::OPTION_KEY);
         if (!empty($opt)) {
-            self::$OPTIONS = $opt;
+            self::$OPTIONS = array_replace(self::$OPTIONS, $opt);
         }
     }
 
@@ -217,7 +218,7 @@ class WCInvoicePdf
             $optValue = $xargs['value'];
         }
 
-        if ($type == 'text' || $type == 'password') {
+        if ($type == 'text' || $type == 'password' || $type == 'number') {
             echo '<input type="'.$type.'" class="regular-text" name="'.$name.'" value="'.$optValue.'"'.$attrStr.' />';
         } elseif ($type == 'email') {
             echo '<input type="'.$type.'" class="regular-text" name="'.$name.'" value="'.$optValue.'"'.$attrStr.' />';
