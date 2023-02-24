@@ -238,16 +238,16 @@ class InvoicePdf
         
         $pdf->ezSetDy(-20);
 
-        $pdf->ezTable($summaryData, null, '', ['width' => 200, 'gridlines' => 0, 'showHeadings' => 0,'shaded' => 0 ,'xPos' => 'right', 'xOrientation' => 'left', 'cols' => $colOptions ]);
-
-        $pdf->ezSetDy(-20);
-
+        $yOffset = $pdf->y;
         if ($isOffer) {
-            $pdf->ezText("<strong>" .  \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_condition_offer'] . "</strong>", 8, ['justification' => 'center']);
+            $pdf->ezText("<strong>" .  \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_condition_offer'] . "</strong>", 8, ["aright" => 350]);
         } else {
-            $pdf->ezText("<strong>" .  sprintf(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_condition'], \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_invoice_due_days']) . "</strong>", 8, ['justification' => 'center']);
+            $pdf->ezText("<strong>" .  sprintf(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_condition'], \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_invoice_due_days']) . "</strong>", 8, ["aright" => 350]);
         }
-        
+
+        $pdf->ezSetDy($yOffset - $pdf->y);
+
+        $pdf->ezTable($summaryData, null, '', ['width' => 200, 'gridlines' => 0, 'showHeadings' => 0,'shaded' => 0 ,'xPos' => 'right', 'xOrientation' => 'left', 'cols' => $colOptions ]);
 
         if ($stream) {
             $pdf->ezStream(['Content-Disposition' => ($isOffer ? $invoice->offer_number : $invoice->invoice_number) . '.pdf' ]);
