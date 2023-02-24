@@ -245,6 +245,7 @@ class InvoiceMenu
                     WCInvoicePdf::addField('wc_pdf_logo', 'Logo', 'media');
                     WCInvoicePdf::addField('wc_pdf_addressline', __('Address line', 'wc-invoice-pdf'));
                     WCInvoicePdf::addField('wc_pdf_condition', __('Payment terms', 'wc-invoice-pdf'), 'textarea');
+                    WCInvoicePdf::addField('wc_pdf_condition_offer', __('Offer terms', 'wc-invoice-pdf'), 'textarea');
                     WCInvoicePdf::addField('wc_pdf_info', '<strong>Info Block</strong><br />' . 'Supports "Inline codes" provided by the <a href="https://github.com/rospdf/pdf-php/blob/master/README.md" target="_blank">R&amp;OS pdf class</a>', 'textarea', ['input_attr' => ['style' => 'width: 340px; height: 100px']]);
                     WCInvoicePdf::addField('wc_pdf_keeprows', '<strong>' . __('Protect rows from splitting', 'wc-invoice-pdf') . '</strong><br />' . __('Keep rows together when page breaks', 'wc-invoice-pdf'), 'checkbox');
 

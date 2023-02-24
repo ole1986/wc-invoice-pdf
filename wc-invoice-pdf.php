@@ -2,7 +2,7 @@
 /*
  * Plugin Name: WC Recurring Invoice PDF
  * Description: WooCommerce invoice pdf plugin with recurring payments (scheduled)
- * Version: 1.5.17
+ * Version: 1.5.18
  * Author: ole1986 <ole.k@web.de>
  * Author URI: https://github.com/ole1986/wc-invoice-pdf
  * Plugin URI: https://github.com/ole1986/wc-invoice-pdf/releases
@@ -61,6 +61,7 @@ class WCInvoicePdf
         'wc_pdf_logo' => '/plugins/wc-invoice-pdf/logo.png',
         'wc_pdf_addressline' => 'Your address in a single line',
         'wc_pdf_condition' => "Payment within %s days after invoice date.",
+        'wc_pdf_condition_offer' => "This offer is valid for 2 weeks",
         'wc_pdf_info' => 'Info block containing created date here: %s',
         'wc_pdf_block1' => 'BLOCK #1',
         'wc_pdf_block2' => 'BLOCK #2',
@@ -237,7 +238,7 @@ class WCInvoicePdf
                 $url = wp_get_attachment_url($optValue);
             }
             echo "<div class='image-preview-wrapper' style='display:inline-block;'>";
-            echo "<img id='${name}-preview' src=\"$url\" style='max-height: 100px;'><br />";
+            echo "<img id='$name-preview' src=\"$url\" style='max-height: 100px;'><br />";
             echo "<input onclick=\"WCInvoicePdfAdmin.OpenMedia(this,'$name')\" type=\"button\" class=\"button\" value=\"" . __('Select image', 'wc-invoice-pdf') ."\" />";
             echo "<input onclick=\"WCInvoicePdfAdmin.ClearMedia(this,'$name')\" type=\"button\" class=\"button\" value=\"" . __('Clear image', 'wc-invoice-pdf') ."\" />";
             echo "<input type='hidden' name=\"".$name."\" id='$name' value=\"$optValue\" />";

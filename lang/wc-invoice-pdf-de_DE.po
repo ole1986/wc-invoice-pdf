@@ -84,6 +84,9 @@ msgstr "Adresszeile"
 msgid "Payment terms"
 msgstr "Zahlungsbedingungen"
 
+msgid "Offer terms"
+msgstr "Angebotsbedingungen"
+
 msgid "Protect rows from splitting"
 msgstr "Zeilenaufteilung vermeiden"
 
