@@ -1,31 +1,32 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "39d1d0da279dca77fc6bd58a944772f0",
+    "content-hash": "c159660dfca50f96880807fbb2b59397",
     "packages": [
         {
             "name": "rospdf/pdf-php",
-            "version": "0.12.48",
+            "version": "0.12.65",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rospdf/pdf-php.git",
-                "reference": "7af97bde9fdfc91fecfa571134c84ce3dc6f88ea"
+                "reference": "d9d468977260538ca999cbf561cae690d8330c4b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rospdf/pdf-php/zipball/7af97bde9fdfc91fecfa571134c84ce3dc6f88ea",
-                "reference": "7af97bde9fdfc91fecfa571134c84ce3dc6f88ea",
+                "url": "https://api.github.com/repos/rospdf/pdf-php/zipball/d9d468977260538ca999cbf561cae690d8330c4b",
+                "reference": "d9d468977260538ca999cbf561cae690d8330c4b",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4.0"
+                "php": ">=5.6.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "3.7.38",
-                "squizlabs/php_codesniffer": "2.8.*"
+                "phpcompatibility/php-compatibility": "^9.3",
+                "phpunit/phpunit": "^9.5",
+                "squizlabs/php_codesniffer": "^3.7"
             },
             "type": "library",
             "extra": {
@@ -46,14 +47,14 @@
             ],
             "authors": [
                 {
-                    "name": "Lars Olesen",
-                    "email": "lars@intraface.dk",
-                    "role": "Developer"
-                },
-                {
                     "name": "Ole Koeckemann",
                     "email": "ole.k@web.de",
                     "role": "Project Head / Developer"
+                },
+                {
+                    "name": "Lars Olesen",
+                    "email": "lars@intraface.dk",
+                    "role": "Developer"
                 },
                 {
                     "name": "Sune Jensen",
@@ -73,7 +74,11 @@
             ],
             "description": "The R&OS Pdf class supports the creation of PDF documents without any adiditional modules or extensions.",
             "homepage": "https://github.com/rospdf/pdf-php",
-            "time": "2018-08-24T18:25:10+00:00"
+            "support": {
+                "issues": "https://github.com/rospdf/pdf-php/issues",
+                "source": "https://github.com/rospdf/pdf-php/tree/0.12.65"
+            },
+            "time": "2022-11-16T17:07:58+00:00"
         }
     ],
     "packages-dev": [],
@@ -83,7 +88,8 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.4.0"
+        "php": "^7.4 || ^8.0 || ^8.1"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
 }

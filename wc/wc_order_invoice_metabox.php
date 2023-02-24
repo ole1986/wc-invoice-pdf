@@ -34,6 +34,9 @@ class InvoiceMetabox
             } else {
                 delete_post_meta($order_id, '_wc_pdf_b2c');
             }
+        } elseif (isset($_POST['resetpaid'])) {
+            delete_post_meta($order_id, '_date_paid');
+            delete_post_meta($order_id, '_paid_date');
         }
 
         echo json_encode($result);
@@ -82,6 +85,9 @@ class InvoiceMetabox
         </p>
         <p style="text-align: right">
             <a href="/wp-admin/admin.php?page=wcinvoicepdf_invoices"><?php _e('Show all invoices', 'wc-invoice-pdf') ?></a>
+        </p>
+        <p style="text-align: right;">
+            <a href="#" data-id="<?php echo $post_id ?>" onclick="WCInvoicePdfAdmin.ResetOrderPaidStatus(this)"><?php _e('Reset order paid status', 'wc-invoice-pdf') ?></a>
         </p>
         <p style="text-align: right">
             <a href="admin.php?page=wcinvoicepdf_invoice&order=<?php echo $post_id ?>" target="_blank" class="button"><?php printf(__('Preview', 'wc-invoice-pdf'), '') ?></a>

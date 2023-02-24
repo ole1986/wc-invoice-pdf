@@ -257,20 +257,14 @@ abstract class WC_ISPConfigProduct extends WC_Product
      */
     public static function OnPaymentCompleted($processing, $order_id, $order)
     {
-        if (!in_array($processing, ['processing', 'completed'])) {
+        if ($processing == 'completed') {
             return $processing;
         }
 
-        if ($order->get_status() == 'pending') {
+        if (in_array($order->get_status(), ['on-hold', 'pending'])) {
             return $processing;
         }
-
-        $payment_method = $order->get_payment_method();
-
-        if ($payment_method == 'bacs' && $order->get_status() == 'on-hold') {
-            return $processing;
-        }
-
+        
         // there is nothing to do when no wp-ispconfig3 plugin is installed
         if (!class_exists('Ispconfig')) {
             return $processing;

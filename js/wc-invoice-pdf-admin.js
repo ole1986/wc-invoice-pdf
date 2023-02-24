@@ -115,6 +115,21 @@ function WCInvoicePdfAdminClass() {
         }).always(function () { loading.remove(); });
     }
 
+    this.ResetOrderPaidStatus = function(obj) {
+        var order_id = parseInt($(obj).data('id'));
+        var loading = $('<img />');
+
+        loading.attr('src', '/wp-admin/images/loading.gif');
+
+        $(obj).after(loading);
+
+        jsonRequest({ order_id: order_id, resetpaid: true}, 'InvoiceMetabox').done(function(resp){
+            document.location.reload();
+        }).fail(function(){
+            alert('An error occured');
+        }).always(function () { loading.remove(); });
+    }
+
     this.RunTask = function(obj, name){
         var tmp = $(obj).text();
         $(obj).text('Loading...');
@@ -143,7 +158,7 @@ function WCInvoicePdfAdminClass() {
 
             self.ShowNotice("Task " + name + " successfully executed | Return code: " + resp, 'success');
         }).always(function () { $(obj).text(tmp); });
-    };
+    }
 
     this.OpenMedia = function(event, name){
         
@@ -168,7 +183,7 @@ function WCInvoicePdfAdminClass() {
             $('#' + name + "-preview").attr('src', att.url);
             $('#' + name).val(att.id);
         });
-    };
+    }
 
     this.ClearMedia = function(event, name) {
         $('#' + name).val('');
@@ -207,7 +222,7 @@ function WCInvoicePdfAdminClass() {
         container.append(btnSave);
         container.append(btnCancel);
         return container;
-    };
+    }
 
     var hideTabs = function(){
         $('#wcinvoicepdf-tabs a').each(function () {
@@ -215,7 +230,7 @@ function WCInvoicePdfAdminClass() {
             $(other_id).hide();
         })
         $('#wcinvoicepdf-tabs > a').removeClass('nav-tab-active');
-    };
+    }
 
     var initTabs = function(){
         $('#wcinvoicepdf-tabs > a').click(function(event){
@@ -231,7 +246,7 @@ function WCInvoicePdfAdminClass() {
 
         hideTabs();
         $('#wcinvoicepdf-tabs a:first').trigger('click');
-    };
+    }
 
     $(function(){
         initTabs();

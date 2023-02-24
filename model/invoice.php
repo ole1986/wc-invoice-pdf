@@ -2,6 +2,8 @@
 
 namespace WCInvoicePdf\Model;
 
+use WCInvoicePdf\WCInvoicePdf;
+
 class Invoice
 {
     /**
@@ -203,6 +205,7 @@ class Invoice
     public function makeNew($isOffer = false)
     {
         unset($this->ID);
+        unset($this->reminder_sent);
         
         if (!empty($this->order) && is_object($this->order)) {
             $Ym = $this->order->get_date_created()->date('Ym');
@@ -232,6 +235,7 @@ class Invoice
     public function makeRecurring()
     {
         unset($this->ID);
+        unset($this->reminder_sent);
 
         if (!empty($this->order) && is_object($this->order)) {
             // reset the payment status for recurring invoices (customer has to pay first)
@@ -251,7 +255,7 @@ class Invoice
         }
         $this->created = $d->format('Y-m-d H:i:s');
         // due date
-        $d->add(new \DateInterval('P14D'));
+        $d->add(new \DateInterval('P' . WCInvoicePdf::$OPTIONS['wc_invoice_due_days'] . 'D'));
         $this->due_date = $d->format('Y-m-d H:i:s');
         $this->paid_date = null;
         $this->status = 0;

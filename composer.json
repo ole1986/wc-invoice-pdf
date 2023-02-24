@@ -1,6 +1,5 @@
 {
     "name": "ole1986/wc-invoice-pdf",
-    "type": "",
     "description": "WC Recurring Invoice Pdf plugin for wordpress",
     "homepage": "https://github.com/ole1986/wc-invoice-pdf",
     "license": "MIT",
@@ -12,7 +11,7 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0",
+        "php": "^7.4 || ^8.0 || ^8.1",
         "rospdf/pdf-php": "0.12.*"
     }
 }

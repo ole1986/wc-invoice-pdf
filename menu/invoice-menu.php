@@ -201,6 +201,9 @@ class InvoiceMenu
                     <?php
                         WCInvoicePdf::addField('wc_pdf_b2c', '<strong>' . __('Enable B2C', 'wc-invoice-pdf') . '</strong><br />' . __('Create invoice compatible for Business to Customer (B2C) relationship', 'wc-invoice-pdf'), 'checkbox');
                     ?>
+                    <?php
+                        WCInvoicePdf::addField('wc_invoice_due_days', '<strong>' . __('Due date in days', 'wc-invoice-pdf') . '</strong><br />' . __('The number of days an invoice becomes due', 'wc-invoice-pdf'), 'number');
+                    ?>
                     <p>
                     <label style="width: 220px; display:inline-block;vertical-align:top;">
                         <strong><?php _e('Subscription option', 'wc-invoice-pdf')  ?></strong><br />
@@ -242,6 +245,7 @@ class InvoiceMenu
                     WCInvoicePdf::addField('wc_pdf_logo', 'Logo', 'media');
                     WCInvoicePdf::addField('wc_pdf_addressline', __('Address line', 'wc-invoice-pdf'));
                     WCInvoicePdf::addField('wc_pdf_condition', __('Payment terms', 'wc-invoice-pdf'), 'textarea');
+                    WCInvoicePdf::addField('wc_pdf_condition_offer', __('Offer terms', 'wc-invoice-pdf'), 'textarea');
                     WCInvoicePdf::addField('wc_pdf_info', '<strong>Info Block</strong><br />' . 'Supports "Inline codes" provided by the <a href="https://github.com/rospdf/pdf-php/blob/master/README.md" target="_blank">R&amp;OS pdf class</a>', 'textarea', ['input_attr' => ['style' => 'width: 340px; height: 100px']]);
                     WCInvoicePdf::addField('wc_pdf_keeprows', '<strong>' . __('Protect rows from splitting', 'wc-invoice-pdf') . '</strong><br />' . __('Keep rows together when page breaks', 'wc-invoice-pdf'), 'checkbox');
 
