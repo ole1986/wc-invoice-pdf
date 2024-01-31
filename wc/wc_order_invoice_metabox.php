@@ -50,7 +50,10 @@ class InvoiceMetabox
 
     public function invoice_box_callback()
     {
-        global $post_id, $post;
+        global $post_id;
+
+        $order = wc_get_order($post_id);
+        $customer_id = $order ? $order->get_user_id() : '';
 
         $b2c = get_post_meta($post_id, '_wc_pdf_b2c', true);
         $period = get_post_meta($post_id, '_ispconfig_period', true);
@@ -84,7 +87,7 @@ class InvoiceMetabox
             <?php printf(__("A scheduler will submit the invoice %s to '%s'", 'wc-invoice-pdf'), __('yearly', 'wc-invoice-pdf'), $customer_email); ?>
         </p>
         <p style="text-align: right">
-            <a href="/wp-admin/admin.php?page=wcinvoicepdf_invoices"><?php _e('Show all invoices', 'wc-invoice-pdf') ?></a>
+            <a href="/wp-admin/admin.php?page=wcinvoicepdf_invoices&action=filter&customer_id=<?php echo $customer_id ?>"><?php _e('Show all invoices', 'wc-invoice-pdf') ?></a>
         </p>
         <p style="text-align: right;">
             <a href="#" data-id="<?php echo $post_id ?>" onclick="WCInvoicePdfAdmin.ResetOrderPaidStatus(this)"><?php _e('Reset order paid status', 'wc-invoice-pdf') ?></a>
