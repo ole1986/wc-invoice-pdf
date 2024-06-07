@@ -243,6 +243,8 @@ class InvoiceList extends \WP_List_Table
                 case 'paid':
                     $invoice->Paid();
                     $invoice->Save();
+                    // update WC_Order status to completed when marked as paid
+                    $invoice->order->update_status('completed');
                     break;
                 case 'cancel':
                     $invoice->Cancel();
