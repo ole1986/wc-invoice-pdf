@@ -270,8 +270,23 @@ msgstr "Einstellungen gespeichert"
 msgid "To the minute calculation"
 msgstr "Minuten-genaue Berechnung"
 
-msgid "Working hours"
-msgstr "Arbeitszeiten"
+msgid "Services"
+msgstr "Dienstleistungen"
+
+msgid "Unit information"
+msgstr "Angaben zur Einheit"
+
+msgid "Unit"
+msgstr "Einheit"
+
+msgid "Unit (plural)"
+msgstr "Einheit (plural)"
+
+msgid "The unit next to the quantity (default: h)"
+msgstr "Die Einhait nach Angabe der Menge (Standardwert: h)"
+
+msgid "The unit when quantity is more than one (optional)"
+msgstr "Die Einheit wenn die Menge größer als eins (optional)"
 
 msgid "Webspace"
 msgstr "Webspeicher"

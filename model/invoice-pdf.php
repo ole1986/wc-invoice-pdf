@@ -25,9 +25,10 @@ class InvoicePdf
             $isB2C = true;
         }
 
-        $formatStyle = \NumberFormatter::DECIMAL;
+        $formatStyle = \NumberFormatter::CURRENCY;
         $formatter = new \NumberFormatter(get_locale(), $formatStyle);
-        $formatter->setPattern("#0.00 " . $order->get_currency());
+        $formatter->setSymbol(\NumberFormatter::INTL_CURRENCY_SYMBOL, $order->get_currency());
+        $formatter->setSymbol(\NumberFormatter::CURRENCY_SYMBOL, $order->get_currency());
 
         $items = $order->get_items();
 
@@ -71,7 +72,6 @@ class InvoicePdf
 
         $pdf->addObject($all, 'all');
 
-
         $pdf->ezSetDy(-60);
 
         $y = $pdf->y;
@@ -104,8 +104,8 @@ class InvoicePdf
         $colOptions = [
             'num' => ['width' => 30],
             'desc' => [],
-            'qty' => ['justification' => 'right', 'width' => 62],
-            'price' => ['justification' => 'right', 'width' => 70],
+            'qty' => ['justification' => 'right', 'width' => 55],
+            'price' => ['justification' => 'right', 'width' => 80],
             'total' => ['justification' => 'right', 'width' => 80],
         ];
 
@@ -144,10 +144,10 @@ class InvoicePdf
                 }
                 $qtyStr = number_format($v['qty'], 0, ',', ' ') . ' ' . $product->get_price_suffix('', $v['qty']);
                 $product_name .= "\n<strong>" . __('Period', 'wc-invoice-pdf') . ": " . \strftime('%x', $current->getTimestamp()) ." - ". \strftime('%x', $next->getTimestamp()) . '</strong>';
-            } elseif ($product instanceof \WC_Product_Hour) {
+            } elseif ($product instanceof \WC_Product_Service) {
                 // check if product type is "hour" to output hours instead of Qty
                 $qtyStr = number_format($v['qty'], 1, ',', ' ');
-                $qtyStr.= '' . $product->get_price_suffix('', $v['qty'], true);
+                $qtyStr.= '' . $product->get_price_suffix('', $v['qty']);
             } else {
                 $qtyStr = number_format($v['qty'], 2, ',', ' ');
             }

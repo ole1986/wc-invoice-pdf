@@ -2,14 +2,14 @@
 /*
  * Plugin Name: WC Recurring Invoice PDF
  * Description: WooCommerce invoice pdf plugin with recurring payments (scheduled)
- * Version: 1.5.20
- * Author: ole1986 <ole.k@web.de>
+ * Version: 1.5.21
+ * Author: ole1986 <ole.koeckemann@gmail.com>
  * Author URI: https://github.com/ole1986/wc-invoice-pdf
  * Plugin URI: https://github.com/ole1986/wc-invoice-pdf/releases
  * Text Domain: wc-invoice-pdf
  *
  * WC requires at least: 3.0.0
- * WC tested up to: 8.5
+ * WC tested up to: 8.9
  */
 
 namespace WCInvoicePdf;
@@ -273,68 +273,20 @@ class WCInvoicePdf
         if (!get_transient('wc-invoice-pdf-migrate')) {
             return;
         }
+
+        // increase when something to migration
+        $migrationIncrement = 4;
+        $plugin = get_plugin_data(__FILE__);
        
         // migration
-        $version = get_option('_ispconfig_invoice_version', 0);
-
-        if ($version > 0 && $version <= 2) {
-            // MIGRATION FROM VERSIONS LOWER 1.5.0
-
-            // fetch all orders containing a "Domain" meta data
-            $post_ids = $wpdb->get_col("SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'Domain'");
-            // get all products with product type webspace
-            $webspace_ids = wc_get_products(['limit' => -1, 'type' => 'webspace', 'return' => 'ids']);
-
-            // go through all matching orders with Domain meta data
-            foreach ($post_ids as $order_id) {
-                $order = wc_get_order($order_id);
-                $items = $order->get_items('line_item');
-
-                // fetch the first webspace product (asuming ithas only one)
-                $webspace_product = array_pop(array_filter($items, function ($item) {
-                    return get_class($item) === 'WC_Order_Item_Product';
-                }));
-
-                if (!$webspace_product) {
-                    // skip when no webspace product found
-                    continue;
-                }
-
-                $domain = $order->get_meta('Domain', true);
-                $metadata = $webspace_product->get_meta_data();
-
-                if (!empty($metadata)) {
-                    usort($metadata, function ($a, $b) {
-                        return $a->id <= $b->id ? -1 : 1;
-                    });
-
-                    $newmetadata = [];
-                    // remove all meta data
-                    foreach ($metadata as $meta) {
-                        $newmetadata[] = ["id" => 0, "key" => $meta->key, "value" => $meta->value];
-                        $webspace_product->delete_meta_data($meta->key);
-                    }
-
-                    // put the domain meta at first
-                    array_unshift($newmetadata, ["id" => 0, "key" => "Domain", "value" => $domain]);
-
-                    $webspace_product->set_meta_data($newmetadata);
-                } else {
-                    $webspace_product->add_meta_data('Domain', $domain);
-                }
-
-                $webspace_product->save_meta_data();
-
-                $order->delete_meta_data('Domain');
-                $order->save_meta_data();
-            }
-
-            $plugin = get_plugin_data(__FILE__);
+        $version = intval(get_option('wc-invoice-pdf-version', $migrationIncrement));
+        
+        if ($version < $migrationIncrement) {
+            $wpdb->query("UPDATE $wpdb->terms SET name = 'service', slug = 'service' WHERE term_id IN (SELECT t.term_id FROM $wpdb->terms t LEFT JOIN $wpdb->term_taxonomy tt ON (t.term_id = tt.term_id) WHERE name = 'hour')");
+            $wpdb->query("UPDATE $wpdb->postmeta SET meta_key = '_qty_suffix', meta_value = 'min' WHERE meta_id IN (SELECT meta_id FROM $wpdb->postmeta pm LEFT JOIN $wpdb->posts p ON p.ID = pm.post_id WHERE p.post_type = 'product' AND pm.meta_key = '_hour_useminute' AND pm.meta_value = 'yes')");
             
-            delete_option('_ispconfig_invoice_version');
-            update_option('wc-invoice-pdf-version', 3);
-
-            echo '<div class="notice notice-success"><p><strong>' . $plugin['Name'] .':</strong> Successfully migrated products from ' . count($post_ids) .' orders</p></div>';
+            update_option('wc-invoice-pdf-version', $migrationIncrement);
+            echo '<div class="notice notice-success"><p><strong>' . $plugin['Name'] .':</strong> Successfully migrated service product_type</p></div>';
         }
 
         delete_transient('wc-invoice-pdf-migrate');
