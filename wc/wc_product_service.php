@@ -4,28 +4,33 @@ if (!class_exists('WC_Product')) {
     return;
 }
 
-add_filter('woocommerce_product_data_tabs', ['WC_Product_Hour','hour_product_data_tab']);
+add_filter('woocommerce_product_data_tabs', ['WC_Product_Service','hour_product_data_tab']);
 
-add_action('woocommerce_product_data_panels', ['WC_Product_Hour','product_data_fields']);
-add_action('woocommerce_process_product_meta_hour', ['WC_Product_Hour', 'metadata_save']);
+add_action('woocommerce_product_data_panels', ['WC_Product_Service','product_data_fields']);
+add_action('woocommerce_process_product_meta_service', ['WC_Product_Service', 'metadata_save']);
 
-add_action('admin_footer', ['WC_Product_Hour', 'jsRegister']);
-add_filter('product_type_selector', ['WC_Product_Hour','register']);
+add_action('admin_footer', ['WC_Product_Service', 'jsRegister']);
+add_filter('product_type_selector', ['WC_Product_Service','register']);
 
-class WC_Product_Hour extends WC_Product
+class WC_Product_Service extends WC_Product
 {
     public static $current;
 
     public function __construct($product)
     {
-        $this->product_type = 'hour';
+        $this->product_type = 'service';
         parent::__construct($product);
+    }
+
+    public function get_type()
+    {
+        return 'service';
     }
 
     public static function register($types)
     {
         // Key should be exactly the same as in the class product_type parameter
-        $types[ 'hour' ] = __('Working hours', 'wc-invoice-pdf');
+        $types[ 'service' ] = __('Services', 'wc-invoice-pdf');
         return $types;
     }
 
@@ -35,7 +40,7 @@ class WC_Product_Hour extends WC_Product
         ?>
         <script type='text/javascript'>
             jQuery( document ).ready( function() {
-                jQuery( '.options_group.pricing' ).addClass( 'show_if_hour' ).show();
+                jQuery( '.options_group.pricing' ).addClass( 'show_if_service' ).show();
                 <?php if ($product_object instanceof self) : ?>
                 jQuery('.general_options').show();
                 jQuery('.general_options > a').trigger('click');
@@ -70,15 +75,15 @@ class WC_Product_Hour extends WC_Product
 
     public static function hour_product_data_tab($product_data_tabs)
     {
-        $product_data_tabs['linked_product']['class'][] = 'hide_if_hour';
-        $product_data_tabs['attribute']['class'][] = 'hide_if_hour';
-        $product_data_tabs['advanced']['class'][] = 'hide_if_hour';
-        $product_data_tabs['shipping']['class'][] = 'hide_if_hour';
+        $product_data_tabs['linked_product']['class'][] = 'hide_if_service';
+        $product_data_tabs['attribute']['class'][] = 'hide_if_service';
+        $product_data_tabs['advanced']['class'][] = 'hide_if_service';
+        $product_data_tabs['shipping']['class'][] = 'hide_if_service';
 
         $product_data_tabs['hour_tab'] = array(
-            'label' => __('Working hours', 'wc-invoice-pdf'),
-            'target' => 'hour_data_tab',
-            'class' => 'show_if_hour'
+            'label' => __('Unit information', 'wc-invoice-pdf'),
+            'target' => 'service_data_tab',
+            'class' => 'show_if_service'
         );
 
         return $product_data_tabs;
@@ -87,8 +92,19 @@ class WC_Product_Hour extends WC_Product
 
     public static function product_data_fields()
     {
-        echo '<div id="hour_data_tab" class="panel woocommerce_options_panel">';
-        woocommerce_wp_checkbox(['id' => '_hour_useminute', 'label' => __('minutes', 'wc-invoice-pdf'), 'description' => __("To the minute calculation", 'wc-invoice-pdf')]);
+        echo '<div id="service_data_tab" class="panel woocommerce_options_panel">';
+        woocommerce_wp_text_input([
+            'id' => '_qty_suffix',
+            'label' => __('Unit', 'wc-invoice-pdf'),
+            'description' => __("The unit next to the quantity (default: h)", 'wc-invoice-pdf'),
+            'style' => 'width: 100px'
+        ]);
+        woocommerce_wp_text_input([
+            'id' => '_qty_suffix_plural',
+            'label' => __('Unit (plural)', 'wc-invoice-pdf'),
+            'description' => __("The unit when quantity is more than one (optional)", 'wc-invoice-pdf'),
+            'style' => 'width: 100px'
+        ]);
         echo '</div>';
     }
 
@@ -97,28 +113,34 @@ class WC_Product_Hour extends WC_Product
      */
     public static function metadata_save($post_id)
     {
-        update_post_meta($post_id, '_hour_useminute', $_POST['_hour_useminute']);
+        $suffix = sanitize_title($_POST['_qty_suffix']);
+        $suffix_plural = sanitize_title($_POST['_qty_suffix_plural']);
+
+        if (!empty($suffix)) {
+            update_post_meta($post_id, '_qty_suffix', $suffix);
+        } else {
+            delete_post_meta($post_id, '_qty_suffix');
+        }
+
+        if (!empty($suffix_plural)) {
+            update_post_meta($post_id, '_qty_suffix_plural', $suffix_plural);
+        } else {
+            delete_post_meta($post_id, '_qty_suffix_plural');
+        }
     }
 
-    public function get_price_suffix($price = '', $qty = 1, $shorten = false)
+    public function get_price_suffix($price = '', $qty = 1)
     {
-        $plural = $qty > 1 ? 's' : '';
-
-        $suffix = __('Hour' . $plural, 'wc-invoice-pdf');
-
-        if ($shorten) {
+        $suffix = $this->get_meta('_qty_suffix', true);
+        if (empty($suffix)) {
             $suffix = 'h';
         }
-
-        
-        if ($this->get_meta('_hour_useminute', true)) {
-            $suffix = __('minute' . $plural, 'wc-invoice-pdf');
-            if ($shorten) {
-                $suffix = 'min';
-            }
+        $suffix_plural = $this->get_meta('_qty_suffix_plural', true);
+        if (empty($suffix_plural)) {
+            $suffix_plural = $suffix;
         }
-
-        return ' ' . $suffix;
+        
+        return ' ' . ($qty > 1 ? $suffix_plural : $suffix);
     }
 
     public function get_price_html($price = '')
