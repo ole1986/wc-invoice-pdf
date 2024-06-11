@@ -1,6 +1,6 @@
 === WC Recurring Invoice Pdf ===
 Contributors: ole1986
-Tags:  woocommerce, WC, invoicing, billing, recurring, order, pdf, automation, read-only, law
+Tags:  woocommerce, invoicing, billing, pdf, custom products
 Donate link: https://www.paypal.com/cgi-bin/webscr?item_name=Donation+WC+Recurring+Invoice+Pdf&cmd=_donations&business=ole.k@web.de
 Requires at least: 3.1
 Tested up to: 6.5
@@ -26,7 +26,7 @@ It also allows to setup WC Orders to be recurring and submits the invoices to th
 * Individual the PDF template in text and picture
 * Remind delegate person about pending payments from customers
 * A "Webspace" product type for recurring payment support
-* A "Working hours" product type to support service hours being invoiced to customers
+* A "Service" product type allowing to fully customize the unit information (E.g hour, hours, KG, Meter(s), etc..)
 
 [RELEASE NOTES]( https://github.com/ole1986/wc-invoice-pdf/releases)
 
