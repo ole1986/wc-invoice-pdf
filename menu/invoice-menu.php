@@ -228,7 +228,13 @@ class InvoiceMenu
                     <select name="wc_ispconfig_client_template">
                         <option value="0">None</option>
                         <?php
-                        $templates = \Ispconfig::$Self->withSoap()->GetClientTemplates();
+                        try {
+                            $ispconfig = \Ispconfig::$Self->withSoap();
+                            $templates = $ispconfig->GetClientTemplates();
+                        } catch (\Exception $e) {
+                            $templates = [];
+                        }
+                        
                         foreach ($templates as $v) {
                             $selected = WCInvoicePdf::$OPTIONS['wc_ispconfig_client_template'] == $v['template_id'] ? 'selected' : '';
                             echo '<option value="'. $v['template_id'] . '" '. $selected .'>'. $v['template_name'] .'</option>';
