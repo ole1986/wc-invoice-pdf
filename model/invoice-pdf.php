@@ -235,18 +235,20 @@ class InvoicePdf
         if (!$isB2C) {
             $summaryData[] = ["<strong>".__('Total', 'wc-invoice-pdf')."</strong>", "<strong>".$formatter->format($summary + $summaryTax)."</strong>"];
         }
-        
-        $pdf->ezSetDy(-20);
 
-        $yOffset = $pdf->y;
-        if ($isOffer) {
-            $pdf->ezText("<strong>" .  \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_condition_offer'] . "</strong>", 8, ["aright" => 350]);
-        } else {
-            $pdf->ezText("<strong>" .  sprintf(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_condition'], \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_invoice_due_days']) . "</strong>", 8, ["aright" => 350]);
+        $pdf->ezSetDy(-15);
+
+        $footerText = $isOffer ? \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_condition_offer'] : sprintf(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_condition'], \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_invoice_due_days']);
+        $isNewPage = $pdf->ezText("<strong>" . $footerText . "</strong>", 8, ["aright" => 350], true);
+
+        if ($isNewPage) {
+            $pdf->ezNewPage();
         }
 
-        $pdf->ezSetDy($yOffset - $pdf->y);
+        $yOffset = $pdf->y;
+        $pdf->ezText("<strong>" . $footerText . "</strong>", 8, ["aright" => 350]);
 
+        $pdf->ezSetDy($yOffset - $pdf->y);
         $pdf->ezTable($summaryData, null, '', ['width' => 200, 'gridlines' => 0, 'showHeadings' => 0,'shaded' => 0 ,'xPos' => 'right', 'xOrientation' => 'left', 'cols' => $colOptions ]);
 
         if ($stream) {
