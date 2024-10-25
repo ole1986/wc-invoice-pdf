@@ -6,12 +6,51 @@
     "authors": [
         {
             "name": "Ole Koeckemann",
-            "email": "ole.k@web.de",
+            "email": "ole.koeckemann@gmail.com",
             "role": "Project Head / Developer"
         }
     ],
+    "scripts": {
+        "prefix-namespaces": [
+            "strauss",
+            "@php composer dump-autoload"
+        ]
+    },
+    "autoload": {
+        "psr-4": {
+            "WcRecurring\\": "src/"
+        }
+    },
+    "extra": {
+        "strauss": {
+            "target_directory": "vendor_build",
+            "namespace_prefix": "WCRDependencies\\",
+            "classmap_prefix": "",
+            "constant_prefix": "",
+            "packages": [],
+            "update_call_sites": false,
+            "override_autoload": {},
+            "exclude_from_copy": {
+                "packages": [],
+                "namespaces": [],
+                "file_patterns": []
+            },
+            "exclude_from_prefix": {
+                "packages": [],
+                "namespaces": [],
+                "file_patterns": []
+            },
+            "namespace_replacement_patterns": {},
+            "delete_vendor_packages": false,
+            "delete_vendor_files": false
+        }
+    },
     "require": {
-        "php": "^7.4 || ^8.0 || ^8.1",
-        "rospdf/pdf-php": "0.12.*"
+        "php": "^7.4 || ^8.0 || ^8.1 || ^8.2",
+        "rospdf/pdf-php": "0.12.*",
+        "horstoeko/zugferd": "^1"
+    },
+    "require-dev": {
+        "brianhenryie/strauss": "^0.20.0"
     }
 }

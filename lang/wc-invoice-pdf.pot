@@ -1,0 +1,511 @@
+# Copyright (C) 2024 ole1986 <ole.koeckemann@gmail.com>
+# This file is distributed under the same license as the WC Recurring Invoice PDF plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: WC Recurring Invoice PDF 1.5.23\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wc-invoice-pdf\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2024-11-27T09:50:20+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.11.0\n"
+"X-Domain: wc-invoice-pdf\n"
+
+#. Plugin Name of the plugin
+#: wc-recurring.php
+msgid "WC Recurring Invoice PDF"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: wc-recurring.php
+msgid "https://github.com/ole1986/wc-invoice-pdf/releases"
+msgstr ""
+
+#. Description of the plugin
+#: wc-recurring.php
+msgid "WooCommerce invoice pdf plugin with recurring payments (scheduled)"
+msgstr ""
+
+#. Author of the plugin
+#: wc-recurring.php
+msgid "ole1986 <ole.koeckemann@gmail.com>"
+msgstr ""
+
+#. Author URI of the plugin
+#: wc-recurring.php
+msgid "https://github.com/ole1986/wc-invoice-pdf"
+msgstr ""
+
+#: src/Menu/AccountInvoice.php:30
+#: src/Menu/InvoiceMenu.php:26
+#: src/Menu/InvoiceMenu.php:27
+#: src/Menu/InvoiceMenu.php:129
+msgid "Invoices"
+msgstr ""
+
+#: src/Menu/AccountInvoice.php:61
+#: src/Menu/AccountInvoice.php:99
+#: src/Model/InvoiceList.php:67
+#: src/Model/InvoicePdf.php:57
+#: src/Schedule/InvoiceTask.php:80
+#: src/Schedule/InvoiceTask.php:195
+#: src/WcExtend/InvoiceMetabox.php:55
+#: src/WcExtend/InvoiceMetabox.php:90
+msgid "Invoice"
+msgstr ""
+
+#: src/Menu/AccountInvoice.php:64
+#: src/Model/InvoiceList.php:72
+#: src/Schedule/InvoiceTask.php:80
+msgid "Due at"
+msgstr ""
+
+#: src/Menu/AccountInvoice.php:80
+#: src/Model/InvoiceList.php:108
+msgid "Canceled"
+msgstr ""
+
+#: src/Menu/AccountInvoice.php:82
+#: src/Menu/AccountInvoice.php:128
+#: src/Menu/AccountInvoice.php:137
+msgid "Pay Now"
+msgstr ""
+
+#: src/Menu/AccountInvoice.php:84
+#: src/Menu/AccountInvoice.php:104
+#: src/Model/InvoiceList.php:73
+#: src/Model/InvoicePdf.php:95
+msgid "Paid at"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:85
+#: src/Menu/InvoiceMenu.php:89
+msgid "Invoice not found our no access to this resource"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:137
+msgid "The next automated invoice submission is scheduled for %s"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:140
+msgid "The scheduler is disabled for automated invoice submission. Please check the <a href='/wp-admin/admin.php?page=wcinvoicepdf_settings'>settings</a>"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:158
+msgid "Recurring payments"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:189
+msgid "WC-Invoice Settings"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:196
+msgid "Settings saved"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:201
+msgid "The schedule is properly installed and running"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:203
+msgid "The scheduled task is not installed - Please try to reenable the plugin"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:206
+#: src/Menu/InvoiceMenu.php:349
+#: src/Menu/InvoiceMenu.php:365
+#: src/Menu/InvoiceMenu.php:369
+msgid "General"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:207
+#: src/Menu/InvoiceMenu.php:431
+#: src/Menu/InvoiceMenu.php:437
+msgid "Invoice template"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:208
+msgid "Email templates"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:209
+#: src/Model/InvoiceList.php:176
+msgid "Export"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:222
+#: src/Menu/InvoiceMenu.php:303
+msgid "Report recipient"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:262
+msgid "Business"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:265
+msgid "Company name"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:265
+msgid "Enter your company name"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:268
+#: src/Menu/InvoiceMenu.php:349
+#: src/Menu/InvoiceMenu.php:365
+#: src/Menu/InvoiceMenu.php:369
+msgid "Contact email"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:268
+msgid "Enter invoice contact email address"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:271
+msgid "VAT ID"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:271
+msgid "Enter your VAT ID"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:281
+#: src/WcExtend/InvoiceMetabox.php:72
+msgid "Enable B2C"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:281
+#: src/WcExtend/InvoiceMetabox.php:75
+msgid "Create invoice compatible for Business to Customer (B2C) relationship"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:284
+msgid "Due date in days"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:284
+msgid "The number of days an invoice becomes due"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:288
+msgid "Subscription option"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:289
+msgid "Allow the customer to choose between the subscriptions during checkout or fix a value"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:292
+msgid "Customer choose"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:301
+msgid "Email details"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:303
+msgid "Reciepient address for payment reports"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:304
+msgid "Sender address"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:304
+msgid "Public sender address the invoice is being submitted"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:309
+msgid "Task Scheduler"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:312
+msgid "Enable test mode and replace all recipients with the admin email address"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:313
+#: src/Menu/InvoiceMenu.php:418
+#: src/Menu/InvoiceMenu.php:424
+msgid "Payment report"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:314
+#: src/Menu/InvoiceMenu.php:428
+msgid "Automate invoice submission"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:314
+msgid "Enable automate invoice submission to customers on a daily schedule"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:315
+#: src/Menu/InvoiceMenu.php:434
+#: src/Schedule/InvoiceTask.php:278
+msgid "Payment reminder"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:315
+msgid "Send payment reminders to customer when invoice is due"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:316
+msgid "First reminder (days)"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:316
+msgid "The number of days (after due) when the first payment reminder should be sent to the customer"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:317
+msgid "Reminder interval"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:318
+msgid "Max reminders"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:327
+msgid "Properties"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:330
+msgid "Document Title"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:332
+msgid "Address line"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:333
+msgid "Payment terms"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:334
+msgid "Offer terms"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:336
+msgid "Protect rows from splitting"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:336
+msgid "Keep rows together when page breaks"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:404
+msgid "Content"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:426
+#: src/Model/InvoiceList.php:124
+#: src/WcExtend/InvoiceMetabox.php:158
+msgid "Payments"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:431
+#: src/Menu/InvoiceMenu.php:437
+msgid "The same placeholder from %s can be used"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:457
+msgid "Save"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:537
+msgid "Select image"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:538
+msgid "Clear image"
+msgstr ""
+
+#: src/Model/InvoiceList.php:70
+msgid "Status"
+msgstr ""
+
+#: src/Model/InvoiceList.php:106
+msgid "Sent"
+msgstr ""
+
+#: src/Model/InvoiceList.php:107
+msgid "Paid"
+msgstr ""
+
+#: src/Model/InvoiceList.php:144
+#: src/Model/InvoicePdf.php:55
+#: src/WcExtend/InvoiceMetabox.php:110
+msgid "Offer"
+msgstr ""
+
+#: src/Model/InvoiceList.php:163
+msgid "%s reminders sent"
+msgstr ""
+
+#: src/Model/InvoicePdf.php:111
+msgid "No#"
+msgstr ""
+
+#: src/Model/InvoicePdf.php:111
+msgid "Description"
+msgstr ""
+
+#: src/Model/InvoicePdf.php:111
+msgid "Qty"
+msgstr ""
+
+#: src/Model/InvoicePdf.php:111
+msgid "Unit Price"
+msgstr ""
+
+#: src/Model/InvoicePdf.php:111
+msgid "Amount"
+msgstr ""
+
+#: src/Model/InvoicePdf.php:180
+msgid "Refund from %s"
+msgstr ""
+
+#: src/Model/InvoicePdf.php:206
+msgid "Summary"
+msgstr ""
+
+#: src/Model/InvoicePdf.php:218
+msgid "includes %s %s"
+msgstr ""
+
+#: src/Model/InvoicePdf.php:220
+msgid "plus %s %s"
+msgstr ""
+
+#: src/Model/InvoicePdf.php:227
+msgid "Total"
+msgstr ""
+
+#: src/Schedule/InvoiceTask.php:147
+msgid "Recurring invoice %s has been created"
+msgstr ""
+
+#: src/Schedule/InvoiceTask.php:204
+msgid "The invoice %s has been submitted to %s"
+msgstr ""
+
+#: src/Schedule/InvoiceTask.php:284
+msgid "A reminder #%s for invoice %s has been submitted to %s"
+msgstr ""
+
+#: src/WcExtend/CustomerProperties.php:25
+#: src/WcExtend/CustomerProperties.php:52
+msgid "Customer reference ID (BT-10)"
+msgstr ""
+
+#: src/WcExtend/CustomerProperties.php:49
+msgid "Additional customer info"
+msgstr ""
+
+#: src/WcExtend/InvoiceMetabox.php:79
+#: src/WcExtend/RecurringExtension.php:65
+msgid "Payment interval"
+msgstr ""
+
+#: src/WcExtend/InvoiceMetabox.php:90
+msgid "A scheduler will submit the invoice once it has been created using the %s button to '%s'"
+msgstr ""
+
+#: src/WcExtend/InvoiceMetabox.php:95
+#: src/WcExtend/InvoiceMetabox.php:100
+msgid "A scheduler will submit the invoice %s to '%s'"
+msgstr ""
+
+#: src/WcExtend/InvoiceMetabox.php:95
+#: wc-recurring.php:89
+msgid "monthly"
+msgstr ""
+
+#: src/WcExtend/InvoiceMetabox.php:100
+#: wc-recurring.php:89
+msgid "yearly"
+msgstr ""
+
+#: src/WcExtend/InvoiceMetabox.php:103
+msgid "Show all invoices"
+msgstr ""
+
+#: src/WcExtend/InvoiceMetabox.php:106
+msgid "Reset order paid status"
+msgstr ""
+
+#: src/WcExtend/InvoiceMetabox.php:109
+#: src/WcExtend/InvoiceMetabox.php:155
+msgid "Preview"
+msgstr ""
+
+#: src/WcExtend/InvoiceMetabox.php:112
+msgid "Generate"
+msgstr ""
+
+#: src/WcExtend/InvoiceMetabox.php:145
+msgid "Invoice %s successfully created"
+msgstr ""
+
+#: src/WcProduct/wc_product_service.php:31
+msgid "Services"
+msgstr ""
+
+#: src/WcProduct/wc_product_service.php:82
+msgid "Unit information"
+msgstr ""
+
+#: src/WcProduct/wc_product_service.php:96
+msgid "Unit"
+msgstr ""
+
+#: src/WcProduct/wc_product_service.php:97
+msgid "The unit next to the quantity (default: h)"
+msgstr ""
+
+#: src/WcProduct/wc_product_service.php:102
+msgid "Unit (plural)"
+msgstr ""
+
+#: src/WcProduct/wc_product_service.php:103
+msgid "The unit when quantity is more than one (optional)"
+msgstr ""
+
+#: src/WcProduct/wc_product_service.php:146
+msgid "per"
+msgstr ""
+
+#: src/WcProduct/wc_product_webspace.php:39
+msgid "Webspace"
+msgstr ""
+
+#: src/WcProduct/wc_product_webspace.php:96
+msgid "Subscription"
+msgstr ""
+
+#: src/WcProduct/wc_product_webspace.php:132
+msgid "Please enter the domain to host here"
+msgstr ""
+
+#: src/WcProduct/wc_product_webspace.php:205
+msgid "months"
+msgstr ""
+
+#: src/WcProduct/wc_product_webspace.php:207
+msgid "month"
+msgstr ""
+
+#: src/WcProduct/wc_product_webspace.php:218
+msgid "per year"
+msgstr ""
+
+#: src/WcProduct/wc_product_webspace.php:220
+msgid "per month"
+msgstr ""
+
+#: src/WcProduct/wc_product_webspace.php:241
+msgid "Period"
+msgstr ""

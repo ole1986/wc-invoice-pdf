@@ -1,8 +1,7 @@
 <?php
-namespace WCInvoicePdf\Menu;
+namespace WcRecurring\Menu;
 
-use WCInvoicePdf\Model\Invoice;
-use WCInvoicePdf\Menu\InvoiceMenu;
+use WcRecurring\Model\Invoice;
 
 class AccountInvoice
 {
@@ -53,6 +52,8 @@ class AccountInvoice
                     ORDER BY i.created DESC";
 
         $result = $wpdb->get_results($query, ARRAY_A);
+
+        $dateFormatter = new \IntlDateFormatter('de-DE', \IntlDateFormatter::MEDIUM, \IntlDateFormatter::NONE);
         ?>
         <table class="woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_invoices account-orders-table">
             <thead>
@@ -60,22 +61,27 @@ class AccountInvoice
                     <th><?php _e('Invoice', 'wc-invoice-pdf') ?></th>
                     <th><?php _e('Order', 'woocommerce') ?></th>
                     <th><?php _e('Created at', 'woocommerce') ?></th>
+                    <th><?php _e('Due at', 'wc-invoice-pdf') ?></th>
                     <th>Status</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($result as $k => $v) { ?>
                 <tr>
-                    <td><a href="<?php echo '?invoice=' . $v['ID'] ?>"><?php echo $v['invoice_number'] ?></a></td>
-                    <td><a href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')). 'view-order/' . $v['order_id'] ?>"><?php echo '#' . $v['order_id'] ?></a></td>
-                    <td><?php echo strftime("%Y-%m-%d", strtotime($v['created'])) ?></td>
                     <td>
+                        <a href="<?php echo '?invoice=' . $v['ID'] ?>" target="_blank"><?php echo $v['invoice_number'] ?></a><br />
+                        <span style="font-size: 75%"><a href="<?php echo '?invoice=' . $v['ID'] .'&xml=1' ?>" target="_blank">XRechnung [XML]</a></span>
+                    </td>
+                    <td><a href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')). 'view-order/' . $v['order_id'] ?>"><?php echo '#' . $v['order_id'] ?></a></td>
+                    <td><?php echo  $dateFormatter->format(strtotime($v['created'])) ?></td>
+                    <td><?php echo $dateFormatter->format(strtotime($v['due_date'])) ?></td>
+                    <td style="text-transform: unset;">
                         <?php if ($v['status'] == Invoice::CANCELED) : ?>
                             <?php _e('Canceled', 'wc-invoice-pdf') ?>
                         <?php elseif (($v['status'] & Invoice::PAID) == 0) : ?>
-                            <a href="<?php echo '?payment='.$v['ID']; ?>" class="button view"><?php _e('Pay Now', 'wc-invoice-pdf') ?></a>
+                            <a href="<?php echo '?invoice=' . $v['ID'] ?>" class="button view" target="_blank"><?php _e('Pay Now', 'wc-invoice-pdf') ?></a>
                         <?php elseif (($v['status'] & Invoice::PAID) != 0) : ?>
-                            <strong><?php echo __('Paid at', 'wc-invoice-pdf') . ' ' . strftime("%x", strtotime($v['paid_date'])) ?> </strong>
+                            <strong><?php echo __('Paid at', 'wc-invoice-pdf') . ' ' .  $dateFormatter->format(strtotime($v['paid_date'])) ?> </strong>
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -115,8 +121,6 @@ class AccountInvoice
 
             $paypal = new \WC_Gateway_Paypal();
             $result = $paypal->process_payment($order->get_id());
-            //include_once(WPISPCONFIG3_PLUGIN_DIR . '../woocommerce/includes/gateways/paypal/includes/class-wc-gateway-paypal-request.php');
-            //$paypal_request = new WC_Gateway_Paypal_Request( $paypal );
             ?>
             <div style="text-align: center;">
                 <a href="<?php echo '?invoice=' . $invoiceID; ?>" class="button view"><?php  _e('Show');  ?></a>

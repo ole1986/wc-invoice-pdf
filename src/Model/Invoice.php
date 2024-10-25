@@ -1,8 +1,8 @@
 <?php
 
-namespace WCInvoicePdf\Model;
+namespace WcRecurring\Model;
 
-use WCInvoicePdf\WCInvoicePdf;
+use WcRecurring\WcRecurringIndex;
 
 class Invoice
 {
@@ -36,15 +36,16 @@ class Invoice
     protected static $columns = [
          'customer_id' => 'bigint(20) NOT NULL DEFAULT 0',
          'wc_order_id' => 'bigint(20) NOT NULL',
-         'offer_number'=> 'VARCHAR(50) NOT NULL',
-         'invoice_number' => 'VARCHAR(50) NOT NULL',
+         'offer_number'=> 'varchar(50) NOT NULL',
+         'invoice_number' => 'varchar(50) NOT NULL',
          'document' => 'mediumblob NULL',
+         'xinvoice' => 'mediumtext NULL',
          'created' => 'datetime NOT NULL DEFAULT \'0000-00-00 00:00:00\'',
          'status' => 'smallint(6) NOT NULL DEFAULT 0',
          'due_date' => 'datetime NULL',
          'paid_date' => 'datetime NULL',
          'reminder_sent' => 'tinyint(4) NOT NULL',
-         'deleted' => 'BOOLEAN NOT NULL DEFAULT FALSE'
+         'deleted' => 'tinyint(1) NOT NULL DEFAULT 0'
     ];
 
     public $isFirst = false;
@@ -72,6 +73,10 @@ class Invoice
 
         $query = "SELECT * FROM {$wpdb->prefix}" . self::TABLE . " WHERE ID = %d LIMIT 1";
         $item = $wpdb->get_row($wpdb->prepare($query, $id), OBJECT);
+
+        if (!$item) {
+            return;
+        }
 
         foreach (get_object_vars($item) as $key => $value) {
             $this->$key = $value;
@@ -177,7 +182,9 @@ class Invoice
             // do not update the document only the meta data
             $result = $wpdb->update("{$wpdb->prefix}". self::TABLE, $item, ['ID' => $this->ID]);
         } else {
+            do_action_ref_array('wc_recurring_invoice_creating', [$this, &$item]);
             $result = $wpdb->insert("{$wpdb->prefix}". self::TABLE, $item);
+            
             $this->ID = $wpdb->insert_id;
         }
 
@@ -255,7 +262,7 @@ class Invoice
         }
         $this->created = $d->format('Y-m-d H:i:s');
         // due date
-        $d->add(new \DateInterval('P' . WCInvoicePdf::$OPTIONS['wc_invoice_due_days'] . 'D'));
+        $d->add(new \DateInterval('P' . WcRecurringIndex::$OPTIONS['wc_invoice_due_days'] . 'D'));
         $this->due_date = $d->format('Y-m-d H:i:s');
         $this->paid_date = null;
         $this->status = 0;
@@ -306,13 +313,13 @@ class Invoice
 
         $charset_collate = $wpdb->get_charset_collate();
 
-        $sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}".self::TABLE." (
+        $sql = "CREATE TABLE {$wpdb->prefix}".self::TABLE." (
             ID mediumint(9) NOT NULL AUTO_INCREMENT,";
         foreach (self::$columns as $col => $dtype) {
             $sql.= "$col $dtype,\n";
         }
 
-        $sql.= "UNIQUE KEY id (id) ) $charset_collate;";
+        $sql.= "UNIQUE KEY id (id) ) $charset_collate;\n";
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);

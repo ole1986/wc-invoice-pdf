@@ -1,0 +1,45 @@
+services:
+  db:
+    # We use a mariadb image which supports both amd64 & arm64 architecture
+    image: mariadb:10.6.4-focal
+    container_name: db_wc_recurring
+    # If you really want to use MySQL, uncomment the following line
+    #image: mysql:8.0.27
+    command: '--default-authentication-plugin=mysql_native_password'
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=somewordpress
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=wordpress
+    expose:
+      - 3306
+      - 33060
+    ports:
+      - 3306:3306
+  wordpress:
+    image: wordpress_local
+    container_name: wp_wc_recurring
+    depends_on:
+    - db
+    build:
+      context: .
+    volumes:
+      - wp_data:/var/www/html
+      - ./wp-install.sh:/wp-install.sh
+      - ./:/var/www/html/wp-content/plugins/wc-invoice-pdf
+      - ./msmtprc:/etc/msmtprc
+    ports:
+      - 80:80
+    restart: always
+    env_file: .env
+    environment:
+      - WORDPRESS_DB_HOST=db
+      - WORDPRESS_DB_USER=wordpress
+      - WORDPRESS_DB_PASSWORD=wordpress
+      - WORDPRESS_DB_NAME=wordpress
+volumes:
+  db_data:
+  wp_data:

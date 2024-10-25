@@ -1,22 +1,29 @@
 <?php
 
-namespace WCInvoicePdf\Metabox;
+namespace WcRecurring\WcExtend;
 
-use WCInvoicePdf\Model\InvoicePdf;
-use WCInvoicePdf\Model\Invoice;
+use WcRecurring\Model\Invoice;
 
 class InvoiceMetabox
 {
     public function __construct()
     {
+        add_action('wp_ajax_InvoiceMetabox', [$this, 'DoAjax']);
+        
+        // the rest after this is for NON-AJAX requests
+        if (defined('DOING_AJAX') && DOING_AJAX) {
+            return;
+        }
+
+        // fill up the info about recurrence
         add_action('add_meta_boxes', [$this, 'invoice_box']);
         add_action('post_updated', [$this, 'invoice_submit']);
+        // enable ajax request for the invoice metabox located in the edit order post
         
-        // fill up the info about recurrence
         add_action('manage_shop_order_posts_custom_column', [$this, 'fill_orders_recurring_column'], 20, 3);
     }
 
-    public static function DoAjax()
+    public function DoAjax()
     {
         $order_id = intval($_POST['order_id']);
 
@@ -26,7 +33,7 @@ class InvoiceMetabox
 
         if (isset($_POST['period'])) {
             $period = esc_attr($_POST['period']);
-            do_action('wcinvoicepdf_order_period', $order_id, $period);
+            do_action('wc_recurring_order_period', $order_id, $period);
             $result = $period;
         } elseif (isset($_POST['b2c'])) {
             if ($_POST['b2c'] == 'true') {
@@ -60,37 +67,43 @@ class InvoiceMetabox
         $customer_email = get_post_meta($post_id, '_billing_email', true, '');
 
         ?>
-        <?php do_action('wcinvoicepdf_invoice_metabox', $post_id); ?>
+        <?php do_action('wc_recurring_invoice_metabox', $post_id); ?>
         <p>
             <label class="post-attributes-label" for="wc_pdf_b2c"><?php _e('Enable B2C', 'wc-invoice-pdf') ?></label>
-            <input id="wc_pdf_b2c" type="checkbox" data-id="<?php echo $post_id ?>" value="1" onclick="WCInvoicePdfAdmin.UpdateB2C(this)" <?php echo !empty($b2c) ? 'checked' : '' ?> />
+            <input id="wc_pdf_b2c" type="checkbox" data-id="<?php echo $post_id ?>" value="1" onclick="WcRecuringAdmin.UpdateB2C(this)" <?php echo !empty($b2c) ? 'checked' : '' ?> />
             <div>
                 <?php _e('Create invoice compatible for Business to Customer (B2C) relationship', 'wc-invoice-pdf') ?>
             </div>
         </p>
         <p>
             <label class="post-attributes-label" for="ispconfig_period"><?php _e('Payment interval', 'wc-invoice-pdf') ?>:</label>
-            <select id="ispconfig_period" data-id="<?php echo $post_id ?>" onchange="WCInvoicePdfAdmin.UpdatePeriod(this)">
+            <select id="ispconfig_period" data-id="<?php echo $post_id ?>" onchange="WcRecuringAdmin.UpdatePeriod(this)">
                 <option value="">Off</option>
             <?php foreach (Invoice::$PERIOD as $k => $v) { ?>
                 <option value="<?php echo $k ?>" <?php echo ($k == $period)?'selected': '' ?> ><?php _e($v, 'wc-invoice-pdf') ?></option>
             <?php } ?>
             </select>
         </p>
-        <p class="ispconfig_scheduler_info periodinfo-s" style="<?php if ($period != '') { echo 'display: none'; } ?>">
+        <p class="ispconfig_scheduler_info periodinfo-s" style="<?php if ($period != '') {
+            echo 'display: none';
+                                                                } ?>">
             <?php printf(__("A scheduler will submit the invoice once it has been created using the %s button to '%s'", 'wc-invoice-pdf'), __('Invoice', 'wc-invoice-pdf'), $customer_email); ?>
         </p>
-        <p class="ispconfig_scheduler_info periodinfo-m" style="<?php if ($period != 'm') { echo 'display: none'; } ?>">
+        <p class="ispconfig_scheduler_info periodinfo-m" style="<?php if ($period != 'm') {
+            echo 'display: none';
+                                                                } ?>">
             <?php printf(__("A scheduler will submit the invoice %s to '%s'", 'wc-invoice-pdf'), __('monthly', 'wc-invoice-pdf'), $customer_email); ?>
         </p>
-        <p class="ispconfig_scheduler_info periodinfo-y" style="<?php if ($period != 'y') { echo 'display: none'; } ?>">
+        <p class="ispconfig_scheduler_info periodinfo-y" style="<?php if ($period != 'y') {
+            echo 'display: none';
+                                                                } ?>">
             <?php printf(__("A scheduler will submit the invoice %s to '%s'", 'wc-invoice-pdf'), __('yearly', 'wc-invoice-pdf'), $customer_email); ?>
         </p>
         <p style="text-align: right">
             <a href="/wp-admin/admin.php?page=wcinvoicepdf_invoices&action=filter&customer_id=<?php echo $customer_id ?>"><?php _e('Show all invoices', 'wc-invoice-pdf') ?></a>
         </p>
         <p style="text-align: right;">
-            <a href="#" data-id="<?php echo $post_id ?>" onclick="WCInvoicePdfAdmin.ResetOrderPaidStatus(this)"><?php _e('Reset order paid status', 'wc-invoice-pdf') ?></a>
+            <a href="#" data-id="<?php echo $post_id ?>" onclick="WcRecuringAdmin.ResetOrderPaidStatus(this)"><?php _e('Reset order paid status', 'wc-invoice-pdf') ?></a>
         </p>
         <p style="text-align: right">
             <a href="admin.php?page=wcinvoicepdf_invoice&order=<?php echo $post_id ?>" target="_blank" class="button"><?php printf(__('Preview', 'wc-invoice-pdf'), '') ?></a>
@@ -138,11 +151,13 @@ class InvoiceMetabox
         global $post;
 
         if ($column === 'order_number') {
+            echo "<div style='font-size: 85%'>";
+            echo "<a href='admin.php?page=wcinvoicepdf_invoice&order=". $post->ID ."' target='_blank'>" . __('Preview', 'wc-invoice-pdf') .  " [PDF]</a>";
             $period = get_post_meta($post->ID, '_ispconfig_period', true);
-            $customer_email = get_post_meta($post->ID, '_billing_email', true, '');
             if ($period) {
-                echo "<div style='font-size: 85%'>" . __('Payments', 'wc-invoice-pdf') . ': ' . __(Invoice::$PERIOD[$period], 'wc-invoice-pdf') .'</div>';
+                echo " | " . __('Payments', 'wc-invoice-pdf') . ': ' . __(Invoice::$PERIOD[$period], 'wc-invoice-pdf');
             }
+            echo "</div>";
         }
     }
 }

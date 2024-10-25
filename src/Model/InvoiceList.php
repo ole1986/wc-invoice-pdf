@@ -1,5 +1,5 @@
 <?php
-namespace WCInvoicePdf\Model;
+namespace WcRecurring\Model;
 
 // Prevent loading this file directly
 defined('ABSPATH') || exit;
@@ -9,15 +9,12 @@ if (! class_exists('WP_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
-add_action('admin_head', array( 'WCInvoicePdf\Model\InvoiceList', 'admin_header' ));
+add_action('admin_head', array( 'WcRecurring\Model\InvoiceList', 'admin_header' ));
 
 class InvoiceList extends \WP_List_Table
 {
-
-    private $rows_per_page = 15;
-    private $total_rows = 0;
-
     public $total_trash_rows = 0;
+    private $rows_per_page = 15;
 
     public function __construct()
     {
@@ -143,16 +140,17 @@ class InvoiceList extends \WP_List_Table
         
         if (!$item->deleted) {
             $actions = [
-                'delete'=> sprintf('<a href="?page=%s&action=%s&id=%s" onclick="WCInvoicePdfAdmin.ConfirmDelete(this)" data-name="%s">%s</a>', $page, 'delete', $item->ID, $item->invoice_number, _x('Trash', 'verb')),
+                'delete'=> sprintf('<a href="?page=%s&action=%s&id=%s" onclick="WcRecuringAdmin.ConfirmDelete(this)" data-name="%s">%s</a>', $page, 'delete', $item->ID, $item->invoice_number, _x('Trash', 'verb')),
                 'quote' => sprintf('<a href="?page=wcinvoicepdf_invoice&order=%s&offer=1" target="_blank">%s</a>', $item->order_id, __('Offer', 'wc-invoice-pdf')),
+                'xml' => sprintf('<a href="?page=wcinvoicepdf_invoice&invoice=%s&xml=1" target="_blank">%s</a>', $item->ID, 'XML'),
             ];
         } else {
             $actions = [
-                'delete'=> sprintf('<a href="?page=%s&post_status=deleted&action=%s&id=%s" onclick="WCInvoicePdfAdmin.ConfirmDelete(this)" data-name="%s">%s</a>', $page, 'deletefull', $item->ID, $item->invoice_number, __('Delete Permanently'))
+                'delete'=> sprintf('<a href="?page=%s&post_status=deleted&action=%s&id=%s" onclick="WcRecuringAdmin.ConfirmDelete(this)" data-name="%s">%s</a>', $page, 'deletefull', $item->ID, $item->invoice_number, __('Delete Permanently'))
             ];
         }
         
-        return sprintf('<a target="_blank" href="?page=wcinvoicepdf_invoice&invoice=%s">%s</a> <span class="sm-visible"><strong>'. __('Customer', 'woocommerce') .':</strong> %s</span> %s', $item->ID, $item->invoice_number, $item->customer_name, $this->row_actions($actions));
+        return sprintf('<a target="_blank" href="?page=wcinvoicepdf_invoice&invoice=%s">%s</a> %s', $item->ID, $item->invoice_number, $this->row_actions($actions));
     }
 
     public function column_due_date($item)
@@ -160,7 +158,7 @@ class InvoiceList extends \WP_List_Table
         if ($item->deleted) {
             return $item->due_date;
         }
-        $result = '<a href="javascript:void(0)" data-id="'.$item->ID.'" onclick="WCInvoicePdfAdmin.EditDueDate(this)">'.$item->due_date.'</a>';
+        $result = '<a href="javascript:void(0)" data-id="'.$item->ID.'" onclick="WcRecuringAdmin.EditDueDate(this)">'.$item->due_date.'</a>';
         if ($item->reminder_sent > 0) {
             $result.= "<br />" . sprintf(__('%s reminders sent', 'wc-invoice-pdf'), $item->reminder_sent);
         }
@@ -169,7 +167,7 @@ class InvoiceList extends \WP_List_Table
 
     public function column_paid_date($item)
     {
-        return '<a href="javascript:void(0)" data-id="'.$item->ID.'" onclick="WCInvoicePdfAdmin.EditPaidDate(this)">'.$item->paid_date.'</a>';
+        return '<a href="javascript:void(0)" data-id="'.$item->ID.'" onclick="WcRecuringAdmin.EditPaidDate(this)">'.$item->paid_date.'</a>';
     }
     
     public function get_bulk_actions()
