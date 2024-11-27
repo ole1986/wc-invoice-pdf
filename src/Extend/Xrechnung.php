@@ -15,7 +15,10 @@ class Xrechnung
 {
     public function __construct()
     {
-        add_action('wc_recurring_invoice_creating', [$this, 'apply'], 20, 2);
+        if (WcRecurringIndex::$OPTIONS['wc_pdf_xinvoice']) {
+            // Attach XInvoice to the table
+            add_action('wc_recurring_invoice_creating', [$this, 'apply'], 20, 2);
+        }
     }
 
     public function apply(Invoice $invoice, &$invoiceItem)
