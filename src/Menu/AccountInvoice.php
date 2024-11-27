@@ -2,6 +2,7 @@
 namespace WcRecurring\Menu;
 
 use WcRecurring\Model\Invoice;
+use WcRecurring\WcRecurringIndex;
 
 class AccountInvoice
 {
@@ -16,12 +17,23 @@ class AccountInvoice
             add_filter('woocommerce_account_menu_items', [$this, 'wc_invoice_menu']);
             add_action('woocommerce_account_invoices_endpoint', [$this, 'wc_invoice_content']);
 
+            if (!empty(WcRecurringIndex::$OPTIONS['wc_order_show_completed'])) {
+                add_filter('woocommerce_my_account_my_orders_query', [$this, 'wc_orders_query']);
+            }
+            
+
             if (isset($_GET['invoice'])) {
                 $menu = new InvoiceMenu();
                 $menu->OpenInvoice();
                 return;
             }
         }
+    }
+
+    public function wc_orders_query($args)
+    {
+        $args['post_status'] = 'wc-completed';
+        return $args;
     }
 
     public function wc_invoice_menu($items)
@@ -37,11 +49,6 @@ class AccountInvoice
     public function wc_invoice_content()
     {
         global $wpdb, $current_user;
-        
-        if (isset($_GET['payment'])) {
-            $this->showPaymentForInvoice(intval($_GET['payment']));
-            return;
-        }
 
         $query = "SELECT i.ID, i.invoice_number, i.created, i.due_date, i.status, i.paid_date, ISNULL(i.xinvoice) AS no_xinvoice,
                     u.user_login AS customer_name, u.user_email AS user_email, u.ID AS user_id, p.ID AS order_id, p.post_status, pm.meta_value AS ispconfig_period 
@@ -91,55 +98,6 @@ class AccountInvoice
                 <?php } ?>
             </tbody>
         </table>
-        <?php
-    }
-
-    public function showPaymentForInvoice($invoiceID)
-    {
-        $invoice = new Invoice($invoiceID);
-        $order = $invoice->order;
-        ?>
-        <h3><?php  _e('Invoice', 'wc-invoice-pdf'); ?> <?php echo $invoice->invoice_number ?></h3>
-        via <?php echo $order->get_payment_method_title() ?>
-        <p><?php _e('Order', 'woocommerce') ?># <?php echo $invoice->invoice_number ?></p>
-
-        <?php if ($invoice->status & Invoice::PAID) : ?>
-        <h4 style="text-align:center;"><?php echo __('Paid at', 'wc-invoice-pdf') . ' ' . strftime("%x", strtotime($invoice->paid_date)) ?></h4>
-            <?php return;
-        endif; ?>
-
-        <?php if ($order->get_payment_method() == 'bacs') :
-            $bacs = new \WC_Gateway_BACS(); ?>      
-            <?php $bacs->thankyou_page($order->get_id()); ?>
-            <h3>Betrag: <?php echo $order->get_total() .' ' . $order->get_currency(); ?></h3>
-        <?php elseif ($order->get_payment_method() == 'paypal') :
-            // overwrite order number to use invoice number instead
-            add_filter('woocommerce_order_number', function () use ($invoice) {
-                return $invoice->invoice_number;
-            });
-            add_filter('woocommerce_paypal_args', function ($args) use ($invoice) {
-                $args['custom'] = json_encode(array('invoice_id' => $invoice->ID));
-                return $args;
-            });
-
-            $paypal = new \WC_Gateway_Paypal();
-            $result = $paypal->process_payment($order->get_id());
-            ?>
-            <div style="text-align: center;">
-                <a href="<?php echo '?invoice=' . $invoiceID; ?>" class="button view"><?php  _e('Show');  ?></a>
-                &nbsp;&nbsp;&nbsp;
-                <a href="<?php echo $result['redirect'] ?>" class="button button-primary"><?php _e('Pay Now', 'wc-invoice-pdf') ?></a>
-            </div>
-        <?php elseif ($order->get_payment_method() == 'paynow') :
-            $paynow = new \WC_Gateway_Paynow();
-            $result = $paynow->process_payment($order->get_id());
-            ?>
-          <div style="text-align: center;">
-                <a href="<?php echo '?invoice=' . $invoiceID; ?>" class="button view"><?php  _e('Show');  ?></a>
-                &nbsp;&nbsp;&nbsp;
-                <a href="<?php echo $result['redirect'] ?>" class="button button-primary"><?php _e('Pay Now', 'wc-invoice-pdf') ?></a>
-            </div>
-        <?php endif; ?>
         <?php
     }
 }

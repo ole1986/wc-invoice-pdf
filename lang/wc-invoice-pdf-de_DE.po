@@ -41,15 +41,15 @@ msgstr "Alle Rechnungen anzeigen"
 msgid "Reset order paid status"
 msgstr "Zahlungsstatus der Bestellung zurücksetzen"
 
-#: src/Menu/InvoiceMenu.php:287
+#: src/Menu/InvoiceMenu.php:290
 msgid "Due date in days"
 msgstr "Fälligkeitsdatum in Tage"
 
-#: src/Menu/InvoiceMenu.php:287
+#: src/Menu/InvoiceMenu.php:290
 msgid "The number of days an invoice becomes due"
 msgstr "Die Anzahl der Tage nachdem eine Rechnung fällig wird"
 
-#: src/Menu/InvoiceMenu.php:312
+#: src/Menu/InvoiceMenu.php:315
 msgid "Task Scheduler"
 msgstr "Aufgabenplaner"
 
@@ -74,44 +74,44 @@ msgstr "Exportieren"
 msgid "Generate"
 msgstr "Erstellen"
 
-#: src/Menu/InvoiceMenu.php:429
+#: src/Menu/InvoiceMenu.php:432
 #: src/Model/InvoiceList.php:124
 #: src/WcExtend/InvoiceMetabox.php:158
 msgid "Payments"
 msgstr "Zahlungen"
 
 #: src/Menu/InvoiceMenu.php:207
-#: src/Menu/InvoiceMenu.php:434
-#: src/Menu/InvoiceMenu.php:440
+#: src/Menu/InvoiceMenu.php:437
+#: src/Menu/InvoiceMenu.php:443
 msgid "Invoice template"
 msgstr "Rechnungsvorlage"
 
-#: src/Menu/InvoiceMenu.php:333
+#: src/Menu/InvoiceMenu.php:336
 msgid "Document Title"
 msgstr "Dokumenten Titel"
 
-#: src/Menu/InvoiceMenu.php:335
+#: src/Menu/InvoiceMenu.php:338
 msgid "Address line"
 msgstr "Adresszeile"
 
-#: src/Menu/InvoiceMenu.php:336
+#: src/Menu/InvoiceMenu.php:339
 msgid "Payment terms"
 msgstr "Zahlungsbedingungen"
 
-#: src/Menu/InvoiceMenu.php:337
+#: src/Menu/InvoiceMenu.php:340
 msgid "Offer terms"
 msgstr "Angebotsbedingungen"
 
-#: src/Menu/InvoiceMenu.php:339
+#: src/Menu/InvoiceMenu.php:342
 msgid "Protect rows from splitting"
 msgstr "Zeilenaufteilung vermeiden"
 
-#: src/Menu/InvoiceMenu.php:339
+#: src/Menu/InvoiceMenu.php:342
 msgid "Keep rows together when page breaks"
 msgstr "Behalte die Zeilen zusammen bei Seitenumbrüchen"
 
-#: src/Menu/InvoiceMenu.php:318
-#: src/Menu/InvoiceMenu.php:437
+#: src/Menu/InvoiceMenu.php:321
+#: src/Menu/InvoiceMenu.php:440
 #: src/Schedule/InvoiceTask.php:278
 msgid "Payment reminder"
 msgstr "Zahlungserinnerung"
@@ -124,11 +124,11 @@ msgstr "%s Erinnerungen versendet"
 msgid "Recurring payments"
 msgstr "Regelmäßige Zahlungen"
 
-#: src/Menu/InvoiceMenu.php:315
+#: src/Menu/InvoiceMenu.php:318
 msgid "Enable test mode and replace all recipients with the admin email address"
 msgstr "Aktiviert den Test modus und ersetzt alle Empfänger mit der E - Mail des Administrators"
 
-#: src/Menu/InvoiceMenu.php:318
+#: src/Menu/InvoiceMenu.php:321
 msgid "Send payment reminders to customer when invoice is due"
 msgstr "Verschickt Zahlungserinnerungen an den Kunden, nachdem eine Zahlung überfällig ist"
 
@@ -136,12 +136,12 @@ msgstr "Verschickt Zahlungserinnerungen an den Kunden, nachdem eine Zahlung übe
 msgid "Recurring invoice %s has been created"
 msgstr "Wiederkehrende Rechnung %s wurde erstellt"
 
-#: src/Menu/InvoiceMenu.php:317
-#: src/Menu/InvoiceMenu.php:431
+#: src/Menu/InvoiceMenu.php:320
+#: src/Menu/InvoiceMenu.php:434
 msgid "Automate invoice submission"
 msgstr "Rechnungen automatisert versenden"
 
-#: src/Menu/InvoiceMenu.php:317
+#: src/Menu/InvoiceMenu.php:320
 msgid "Enable automate invoice submission to customers on a daily schedule"
 msgstr "Aktiviert das automatische versenden von Rechnung (täglich)"
 
@@ -161,35 +161,35 @@ msgstr "Rechnung %s erfolgreich erstellt"
 msgid "A reminder #%s for invoice %s has been submitted to %s"
 msgstr "Eine Erinnerung #%s für die Rechnung %s wurde an %s übermittelt"
 
-#: src/Menu/InvoiceMenu.php:316
-#: src/Menu/InvoiceMenu.php:421
-#: src/Menu/InvoiceMenu.php:427
+#: src/Menu/InvoiceMenu.php:319
+#: src/Menu/InvoiceMenu.php:424
+#: src/Menu/InvoiceMenu.php:430
 msgid "Payment report"
 msgstr "Zahlungsbericht"
 
-#: src/Menu/InvoiceMenu.php:319
+#: src/Menu/InvoiceMenu.php:322
 msgid "First reminder (days)"
 msgstr "Erste Erinnerung (tage)"
 
-#: src/Menu/InvoiceMenu.php:319
+#: src/Menu/InvoiceMenu.php:322
 msgid "The number of days (after due) when the first payment reminder should be sent to the customer"
 msgstr "Die Anzahl der Tage (nach Fälligkeit) an dem die erste Zahlungserinnerung an den Kunden geschickt werden soll"
 
-#: src/Menu/InvoiceMenu.php:320
+#: src/Menu/InvoiceMenu.php:323
 msgid "Reminder interval"
 msgstr "Erinnerungsinterval"
 
-#: src/Menu/InvoiceMenu.php:321
+#: src/Menu/InvoiceMenu.php:324
 msgid "Max reminders"
 msgstr "Maximale Erinnerungen"
 
 #: src/WcExtend/InvoiceMetabox.php:100
-#: wc-recurring.php:90
+#: wc-recurring.php:91
 msgid "yearly"
 msgstr "jährlich"
 
 #: src/WcExtend/InvoiceMetabox.php:95
-#: wc-recurring.php:90
+#: wc-recurring.php:91
 msgid "monthly"
 msgstr "monatlich"
 
@@ -209,8 +209,7 @@ msgstr "pro Monat"
 msgid "per"
 msgstr "pro"
 
-#: src/Menu/AccountInvoice.php:62
-#: src/Menu/AccountInvoice.php:102
+#: src/Menu/AccountInvoice.php:65
 #: src/Model/InvoiceList.php:67
 #: src/Model/InvoicePdf.php:57
 #: src/Schedule/InvoiceTask.php:80
@@ -220,16 +219,14 @@ msgstr "pro"
 msgid "Invoice"
 msgstr "Rechnung"
 
-#: src/Menu/AccountInvoice.php:30
+#: src/Menu/AccountInvoice.php:38
 #: src/Menu/InvoiceMenu.php:26
 #: src/Menu/InvoiceMenu.php:27
 #: src/Menu/InvoiceMenu.php:129
 msgid "Invoices"
 msgstr "Rechnungen"
 
-#: src/Menu/AccountInvoice.php:85
-#: src/Menu/AccountInvoice.php:131
-#: src/Menu/AccountInvoice.php:140
+#: src/Menu/AccountInvoice.php:88
 msgid "Pay Now"
 msgstr "Bezahlen"
 
@@ -242,14 +239,13 @@ msgstr "Zahlungsinterval"
 msgid "Period"
 msgstr "Zeitraum"
 
-#: src/Menu/AccountInvoice.php:87
-#: src/Menu/AccountInvoice.php:107
+#: src/Menu/AccountInvoice.php:90
 #: src/Model/InvoiceList.php:73
 #: src/Model/InvoicePdf.php:95
 msgid "Paid at"
 msgstr "Bezahlt am"
 
-#: src/Menu/AccountInvoice.php:65
+#: src/Menu/AccountInvoice.php:68
 #: src/Model/InvoiceList.php:72
 #: src/Schedule/InvoiceTask.php:80
 msgid "Due at"
@@ -263,7 +259,7 @@ msgstr "Bezahlt"
 msgid "Sent"
 msgstr "Gesendet"
 
-#: src/Menu/AccountInvoice.php:83
+#: src/Menu/AccountInvoice.php:86
 #: src/Model/InvoiceList.php:108
 msgid "Canceled"
 msgstr "Abgebrochen"
@@ -314,7 +310,7 @@ msgstr "Total"
 msgid "Status"
 msgstr "Status"
 
-#: src/Menu/InvoiceMenu.php:460
+#: src/Menu/InvoiceMenu.php:463
 msgid "Save"
 msgstr "Speichern"
 
@@ -363,24 +359,24 @@ msgstr "Bitte geben Sie hier die gwünschte Domain ein"
 msgid "Subscription"
 msgstr "Abonnement"
 
-#: src/Menu/InvoiceMenu.php:291
+#: src/Menu/InvoiceMenu.php:294
 msgid "Subscription option"
 msgstr "Abonnement auswahl"
 
-#: src/Menu/InvoiceMenu.php:295
+#: src/Menu/InvoiceMenu.php:298
 msgid "Customer choose"
 msgstr "Kunde entscheidet"
 
-#: src/Menu/InvoiceMenu.php:292
+#: src/Menu/InvoiceMenu.php:295
 msgid "Allow the customer to choose between the subscriptions during checkout or fix a value"
 msgstr "Erlaube dem Kunden die Auswahl eines Abonnement oder setze den Wert fest"
 
-#: src/Menu/InvoiceMenu.php:284
+#: src/Menu/InvoiceMenu.php:287
 #: src/WcExtend/InvoiceMetabox.php:72
 msgid "Enable B2C"
 msgstr "Aktiviere B2C"
 
-#: src/Menu/InvoiceMenu.php:284
+#: src/Menu/InvoiceMenu.php:287
 #: src/WcExtend/InvoiceMetabox.php:75
 msgid "Create invoice compatible for Business to Customer (B2C) relationship"
 msgstr "Erstelle Business to Customer (B2C) kompatible Rechnungen"
@@ -420,9 +416,9 @@ msgid "Invoice not found our no access to this resource"
 msgstr "Rechnung nicht gefunden oder kein Zugriff auf diese Resource"
 
 #: src/Menu/InvoiceMenu.php:206
-#: src/Menu/InvoiceMenu.php:352
-#: src/Menu/InvoiceMenu.php:368
-#: src/Menu/InvoiceMenu.php:372
+#: src/Menu/InvoiceMenu.php:355
+#: src/Menu/InvoiceMenu.php:371
+#: src/Menu/InvoiceMenu.php:375
 msgid "General"
 msgstr "Allgemein"
 
@@ -430,32 +426,32 @@ msgstr "Allgemein"
 msgid "Business"
 msgstr "Geschäft"
 
-#: src/Menu/InvoiceMenu.php:540
+#: src/Menu/InvoiceMenu.php:543
 msgid "Select image"
 msgstr "Bild auswählen"
 
-#: src/Menu/InvoiceMenu.php:541
+#: src/Menu/InvoiceMenu.php:544
 msgid "Clear image"
 msgstr "Bild löschen"
 
-#: src/Menu/InvoiceMenu.php:304
+#: src/Menu/InvoiceMenu.php:307
 msgid "Email details"
 msgstr "E-Mail Details"
 
 #: src/Menu/InvoiceMenu.php:222
-#: src/Menu/InvoiceMenu.php:306
+#: src/Menu/InvoiceMenu.php:309
 msgid "Report recipient"
 msgstr "Berichtsadresse"
 
-#: src/Menu/InvoiceMenu.php:306
+#: src/Menu/InvoiceMenu.php:309
 msgid "Reciepient address for payment reports"
 msgstr "Empfänger - Adresse für Zahlungsberichte"
 
-#: src/Menu/InvoiceMenu.php:307
+#: src/Menu/InvoiceMenu.php:310
 msgid "Sender address"
 msgstr "Absender - Adresse"
 
-#: src/Menu/InvoiceMenu.php:307
+#: src/Menu/InvoiceMenu.php:310
 msgid "Public sender address the invoice is being submitted"
 msgstr "Öffentliche Absender - Adresse bei Rechnungsübermittlung"
 
@@ -472,9 +468,9 @@ msgid "Enter your company name"
 msgstr "Gebe hier die Firma an"
 
 #: src/Menu/InvoiceMenu.php:268
-#: src/Menu/InvoiceMenu.php:352
-#: src/Menu/InvoiceMenu.php:368
-#: src/Menu/InvoiceMenu.php:372
+#: src/Menu/InvoiceMenu.php:355
+#: src/Menu/InvoiceMenu.php:371
+#: src/Menu/InvoiceMenu.php:375
 msgid "Contact email"
 msgstr "Kontakt Email"
 
@@ -490,11 +486,11 @@ msgstr "Umsatzsteuer ID"
 msgid "Enter your VAT ID"
 msgstr "Geben Sie hier die UST. ID an"
 
-#: src/Menu/InvoiceMenu.php:330
+#: src/Menu/InvoiceMenu.php:333
 msgid "Properties"
 msgstr "Eigenschaften"
 
-#: src/Menu/InvoiceMenu.php:407
+#: src/Menu/InvoiceMenu.php:410
 msgid "Content"
 msgstr "Inhalt"
 
@@ -507,8 +503,8 @@ msgstr "Kundenreferenz ID (BT-10)"
 msgid "Additional customer info"
 msgstr "Zusätzliche Kundeninformation"
 
-#: src/Menu/InvoiceMenu.php:434
-#: src/Menu/InvoiceMenu.php:440
+#: src/Menu/InvoiceMenu.php:437
+#: src/Menu/InvoiceMenu.php:443
 msgid "The same placeholder from %s can be used"
 msgstr "Platzhalter aus %s können verwendet werden"
 
@@ -519,3 +515,11 @@ msgstr "Aktiviere XRechnung"
 #: src/Menu/InvoiceMenu.php:281
 msgid "Enable support for XInvoice (XML)"
 msgstr "Unterstützung für XRechnung (XML) aktivieren"
+
+#: src/Menu/InvoiceMenu.php:284
+msgid "Order account filter"
+msgstr "Konto Filter für Bestellung"
+
+#: src/Menu/InvoiceMenu.php:284
+msgid "Only show completed WooCommerce orders on customers account page"
+msgstr "Zeige nur abgeschlossene WooCommerce Bestellungen auf der Kundenkonto Seite"
