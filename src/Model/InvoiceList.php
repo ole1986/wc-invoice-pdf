@@ -144,7 +144,7 @@ class InvoiceList extends \WP_List_Table
                 'quote' => sprintf('<a href="?page=wcinvoicepdf_invoice&order=%s&offer=1" target="_blank">%s</a>', $item->order_id, __('Offer', 'wc-invoice-pdf')),
             ];
             if (empty($item->no_xinvoice)) {
-                $action['xml'] = sprintf('<a href="?page=wcinvoicepdf_invoice&invoice=%s&xml=1" target="_blank">%s</a>', $item->ID, 'XML');
+                $actions['xml'] = sprintf('<a href="?page=wcinvoicepdf_invoice&invoice=%s&xml=1" target="_blank">%s</a>', $item->ID, 'XML');
             }
         } else {
             $actions = [
