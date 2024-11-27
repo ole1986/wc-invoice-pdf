@@ -142,8 +142,10 @@ class InvoiceList extends \WP_List_Table
             $actions = [
                 'delete'=> sprintf('<a href="?page=%s&action=%s&id=%s" onclick="WcRecuringAdmin.ConfirmDelete(this)" data-name="%s">%s</a>', $page, 'delete', $item->ID, $item->invoice_number, _x('Trash', 'verb')),
                 'quote' => sprintf('<a href="?page=wcinvoicepdf_invoice&order=%s&offer=1" target="_blank">%s</a>', $item->order_id, __('Offer', 'wc-invoice-pdf')),
-                'xml' => sprintf('<a href="?page=wcinvoicepdf_invoice&invoice=%s&xml=1" target="_blank">%s</a>', $item->ID, 'XML'),
             ];
+            if (empty($item->no_xinvoice)) {
+                $action['xml'] = sprintf('<a href="?page=wcinvoicepdf_invoice&invoice=%s&xml=1" target="_blank">%s</a>', $item->ID, 'XML');
+            }
         } else {
             $actions = [
                 'delete'=> sprintf('<a href="?page=%s&post_status=deleted&action=%s&id=%s" onclick="WcRecuringAdmin.ConfirmDelete(this)" data-name="%s">%s</a>', $page, 'deletefull', $item->ID, $item->invoice_number, __('Delete Permanently'))
@@ -205,7 +207,8 @@ class InvoiceList extends \WP_List_Table
         $sortable = $this->get_sortable_columns();
         $this->_column_headers = array($columns, $hidden, $sortable);
 
-        $query = "SELECT i.id AS ID, i.customer_id, i.invoice_number, i.wc_order_id, i.created, i.due_date, i.paid_date, i.status, i.deleted, i.reminder_sent, u.user_login AS customer_name, pm2.meta_value AS user_email, u.ID AS user_id, p.ID AS order_id, p.post_status, pm.meta_value AS ispconfig_period 
+        $query = "SELECT i.id AS ID, i.customer_id, i.invoice_number, i.wc_order_id, i.created, i.due_date, i.paid_date, i.status, i.deleted, i.reminder_sent, ISNULL(i.xinvoice) AS no_xinvoice,
+                    u.user_login AS customer_name, pm2.meta_value AS user_email, u.ID AS user_id, p.ID AS order_id, p.post_status, pm.meta_value AS ispconfig_period 
                     FROM {$wpdb->prefix}".Invoice::TABLE." AS i 
                     LEFT JOIN {$wpdb->users} AS u ON u.ID = i.customer_id
                     LEFT JOIN {$wpdb->posts} AS p ON p.ID = i.wc_order_id

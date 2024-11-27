@@ -278,6 +278,9 @@ class InvoiceMenu
                             </p>
                             <p>Further address details are located in <a href="?page=wc-settings&tab=general">Woocommerce -> Settings</a></p>
                             <?php
+                                $this->addField('wc_pdf_xinvoice', '<strong>' . __('Enable XInvoice', 'wc-invoice-pdf') . '</strong><br />' . __('Enable support for XInvoice (XML)', 'wc-invoice-pdf'), 'checkbox');
+                            ?>
+                            <?php
                                 $this->addField('wc_pdf_b2c', '<strong>' . __('Enable B2C', 'wc-invoice-pdf') . '</strong><br />' . __('Create invoice compatible for Business to Customer (B2C) relationship', 'wc-invoice-pdf'), 'checkbox');
                             ?>
                             <?php

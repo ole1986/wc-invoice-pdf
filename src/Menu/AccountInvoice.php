@@ -43,7 +43,8 @@ class AccountInvoice
             return;
         }
 
-        $query = "SELECT i.*, u.user_login AS customer_name, u.user_email AS user_email, u.ID AS user_id, p.ID AS order_id, p.post_status, pm.meta_value AS ispconfig_period 
+        $query = "SELECT i.ID, i.invoice_number, i.created, i.due_date, i.status, ISNULL(i.xinvoice) AS no_xinvoice,
+                    u.user_login AS customer_name, u.user_email AS user_email, u.ID AS user_id, p.ID AS order_id, p.post_status, pm.meta_value AS ispconfig_period 
                     FROM {$wpdb->prefix}ispconfig_invoice AS i 
                     LEFT JOIN {$wpdb->users} AS u ON u.ID = i.customer_id
                     LEFT JOIN {$wpdb->posts} AS p ON p.ID = i.wc_order_id
@@ -70,7 +71,9 @@ class AccountInvoice
                 <tr>
                     <td>
                         <a href="<?php echo '?invoice=' . $v['ID'] ?>" target="_blank"><?php echo $v['invoice_number'] ?></a><br />
+                        <?php if (empty($v['no_xinvoice'])) : ?>
                         <span style="font-size: 75%"><a href="<?php echo '?invoice=' . $v['ID'] .'&xml=1' ?>" target="_blank">XRechnung [XML]</a></span>
+                        <?php endif; ?>
                     </td>
                     <td><a href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')). 'view-order/' . $v['order_id'] ?>"><?php echo '#' . $v['order_id'] ?></a></td>
                     <td><?php echo  $dateFormatter->format(strtotime($v['created'])) ?></td>
