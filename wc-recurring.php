@@ -19,10 +19,10 @@ defined('ABSPATH') or die('No script kiddies please!');
 define('WCRECURRING_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WCRECURRING_PLUGIN_URL', plugin_dir_url(__FILE__));
 
-if (file_exists('vendor_build/autoload.php')) {
-    require_once 'vendor_build/autoload.php';
-} else {
-    require_once 'vendor/autoload.php';
+require_once 'vendor/autoload.php';
+
+if (file_exists(WCRECURRING_PLUGIN_DIR. '/vendor_build/autoload.php')) {
+    require_once WCRECURRING_PLUGIN_DIR .'/vendor_build/autoload.php';
 }
 
 add_action('init', ['\WcRecurring\WcRecurringIndex', 'init']);

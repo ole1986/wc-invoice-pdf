@@ -3,7 +3,5 @@ assets
 .git
 .github
 
-vendor
-
 .distignore
 .gitignore

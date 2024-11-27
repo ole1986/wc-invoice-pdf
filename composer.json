@@ -12,8 +12,7 @@
     ],
     "scripts": {
         "prefix-namespaces": [
-            "strauss",
-            "@php composer dump-autoload"
+            "strauss"
         ]
     },
     "autoload": {
@@ -28,7 +27,7 @@
             "classmap_prefix": "",
             "constant_prefix": "",
             "packages": [],
-            "update_call_sites": false,
+            "update_call_sites": true,
             "override_autoload": {},
             "exclude_from_copy": {
                 "packages": [],

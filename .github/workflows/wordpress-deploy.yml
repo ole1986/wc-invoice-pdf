@@ -12,12 +12,21 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install subversion
+      - run: rm composer.lock
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-source
+      - name: Run strauss
+        run: composer prefix-namespaces
+      - name: FIX ROSPDF includes and fonts
+        run: cp -r vendor/rospdf/pdf-php/src/{include,fonts} vendor_build/rospdf/pdf-php/src/
+      - name: Remove vendor
+        run: rm -r vendor
+      - run: composer dump-autoload
       - name: WordPress Plugin Deploy
         id: deploy
         uses: 10up/action-wordpress-plugin-deploy@stable
         with:
           generate-zip: true
-          dry-run: true
         env:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
