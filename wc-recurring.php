@@ -73,7 +73,8 @@ class WcRecurringIndex
         'wc_company_name' => 'Your Company',
         'wc_company_email' => 'some@mail.tld',
         'wc_company_vat' => 'DE123456',
-        'wc_pdf_xinvoice' => 0
+        'wc_pdf_xinvoice' => 0,
+        'wc_order_show_completed' => 0
     ];
 
     public static $SUBSCRIPTIONS = [];
