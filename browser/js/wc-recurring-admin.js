@@ -1,7 +1,7 @@
 /**
- * ISPConfig Admin class
+ * WC Recurring Invoice class
  */
-function WCInvoicePdfAdminClass() {
+function WcRecuringAdminClass() {
     var $ = jQuery;
     var self = this;
 
@@ -12,7 +12,7 @@ function WCInvoicePdfAdminClass() {
      * @param {String} action action
      */
     var jsonRequest = function (data, action) {
-        if(!action) {
+        if (!action) {
             alert('No hook action defined');
             return;
         }
@@ -20,10 +20,10 @@ function WCInvoicePdfAdminClass() {
         return jQuery.post(ajaxurl, data, null, 'json');
     };
 
-     /** 
-     * confirm deletion
-     * @param {Object} obj sender object
-     */
+    /** 
+    * confirm deletion
+    * @param {Object} obj sender object
+    */
     this.ConfirmDelete = function (obj) {
         var invoice = $(obj).data('name');
         var ok = confirm("Really delete invoice " + invoice + "?");
@@ -74,7 +74,7 @@ function WCInvoicePdfAdminClass() {
         $(obj).after(container);
     }
 
-    this.UpdateB2C = function(obj){
+    this.UpdateB2C = function (obj) {
         var order_id = parseInt($(obj).data('id'));
         var value = $(obj).prop('checked');
 
@@ -83,9 +83,9 @@ function WCInvoicePdfAdminClass() {
 
         $(obj).after(loading);
 
-        jsonRequest({ order_id: order_id, b2c: value}, 'InvoiceMetabox').done(function(resp){
-            
-        }).fail(function(){
+        jsonRequest({ order_id: order_id, b2c: value }, 'InvoiceMetabox').done(function (resp) {
+
+        }).fail(function () {
             alert('An error occured');
         }).always(function () { loading.remove(); });
     }
@@ -93,7 +93,7 @@ function WCInvoicePdfAdminClass() {
      * allow changing the recurring period from the invoice metabox in any order
      * @param {Object} obj sender object
      */
-    this.UpdatePeriod = function(obj){
+    this.UpdatePeriod = function (obj) {
         var order_id = parseInt($(obj).data('id'));
         var value = $(obj).val();
 
@@ -104,18 +104,18 @@ function WCInvoicePdfAdminClass() {
 
         $('.ispconfig_scheduler_info').hide();
 
-        jsonRequest({ order_id: order_id, period: value}, 'InvoiceMetabox').done(function(resp){
-            if(value === '') value = 's';
+        jsonRequest({ order_id: order_id, period: value }, 'InvoiceMetabox').done(function (resp) {
+            if (value === '') value = 's';
             if (resp !== '')
                 $('.periodinfo-' + value).show();
 
             $(obj).val(resp);
-        }).fail(function(){
+        }).fail(function () {
             alert('An error occured');
         }).always(function () { loading.remove(); });
     }
 
-    this.ResetOrderPaidStatus = function(obj) {
+    this.ResetOrderPaidStatus = function (obj) {
         var order_id = parseInt($(obj).data('id'));
         var loading = $('<img />');
 
@@ -123,35 +123,35 @@ function WCInvoicePdfAdminClass() {
 
         $(obj).after(loading);
 
-        jsonRequest({ order_id: order_id, resetpaid: true}, 'InvoiceMetabox').done(function(resp){
+        jsonRequest({ order_id: order_id, resetpaid: true }, 'InvoiceMetabox').done(function (resp) {
             document.location.reload();
-        }).fail(function(){
+        }).fail(function () {
             alert('An error occured');
         }).always(function () { loading.remove(); });
     }
 
-    this.RunTask = function(obj, name){
+    this.RunTask = function (obj, name) {
         var tmp = $(obj).text();
         $(obj).text('Loading...');
 
-        jsonRequest({name: name}, 'InvoiceTask').done(function(resp){
-            if(name === 'reminder' && resp < -1) {
+        jsonRequest({ name: name }, 'InvoiceTask').done(function (resp) {
+            if (name === 'reminder' && resp < -1) {
                 self.ShowNotice("Failed to send the payment reminder due to an invalid email address", 'warning');
                 return;
             }
-            if(name === 'reminder' && resp < 0) {
+            if (name === 'reminder' && resp < 0) {
                 self.ShowNotice("The payment reminder is disabled. Please enable before using it", 'warning');
                 return;
             }
-            if(name === 'recurring' && resp < -1) {
+            if (name === 'recurring' && resp < -1) {
                 self.ShowNotice("Please select 'Test Recurring' first.", 'warning');
                 return;
             }
-            if(name === 'recurring' && resp < 0) {
+            if (name === 'recurring' && resp < 0) {
                 self.ShowNotice("Recurring payments is disabled", 'warning');
                 return;
             }
-            if(name === 'recurring_reminder' && resp < 0) {
+            if (name === 'recurring_reminder' && resp < 0) {
                 self.ShowNotice("Recurring reminder is disabled", 'warning');
                 return;
             }
@@ -160,9 +160,9 @@ function WCInvoicePdfAdminClass() {
         }).always(function () { $(obj).text(tmp); });
     }
 
-    this.OpenMedia = function(event, name){
-        
-        if(mediaFrame) {
+    this.OpenMedia = function (event, name) {
+
+        if (mediaFrame) {
             mediaFrame.open();
             return;
         }
@@ -176,7 +176,7 @@ function WCInvoicePdfAdminClass() {
         })
         mediaFrame.open();
 
-        mediaFrame.on('select', function(){
+        mediaFrame.on('select', function () {
             // Get media attachment details from the frame state
             var att = mediaFrame.state().get('selection').first().toJSON();
             console.log(att);
@@ -185,21 +185,21 @@ function WCInvoicePdfAdminClass() {
         });
     }
 
-    this.ClearMedia = function(event, name) {
+    this.ClearMedia = function (event, name) {
         $('#' + name).val('');
         $('#' + name + "-preview").attr('src', '');
     }
 
-    this.ShowNotice = function(message, type, ondismiss){
-        $button = $('<button />', {type: 'button', class:'notice-dismiss'});
-        $notice = $('<div />', {class: 'notice is-dismissible notice-'+type});
+    this.ShowNotice = function (message, type, ondismiss) {
+        $button = $('<button />', { type: 'button', class: 'notice-dismiss' });
+        $notice = $('<div />', { class: 'notice is-dismissible notice-' + type });
 
-        $button.click(function(){ $(this).parent().remove(); });
+        $button.click(function () { $(this).parent().remove(); });
 
-        $notice.html('<p>'+message+'</p>');
+        $notice.html('<p>' + message + '</p>');
         $notice.append($button);
 
-        $('#wpbody-content > .wrap > :first-child').after($notice);
+        $('#wpbody-content > .wc-recurring-settings > :first-child').after($notice);
     }
 
     var openDateInput = function (defaultValue, onSaveCallback, onCancelCallback) {
@@ -224,7 +224,7 @@ function WCInvoicePdfAdminClass() {
         return container;
     }
 
-    var hideTabs = function(){
+    var hideTabs = function () {
         $('#wcinvoicepdf-tabs a').each(function () {
             var other_id = $(this).attr('href');
             $(other_id).hide();
@@ -232,8 +232,8 @@ function WCInvoicePdfAdminClass() {
         $('#wcinvoicepdf-tabs > a').removeClass('nav-tab-active');
     }
 
-    var initTabs = function(){
-        $('#wcinvoicepdf-tabs > a').click(function(event){
+    var initTabs = function () {
+        $('#wcinvoicepdf-tabs > a').click(function (event) {
             event.preventDefault();
 
             var id = $(this).attr('href');
@@ -248,9 +248,9 @@ function WCInvoicePdfAdminClass() {
         $('#wcinvoicepdf-tabs a:first').trigger('click');
     }
 
-    $(function(){
+    $(function () {
         initTabs();
     })
 }
 
-window['WCInvoicePdfAdmin'] = new WCInvoicePdfAdminClass();
+window['WcRecuringAdmin'] = new WcRecuringAdminClass();

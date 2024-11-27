@@ -1,5 +1,4 @@
 name: Generate Release Notes
-
 on:
   push:
     tags:
@@ -8,15 +7,15 @@ jobs:
   Build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '10.x'
-    - run: npm install github-release-notes@0.17.1 -g
-    - name: Write PreRelease Notes
-      env:
-        GREN_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GITHUB_EVENT_REF: ${{ github.event.ref }}
-      run: |
-        tagname="${GITHUB_EVENT_REF/refs\/tags\//}"
-        gren release --override -d --tags=$tagname
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "10.x"
+      - run: npm install github-release-notes@0.17.1 -g
+      - name: Write PreRelease Notes
+        env:
+          GREN_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_EVENT_REF: ${{ github.event.ref }}
+        run: |
+          tagname="${GITHUB_EVENT_REF/refs\/tags\//}"
+          gren release --override -d --tags=$tagname

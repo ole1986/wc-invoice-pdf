@@ -1,7 +1,7 @@
 <?php
-namespace WCInvoicePdf\Model;
+namespace WcRecurring\Model;
 
-use WCInvoicePdf\WCInvoicePdf;
+use WcRecurring\WcRecurringIndex;
 
 // Prevent loading this file directly
 defined('ABSPATH') || exit;
@@ -43,8 +43,8 @@ class InvoiceExport
         foreach ($this->items as $i) {
             $invoice = new Invoice($i);
             
-            if (!empty(WCInvoicePdf::$OPTIONS['wc_export_locale'])) {
-                setlocale(LC_ALL, WCInvoicePdf::$OPTIONS['wc_export_locale']);
+            if (!empty(WcRecurringIndex::$OPTIONS['wc_export_locale'])) {
+                setlocale(LC_ALL, WcRecurringIndex::$OPTIONS['wc_export_locale']);
             }
 
             $locale = localeconv();
@@ -68,7 +68,7 @@ class InvoiceExport
                     $crDate, /* date */
                     $item->get_name(), /* description */
                     '', /* action */
-                    utf8_decode(WCInvoicePdf::$OPTIONS['wc_export_account']), /* account */
+                    utf8_decode(WcRecurringIndex::$OPTIONS['wc_export_account']), /* account */
                     $item->get_quantity(), /* qty */
                     number_format($item->get_total() / $item->get_quantity(), 2, $locale['decimal_point'], ''), /* single price excl. tax  */
                     '', /* disc_type */
@@ -76,11 +76,11 @@ class InvoiceExport
                     '', /* discount */
                     'yes', /* taxable */
                     'no', /* tax included */
-                    WCInvoicePdf::$OPTIONS['wc_export_account_tax'], /* tax table */
+                    WcRecurringIndex::$OPTIONS['wc_export_account_tax'], /* tax table */
                     $crDate, /* date posted */
                     $dueDate, /* due date */
-                    utf8_decode(WCInvoicePdf::$OPTIONS['wc_export_account_posted']), /* account posted*/
-                    sprintf(WCInvoicePdf::$OPTIONS['wc_export_notes'], $i->invoice_number), /* memo_posted */
+                    utf8_decode(WcRecurringIndex::$OPTIONS['wc_export_account_posted']), /* account posted*/
+                    sprintf(WcRecurringIndex::$OPTIONS['wc_export_notes'], $i->invoice_number), /* memo_posted */
                     '' /* accu_split */
                 ];
 

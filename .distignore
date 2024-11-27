@@ -1,6 +1,9 @@
-/assets
-/.git
-/.github
+assets
+.vscode
+.git
+.github
+
+vendor
 
 .distignore
 .gitignore

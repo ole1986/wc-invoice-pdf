@@ -1,6 +1,0 @@
-[submodule "pdf-php"]
-	path = vendor/rospdf/pdf-php
-	url = https://github.com/rospdf/pdf-php
-[submodule "vendor/rospdf/pdf-php"]
-	path = vendor/rospdf/pdf-php
-	url = https://github.com/rospdf/pdf-php

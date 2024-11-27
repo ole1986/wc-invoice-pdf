@@ -12,10 +12,8 @@ add_action('woocommerce_process_product_meta_service', ['WC_Product_Service', 'm
 add_action('admin_footer', ['WC_Product_Service', 'jsRegister']);
 add_filter('product_type_selector', ['WC_Product_Service','register']);
 
-class WC_Product_Service extends WC_Product
+class WC_Product_Service extends \WC_Product implements WC_Product_RecurringInterface
 {
-    public static $current;
-
     public function __construct($product)
     {
         $this->product_type = 'service';
@@ -147,5 +145,17 @@ class WC_Product_Service extends WC_Product
     {
         $price = wc_price(wc_get_price_to_display($this, array( 'price' => $this->get_regular_price() ))) . ' ' . __('per', 'wc-invoice-pdf') . $this->get_price_suffix('', 1);
         return apply_filters('woocommerce_get_price_html', $price, $this);
+    }
+
+    public function invoice_title($item, $invoice)
+    {
+        return $item['name'];
+    }
+
+    public function invoice_qty($item, $invoice)
+    {
+        $qtyStr = number_format($item['qty'], 1, ',', ' ');
+        $qtyStr.= '' . $this->get_price_suffix('', $item['qty']);
+        return $qtyStr;
     }
 }

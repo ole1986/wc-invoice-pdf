@@ -1,12 +1,17 @@
 <?php
-namespace WCInvoicePdf\Model;
+namespace WcRecurring\Model;
+
+use WcRecurring\Helper\Substitute;
+use WcRecurring\WcRecurringIndex;
+use WcRecurring\Model\Placeholder\CompanyDetails;
+use WcRecurring\Model\Placeholder\InvoiceDetails;
 
 class InvoicePdf
 {
     public function __construct()
     {
         // only load rospdf library when its necessary to avoid class conflicts
-        include_once WCINVOICEPDF_PLUGIN_DIR . 'vendor/rospdf/pdf-php/src/Cezpdf.php';
+        include_once WCRECURRING_PLUGIN_DIR . 'vendor/rospdf/pdf-php/src/Cezpdf.php';
     }
     /**
      * Used to build a pdf invoice using the WC_Order object
@@ -19,16 +24,23 @@ class InvoicePdf
         
         $order = $invoice->order;
 
-        $isB2C = !empty(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_b2c']) ? true : false;
+        $isB2C = !empty(WcRecurringIndex::$OPTIONS['wc_pdf_b2c']) ? true : false;
 
         if (!empty($order->get_meta('_wc_pdf_b2c'))) {
             $isB2C = true;
         }
 
+        $dateFormat = new \IntlDateFormatter(get_locale(), \IntlDateFormatter::MEDIUM, \IntlDateFormatter::NONE);
         $formatStyle = \NumberFormatter::CURRENCY;
         $formatter = new \NumberFormatter(get_locale(), $formatStyle);
         $formatter->setSymbol(\NumberFormatter::INTL_CURRENCY_SYMBOL, $order->get_currency());
         $formatter->setSymbol(\NumberFormatter::CURRENCY_SYMBOL, $order->get_currency());
+
+        // substition classes
+        $companyDetails = CompanyDetails::getInstance();
+        $invoiceDetails = new InvoiceDetails($invoice, $isOffer, $dateFormat);
+        $substitude = new Substitute($companyDetails);
+        $substitude->apply($invoiceDetails);
 
         $items = $order->get_items();
 
@@ -44,12 +56,11 @@ class InvoicePdf
         } else {
             $headlineText =  __('Invoice', 'wc-invoice-pdf') . ' ' . $invoice->invoice_number;
         }
-
                     
         $pdf = new \Cezpdf('a4');
         $pdf->ezSetMargins(50, 110, 50, 50);
 
-        $mediaId = intval(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_logo']);
+        $mediaId = intval(WcRecurringIndex::$OPTIONS['wc_pdf_logo']);
         if ($mediaId > 0) {
             $mediaUrl = wp_get_attachment_url($mediaId);
             if ($mediaUrl !== false) {
@@ -63,9 +74,9 @@ class InvoicePdf
         $pdf->setStrokeColor(0, 0, 0, 1);
         $pdf->line(50, 100, 550, 100);
 
-        $pdf->addTextWrap(50, 90, 8, \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_block1']);
-        $pdf->addTextWrap(250, 90, 8, \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_block2'], 0);
-        $pdf->addTextWrap(550, 90, 8, \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_block3'], 0, 'right');
+        $pdf->addTextWrap(50, 90, 8, $substitude->message(WcRecurringIndex::$OPTIONS['wc_pdf_block1']));
+        $pdf->addTextWrap(250, 90, 8, $substitude->message(WcRecurringIndex::$OPTIONS['wc_pdf_block2']), 0);
+        $pdf->addTextWrap(550, 90, 8, $substitude->message(WcRecurringIndex::$OPTIONS['wc_pdf_block3']), 0, 'right');
 
         $pdf->restoreState();
         $pdf->closeObject();
@@ -76,21 +87,20 @@ class InvoicePdf
 
         $y = $pdf->y;
 
-        $pdf->ezText(sprintf(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_info'], strftime('%x', strtotime($invoice->created))), 0, ['justification' => 'right']);
+        $pdf->ezText($substitude->message(WcRecurringIndex::$OPTIONS['wc_pdf_info']), 0, ['justification' => 'right']);
 
         if ($order->get_date_paid() && !$isOffer) {
             $pdf->saveState();
             $pdf->setColor(1, 0, 0);
-            $pdf->ezText(sprintf(__('Paid at', 'wc-invoice-pdf') . ' %s', strftime('%x', strtotime($order->get_date_paid()))), 0, ['justification' => 'right']);
+            $pdf->ezText(sprintf(__('Paid at', 'wc-invoice-pdf') . ' %s', $dateFormat->format(strtotime($order->get_date_paid()))), 0, ['justification' => 'right']);
             $pdf->restoreState();
         } else {
             $pdf->ezText('');
         }
 
-
         $pdf->y = $y;
 
-        $pdf->ezText("<strong>" . \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_addressline'] . "</strong>\n", 8);
+        $pdf->ezText("<strong>" . $substitude->message(WcRecurringIndex::$OPTIONS['wc_pdf_addressline']) . "</strong>\n", 8);
         $pdf->line($pdf->ez['leftMargin'], $pdf->y + 5, 200, $pdf->y + 5);
 
         $pdf->ezText($billing_info, 10);
@@ -98,13 +108,11 @@ class InvoicePdf
 
         $pdf->ezText("$headlineText", 14);
 
-
-
         $cols = array('num' => __('No#', 'wc-invoice-pdf'), 'desc' => __('Description', 'wc-invoice-pdf'), 'qty' => __('Qty', 'wc-invoice-pdf'), 'price' => __('Unit Price', 'wc-invoice-pdf'), 'total' => __('Amount', 'wc-invoice-pdf'));
         $colOptions = [
-            'num' => ['width' => 30],
+            'num' => ['width' => 28],
             'desc' => [],
-            'qty' => ['justification' => 'right', 'width' => 55],
+            'qty' => ['justification' => 'right', 'width' => 62],
             'price' => ['justification' => 'right', 'width' => 80],
             'total' => ['justification' => 'right', 'width' => 80],
         ];
@@ -119,37 +127,20 @@ class InvoicePdf
 
         foreach ($items as $v) {
             $row = [];
-
             $product_name = $v['name'];
-            //error_log(print_r($v,true));
-            $product = null;
-            // check if product id is available and fetch the ISPCONFIG tempalte ID
-            if (!empty($v['product_id'])) {
-                $product = wc_get_product($v['product_id']);
-            }
                 
             if (!isset($v['qty'])) {
                 $v['qty'] = 1;
             }
-           
-            if (\is_subclass_of($product, 'WC_ISPConfigProduct')) {
-                // if its an ISPCONFIG Template product
-                $current = new \DateTime($invoice->created);
-                $next = clone $current;
-                if ($v['qty'] == 1) {
-                    $next->add(new \DateInterval('P1M'));
-                } elseif ($v['qty'] == 12) {
-                    // overwrite the QTY to be 1 MONTH
-                    $next->add(new \DateInterval('P12M'));
-                }
-                $qtyStr = number_format($v['qty'], 0, ',', ' ') . ' ' . $product->get_price_suffix('', $v['qty']);
-                $product_name .= "\n<strong>" . __('Period', 'wc-invoice-pdf') . ": " . \strftime('%x', $current->getTimestamp()) ." - ". \strftime('%x', $next->getTimestamp()) . '</strong>';
-            } elseif ($product instanceof \WC_Product_Service) {
-                // check if product type is "hour" to output hours instead of Qty
-                $qtyStr = number_format($v['qty'], 1, ',', ' ');
-                $qtyStr.= '' . $product->get_price_suffix('', $v['qty']);
+
+            $product = $v->get_product();
+
+            if ($product instanceof \WC_Product_RecurringInterface) {
+                $qtyStr = $product->invoice_qty($v, $invoice);
+                $product_name = $product->invoice_title($v, $invoice);
             } else {
                 $qtyStr = number_format($v['qty'], 2, ',', ' ');
+                $product_name = $v['name'];
             }
 
             $total = round($v['total'], 2);
@@ -186,7 +177,7 @@ class InvoicePdf
         foreach ($order->get_refunds() as $v) {
             $data[] = [
                 "num" => "",
-                "desc" => "\n<strong>" .sprintf(__('Refund from %s', 'wc-invoice-pdf'), \strftime('%x', $v->get_date_created()->getTimestamp())) . ":</strong>\n" . $v->reason . "\n",
+                "desc" => "\n<strong>" .sprintf(__('Refund from %s', 'wc-invoice-pdf'), $dateFormat->format($v->get_date_created()->getTimestamp())) . ":</strong>\n" . $v->reason . "\n",
                 "qty" => "",
                 "price" => "",
                 "total" => "\n" . $formatter->format($v->total),
@@ -201,7 +192,7 @@ class InvoicePdf
                                          'shaded' => 1,
                                          'shadeHeadingCol'=> [0.8,0.8,0.8],
                                          'shadeCol' => [0.94,0.94,0.94],
-                                         'splitRows' => !boolval(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_keeprows'] ?? 0),
+                                         'splitRows' => !boolval(WcRecurringIndex::$OPTIONS['wc_pdf_keeprows'] ?? 0),
                                          'gridlines' => EZ_GRIDLINE_HEADERONLY + EZ_GRIDLINE_COLUMNS,
                                          'cols' => $colOptions]);
     
@@ -238,7 +229,7 @@ class InvoicePdf
 
         $pdf->ezSetDy(-15);
 
-        $footerText = $isOffer ? \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_condition_offer'] : sprintf(\WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_pdf_condition'], \WCInvoicePdf\WCInvoicePdf::$OPTIONS['wc_invoice_due_days']);
+        $footerText = $substitude->message($isOffer ? WcRecurringIndex::$OPTIONS['wc_pdf_condition_offer'] : WcRecurringIndex::$OPTIONS['wc_pdf_condition']);
         $isNewPage = $pdf->ezText("<strong>" . $footerText . "</strong>", 8, ["aright" => 350], true);
 
         if ($isNewPage) {

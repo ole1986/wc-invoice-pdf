@@ -5,3 +5,9 @@
 
 # ignore composer vendor path
 vendor
+# ignore build
+vendor_build
+
+# ignore email settings
+msmtprc
+.env
