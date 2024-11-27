@@ -43,7 +43,7 @@ class AccountInvoice
             return;
         }
 
-        $query = "SELECT i.ID, i.invoice_number, i.created, i.due_date, i.status, ISNULL(i.xinvoice) AS no_xinvoice,
+        $query = "SELECT i.ID, i.invoice_number, i.created, i.due_date, i.status, i.paid_date, ISNULL(i.xinvoice) AS no_xinvoice,
                     u.user_login AS customer_name, u.user_email AS user_email, u.ID AS user_id, p.ID AS order_id, p.post_status, pm.meta_value AS ispconfig_period 
                     FROM {$wpdb->prefix}ispconfig_invoice AS i 
                     LEFT JOIN {$wpdb->users} AS u ON u.ID = i.customer_id
