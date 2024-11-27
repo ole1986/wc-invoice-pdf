@@ -234,7 +234,7 @@ class WcRecurringIndex
         // install WP schedule to remind due date
         if (! wp_next_scheduled('invoice_reminder')) {
             // install the invoice reminder schedule which runs on daily bases
-            wp_schedule_event(time(), 'daily', 'invoice_reminder');
+            wp_schedule_event(time() + 86400, 'daily', 'invoice_reminder');
         }
 
         // add new permalinks and refresh the rewrite rules
