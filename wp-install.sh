@@ -8,7 +8,7 @@ wp plugin uninstall hello akismet
 wp plugin install woocommerce --version=9.3.3
 # Install neccesary plugin
 wp plugin activate woocommerce
-wp plugin activate wc-invoice-pdf
+wp plugin activate wc-recurring-pdf
 
 # create necessary pages
 found=$(wp post list --format=count --title="Legacy Cart" --post_type=page)

@@ -29,7 +29,7 @@ services:
     volumes:
       - wp_data:/var/www/html
       - ./wp-install.sh:/wp-install.sh
-      - ./:/var/www/html/wp-content/plugins/wc-invoice-pdf
+      - ./:/var/www/html/wp-content/plugins/wc-recurring-pdf
       - ./msmtprc:/etc/msmtprc
     ports:
       - 80:80
