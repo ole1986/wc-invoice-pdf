@@ -2,7 +2,7 @@
 /*
  * Plugin Name: WC Recurring Invoice PDF
  * Description: WooCommerce invoice pdf plugin with recurring payments (scheduled)
- * Version: 1.6.0
+ * Version: 1.6.1
  * Author: ole1986 <ole.koeckemann@gmail.com>
  * Author URI: https://github.com/ole1986/wc-invoice-pdf
  * Plugin URI: https://github.com/ole1986/wc-invoice-pdf/releases
@@ -74,7 +74,8 @@ class WcRecurringIndex
         'wc_company_email' => 'some@mail.tld',
         'wc_company_vat' => 'DE123456',
         'wc_pdf_xinvoice' => 0,
-        'wc_order_show_completed' => 0
+        'wc_order_show_completed' => 0,
+        'wc_customer_login_gdpr' => 0
     ];
 
     public static $SUBSCRIPTIONS = [];
@@ -234,7 +235,7 @@ class WcRecurringIndex
         // install WP schedule to remind due date
         if (! wp_next_scheduled('invoice_reminder')) {
             // install the invoice reminder schedule which runs on daily bases
-            wp_schedule_event(time(), 'daily', 'invoice_reminder');
+            wp_schedule_event(time() + 86400, 'daily', 'invoice_reminder');
         }
 
         // add new permalinks and refresh the rewrite rules
