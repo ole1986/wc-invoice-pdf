@@ -3,13 +3,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WC Recurring Invoice PDF 1.6.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wc-invoice-pdf\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wc-recurring-pdf\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-11-27T13:36:03+00:00\n"
+"POT-Creation-Date: 2024-11-30T09:07:35+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: wc-invoice-pdf\n"
@@ -39,14 +39,14 @@ msgstr ""
 msgid "https://github.com/ole1986/wc-invoice-pdf"
 msgstr ""
 
-#: src/Menu/AccountInvoice.php:38
+#: src/Menu/AccountInvoice.php:42
 #: src/Menu/InvoiceMenu.php:26
 #: src/Menu/InvoiceMenu.php:27
 #: src/Menu/InvoiceMenu.php:129
 msgid "Invoices"
 msgstr ""
 
-#: src/Menu/AccountInvoice.php:65
+#: src/Menu/AccountInvoice.php:69
 #: src/Model/InvoiceList.php:67
 #: src/Model/InvoicePdf.php:57
 #: src/Schedule/InvoiceTask.php:80
@@ -56,22 +56,22 @@ msgstr ""
 msgid "Invoice"
 msgstr ""
 
-#: src/Menu/AccountInvoice.php:68
+#: src/Menu/AccountInvoice.php:72
 #: src/Model/InvoiceList.php:72
 #: src/Schedule/InvoiceTask.php:80
 msgid "Due at"
 msgstr ""
 
-#: src/Menu/AccountInvoice.php:86
+#: src/Menu/AccountInvoice.php:90
 #: src/Model/InvoiceList.php:108
 msgid "Canceled"
 msgstr ""
 
-#: src/Menu/AccountInvoice.php:88
+#: src/Menu/AccountInvoice.php:92
 msgid "Pay Now"
 msgstr ""
 
-#: src/Menu/AccountInvoice.php:90
+#: src/Menu/AccountInvoice.php:94
 #: src/Model/InvoiceList.php:73
 #: src/Model/InvoicePdf.php:95
 msgid "Paid at"
@@ -111,15 +111,15 @@ msgid "The scheduled task is not installed - Please try to reenable the plugin"
 msgstr ""
 
 #: src/Menu/InvoiceMenu.php:206
-#: src/Menu/InvoiceMenu.php:355
-#: src/Menu/InvoiceMenu.php:371
-#: src/Menu/InvoiceMenu.php:375
+#: src/Menu/InvoiceMenu.php:358
+#: src/Menu/InvoiceMenu.php:374
+#: src/Menu/InvoiceMenu.php:378
 msgid "General"
 msgstr ""
 
 #: src/Menu/InvoiceMenu.php:207
-#: src/Menu/InvoiceMenu.php:437
-#: src/Menu/InvoiceMenu.php:443
+#: src/Menu/InvoiceMenu.php:440
+#: src/Menu/InvoiceMenu.php:446
 msgid "Invoice template"
 msgstr ""
 
@@ -133,7 +133,7 @@ msgid "Export"
 msgstr ""
 
 #: src/Menu/InvoiceMenu.php:222
-#: src/Menu/InvoiceMenu.php:309
+#: src/Menu/InvoiceMenu.php:312
 msgid "Report recipient"
 msgstr ""
 
@@ -150,9 +150,9 @@ msgid "Enter your company name"
 msgstr ""
 
 #: src/Menu/InvoiceMenu.php:268
-#: src/Menu/InvoiceMenu.php:355
-#: src/Menu/InvoiceMenu.php:371
-#: src/Menu/InvoiceMenu.php:375
+#: src/Menu/InvoiceMenu.php:358
+#: src/Menu/InvoiceMenu.php:374
+#: src/Menu/InvoiceMenu.php:378
 msgid "Contact email"
 msgstr ""
 
@@ -185,152 +185,160 @@ msgid "Only show completed WooCommerce orders on customers account page"
 msgstr ""
 
 #: src/Menu/InvoiceMenu.php:287
+msgid "Customer GDPR compliance"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:287
+msgid "Provide checkbox on customer login for to accept the GDPR"
+msgstr ""
+
+#: src/Menu/InvoiceMenu.php:290
 #: src/WcExtend/InvoiceMetabox.php:72
 msgid "Enable B2C"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:287
+#: src/Menu/InvoiceMenu.php:290
 #: src/WcExtend/InvoiceMetabox.php:75
 msgid "Create invoice compatible for Business to Customer (B2C) relationship"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:290
+#: src/Menu/InvoiceMenu.php:293
 msgid "Due date in days"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:290
+#: src/Menu/InvoiceMenu.php:293
 msgid "The number of days an invoice becomes due"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:294
+#: src/Menu/InvoiceMenu.php:297
 msgid "Subscription option"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:295
+#: src/Menu/InvoiceMenu.php:298
 msgid "Allow the customer to choose between the subscriptions during checkout or fix a value"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:298
+#: src/Menu/InvoiceMenu.php:301
 msgid "Customer choose"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:307
+#: src/Menu/InvoiceMenu.php:310
 msgid "Email details"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:309
+#: src/Menu/InvoiceMenu.php:312
 msgid "Reciepient address for payment reports"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:310
+#: src/Menu/InvoiceMenu.php:313
 msgid "Sender address"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:310
+#: src/Menu/InvoiceMenu.php:313
 msgid "Public sender address the invoice is being submitted"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:315
+#: src/Menu/InvoiceMenu.php:318
 msgid "Task Scheduler"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:318
+#: src/Menu/InvoiceMenu.php:321
 msgid "Enable test mode and replace all recipients with the admin email address"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:319
-#: src/Menu/InvoiceMenu.php:424
-#: src/Menu/InvoiceMenu.php:430
+#: src/Menu/InvoiceMenu.php:322
+#: src/Menu/InvoiceMenu.php:427
+#: src/Menu/InvoiceMenu.php:433
 msgid "Payment report"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:320
-#: src/Menu/InvoiceMenu.php:434
+#: src/Menu/InvoiceMenu.php:323
+#: src/Menu/InvoiceMenu.php:437
 msgid "Automate invoice submission"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:320
+#: src/Menu/InvoiceMenu.php:323
 msgid "Enable automate invoice submission to customers on a daily schedule"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:321
-#: src/Menu/InvoiceMenu.php:440
+#: src/Menu/InvoiceMenu.php:324
+#: src/Menu/InvoiceMenu.php:443
 #: src/Schedule/InvoiceTask.php:278
 msgid "Payment reminder"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:321
+#: src/Menu/InvoiceMenu.php:324
 msgid "Send payment reminders to customer when invoice is due"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:322
+#: src/Menu/InvoiceMenu.php:325
 msgid "First reminder (days)"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:322
+#: src/Menu/InvoiceMenu.php:325
 msgid "The number of days (after due) when the first payment reminder should be sent to the customer"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:323
+#: src/Menu/InvoiceMenu.php:326
 msgid "Reminder interval"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:324
+#: src/Menu/InvoiceMenu.php:327
 msgid "Max reminders"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:333
+#: src/Menu/InvoiceMenu.php:336
 msgid "Properties"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:336
+#: src/Menu/InvoiceMenu.php:339
 msgid "Document Title"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:338
+#: src/Menu/InvoiceMenu.php:341
 msgid "Address line"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:339
+#: src/Menu/InvoiceMenu.php:342
 msgid "Payment terms"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:340
+#: src/Menu/InvoiceMenu.php:343
 msgid "Offer terms"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:342
+#: src/Menu/InvoiceMenu.php:345
 msgid "Protect rows from splitting"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:342
+#: src/Menu/InvoiceMenu.php:345
 msgid "Keep rows together when page breaks"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:410
+#: src/Menu/InvoiceMenu.php:413
 msgid "Content"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:432
+#: src/Menu/InvoiceMenu.php:435
 #: src/Model/InvoiceList.php:124
 #: src/WcExtend/InvoiceMetabox.php:158
 msgid "Payments"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:437
-#: src/Menu/InvoiceMenu.php:443
+#: src/Menu/InvoiceMenu.php:440
+#: src/Menu/InvoiceMenu.php:446
 msgid "The same placeholder from %s can be used"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:463
+#: src/Menu/InvoiceMenu.php:466
 msgid "Save"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:543
+#: src/Menu/InvoiceMenu.php:546
 msgid "Select image"
 msgstr ""
 
-#: src/Menu/InvoiceMenu.php:544
+#: src/Menu/InvoiceMenu.php:547
 msgid "Clear image"
 msgstr ""
 
@@ -408,13 +416,21 @@ msgstr ""
 msgid "A reminder #%s for invoice %s has been submitted to %s"
 msgstr ""
 
-#: src/WcExtend/CustomerProperties.php:25
-#: src/WcExtend/CustomerProperties.php:52
+#: src/WcExtend/CustomerProperties.php:33
+#: src/WcExtend/CustomerProperties.php:64
 msgid "Customer reference ID (BT-10)"
 msgstr ""
 
-#: src/WcExtend/CustomerProperties.php:49
+#: src/WcExtend/CustomerProperties.php:61
 msgid "Additional customer info"
+msgstr ""
+
+#: src/WcExtend/CustomerProperties.php:70
+msgid "GDPR accepted"
+msgstr ""
+
+#: src/WcExtend/CustomerProperties.php:86
+msgid "I hereby accept the "
 msgstr ""
 
 #: src/WcExtend/InvoiceMetabox.php:79
@@ -432,12 +448,12 @@ msgid "A scheduler will submit the invoice %s to '%s'"
 msgstr ""
 
 #: src/WcExtend/InvoiceMetabox.php:95
-#: wc-recurring.php:91
+#: wc-recurring.php:92
 msgid "monthly"
 msgstr ""
 
 #: src/WcExtend/InvoiceMetabox.php:100
-#: wc-recurring.php:91
+#: wc-recurring.php:92
 msgid "yearly"
 msgstr ""
 

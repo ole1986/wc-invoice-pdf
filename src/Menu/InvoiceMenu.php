@@ -284,6 +284,9 @@ class InvoiceMenu
                                 $this->addField('wc_order_show_completed', '<strong>' . __('Order account filter', 'wc-invoice-pdf') . '</strong><br />' . __('Only show completed WooCommerce orders on customers account page', 'wc-invoice-pdf'), 'checkbox');
                             ?>
                             <?php
+                                $this->addField('wc_customer_login_gdpr', '<strong>' . __('Customer GDPR compliance', 'wc-invoice-pdf') . '</strong><br />' . __('Provide checkbox on customer login for to accept the GDPR', 'wc-invoice-pdf'), 'checkbox');
+                            ?>
+                            <?php
                                 $this->addField('wc_pdf_b2c', '<strong>' . __('Enable B2C', 'wc-invoice-pdf') . '</strong><br />' . __('Create invoice compatible for Business to Customer (B2C) relationship', 'wc-invoice-pdf'), 'checkbox');
                             ?>
                             <?php
