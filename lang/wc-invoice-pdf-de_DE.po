@@ -530,7 +530,7 @@ msgstr "Hiermit akzeptiere ich die "
 
 #: src/Menu/InvoiceMenu.php:287
 msgid "Provide checkbox on customer login for to accept the GDPR"
-msgstr "Kundenlogin um eine Auswahlbox für das akzeptiere der DSGVO erweitern"
+msgstr "Kundenlogin um eine Auswahlbox für das akzeptieren der DSGVO erweitern"
 
 #: src/Menu/InvoiceMenu.php:287
 msgid "Customer GDPR compliance"
