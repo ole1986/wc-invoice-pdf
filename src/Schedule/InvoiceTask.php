@@ -6,11 +6,14 @@ use WcRecurring\WcRecurringIndex;
 use WcRecurring\Model\Invoice;
 use WcRecurring\Model\Placeholder\CompanyDetails;
 use WcRecurring\Model\Placeholder\InvoiceDetails;
+use WcRecurring\Extend;
 
 class InvoiceTask
 {
     public static function Run()
     {
+        new Extend\Xrechnung();
+
         $me = new self();
         $me->payment_notify();
         $me->payment_recur();
