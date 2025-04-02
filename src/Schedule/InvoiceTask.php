@@ -117,7 +117,12 @@ class InvoiceTask
 
         $res = $wpdb->get_results("SELECT p.ID,p.post_date_gmt, pm.meta_value AS payment_period FROM {$wpdb->posts} p 
                                 LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id 
-                                WHERE DATE_FORMAT(NOW(), '%d%m') = DATE_FORMAT(post_date, '%d%m') AND p.post_type = 'shop_order' AND p.post_status = 'wc-completed' AND pm.meta_key = '_ispconfig_period'", OBJECT);
+                                 WHERE p.post_type = 'shop_order' AND p.post_status = 'wc-completed' AND pm.meta_key = '_ispconfig_period' AND
+                                	(
+                                        (DATE_FORMAT(NOW(), '%d%m') = DATE_FORMAT(post_date, '%d%m') AND pm.meta_value = 'y') OR
+                                        (DATE_FORMAT(NOW(), '%d') = DATE_FORMAT(post_date, '%d') AND pm.meta_value = 'm')
+                                    ) AND p.ID NOT IN (SELECT wc_order_id FROM {$wpdb->prefix}ispconfig_invoice WHERE DATE_FORMAT(NOW(), '%d') = DATE_FORMAT(created, '%d'))
+                                    ", OBJECT);
         
         if (empty($res)) {
             return 0;
