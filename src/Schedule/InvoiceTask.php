@@ -121,7 +121,7 @@ class InvoiceTask
                                 	(
                                         (DATE_FORMAT(NOW(), '%d%m') = DATE_FORMAT(post_date, '%d%m') AND pm.meta_value = 'y') OR
                                         (DATE_FORMAT(NOW(), '%d') = DATE_FORMAT(post_date, '%d') AND pm.meta_value = 'm')
-                                    ) AND p.ID NOT IN (SELECT wc_order_id FROM {$wpdb->prefix}ispconfig_invoice WHERE DATE_FORMAT(NOW(), '%d') = DATE_FORMAT(created, '%d'))
+                                    ) AND p.ID NOT IN (SELECT wc_order_id FROM {$wpdb->prefix}ispconfig_invoice WHERE DATE_FORMAT(NOW(), '%Y-%m-%d') = DATE_FORMAT(created, '%Y-%m-%d'))
                                     ", OBJECT);
         
         if (empty($res)) {
