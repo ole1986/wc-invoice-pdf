@@ -75,7 +75,7 @@ class InvoiceMenu
             $invoice->makeNew($offer);
 
             header("Content-type: application/pdf");
-            header("Content-Disposition: inline; filename=".$invoice->invoice_number .'.pdf');
+            header("Content-Disposition: inline; filename=". ($offer ? $invoice->offer_number : $invoice->invoice_number) .'.pdf');
 
             echo $invoice->document;
         } elseif (!empty($_GET['invoice'])) {

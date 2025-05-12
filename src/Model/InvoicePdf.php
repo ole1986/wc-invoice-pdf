@@ -133,11 +133,15 @@ class InvoicePdf
                 $v['qty'] = 1;
             }
 
-            $product = $v->get_product();
-
-            if ($product instanceof \WC_Product_RecurringInterface) {
-                $qtyStr = $product->invoice_qty($v, $invoice);
-                $product_name = $product->invoice_title($v, $invoice);
+            if ($v instanceof \WC_Order_Item_Product) {
+                $product = $v->get_product();
+                if ($product instanceof \WC_Product_RecurringInterface) {
+                    $qtyStr = $product->invoice_qty($v, $invoice);
+                    $product_name = $product->invoice_title($v, $invoice);
+                } else {
+                    $qtyStr = number_format($v['qty'], 2, ',', ' ');
+                    $product_name = $v['name'];
+                }
             } else {
                 $qtyStr = number_format($v['qty'], 2, ',', ' ');
                 $product_name = $v['name'];
