@@ -149,7 +149,9 @@ class WC_Product_Service extends \WC_Product implements WC_Product_RecurringInte
 
     public function invoice_title($item, $invoice)
     {
-        return $item['name'];
+        if (empty($this->sku))
+            return $item['name'];
+        return $item['name'] . ' ['.$this->sku.']';
     }
 
     public function invoice_qty($item, $invoice)

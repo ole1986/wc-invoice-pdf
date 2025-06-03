@@ -112,7 +112,7 @@ class InvoicePdf
         $colOptions = [
             'num' => ['width' => 28],
             'desc' => [],
-            'qty' => ['justification' => 'right', 'width' => 62],
+            'qty' => ['justification' => 'right', 'width' => 60],
             'price' => ['justification' => 'right', 'width' => 80],
             'total' => ['justification' => 'right', 'width' => 80],
         ];
@@ -141,6 +141,8 @@ class InvoicePdf
                 } else {
                     $qtyStr = number_format($v['qty'], 2, ',', ' ');
                     $product_name = $v['name'];
+                    if (!empty($product->sku))
+                        $product_name .= ' [' . $product->sku . ']';
                 }
             } else {
                 $qtyStr = number_format($v['qty'], 2, ',', ' ');
@@ -167,7 +169,7 @@ class InvoicePdf
             }
 
             $row['num'] = "$i";
-            $row['desc'] = $product_name . "\n" . $mdcontent;
+            $row['desc'] = implode("\n", ["<i>$product_name</i>", $mdcontent]);
             $row['qty'] = $qtyStr;
             $row['price'] = $formatter->format($unitprice);
             $row['total'] = $formatter->format($total);
