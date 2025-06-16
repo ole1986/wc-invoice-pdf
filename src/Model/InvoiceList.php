@@ -79,13 +79,7 @@ class InvoiceList extends \WP_List_Table
     {
         switch ($column_name) {
             case 'ID':
-            case 'customer_name':
-            case 'created':
-            case 'due_date':
-            case 'paid_date':
                 return $item->$column_name;
-            case 'status':
-                return Invoice::GetStatus($item->$column_name);
             default:
                 return print_r($item, true) ; //Show the whole array for troubleshooting purposes
         }
@@ -153,6 +147,13 @@ class InvoiceList extends \WP_List_Table
         }
         
         return sprintf('<a target="_blank" href="?page=wcinvoicepdf_invoice&invoice=%s">%s</a> %s', $item->ID, $item->invoice_number, $this->row_actions($actions));
+    }
+
+    public function column_created($item)
+    {
+        $d = new \DateTime($item->created);
+        $d->setTimezone(\wp_timezone());
+        return $d->format("Y-m-d H:i");
     }
 
     public function column_due_date($item)
