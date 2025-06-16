@@ -234,6 +234,8 @@ class WC_Product_Webspace extends \WC_Product implements WC_Product_RecurringInt
         $dateFormat = new IntlDateFormatter(get_locale(), IntlDateFormatter::MEDIUM, IntlDateFormatter::NONE);
 
         $product_name = $item['name'];
+        if (!empty($this->sku))
+            $product_name .= ' ['.$this->sku.']';
         $current = new \DateTime($invoice->created);
         $next = clone $current;
         $next->add(new \DateInterval('P' . strval($item['qty']) . 'M'));
