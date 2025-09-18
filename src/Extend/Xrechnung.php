@@ -2,8 +2,8 @@
 
 namespace WcRecurring\Extend;
 
-use horstoeko\zugferd\ZugferdDocumentBuilder;
-use horstoeko\zugferd\ZugferdProfiles;
+use WCRDependencies\horstoeko\zugferd\ZugferdDocumentBuilder;
+use WCRDependencies\horstoeko\zugferd\ZugferdProfiles;
 use WcRecurring\WcRecurringIndex;
 use WcRecurring\Model\Placeholder\CompanyDetails;
 use WcRecurring\Model\Placeholder\InvoiceDetails;

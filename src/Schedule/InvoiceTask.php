@@ -7,6 +7,7 @@ use WcRecurring\Model\Invoice;
 use WcRecurring\Model\Placeholder\CompanyDetails;
 use WcRecurring\Model\Placeholder\InvoiceDetails;
 use WcRecurring\Extend;
+use WcRecurring\WcExtend\CustomerProperties;
 
 class InvoiceTask
 {
@@ -196,13 +197,24 @@ class InvoiceTask
                 $recipient = $order->get_billing_email();
             }
 
+            $headers = [
+                'From: '. WcRecurringIndex::$OPTIONS['wc_mail_sender']
+            ];
+
+            // Addtional Billing Email (CC)
+            $user_id = $order->get_user_id();
+            $additional_billing_email = get_user_meta($user_id, CustomerProperties::ADDITIONAL_BILLING_EMAIL, true);
+            if (!empty($additional_billing_email)) {
+                $headers[] = "CC: $additional_billing_email";
+            }
+
             error_log("INFO: Sending invoice ".$invoice->invoice_number." to: " . $recipient);
 
             $success = wp_mail(
                 $recipient,
                 __('Invoice', 'wc-invoice-pdf') . ' ' . $invoice->invoice_number,
                 $substitude->message($messageBody),
-                'From: '. WcRecurringIndex::$OPTIONS['wc_mail_sender']
+                $headers
             );
 
             if ($success) {

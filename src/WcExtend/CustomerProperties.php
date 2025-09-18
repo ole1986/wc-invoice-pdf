@@ -5,6 +5,7 @@ use WcRecurring\WcRecurringIndex;
 
 class CustomerProperties
 {
+    const ADDITIONAL_BILLING_EMAIL = "additional_billing_email";
     const CUSTOMER_REFERENCE_KEY = "customer_reference";
     const ACCEPT_GDPR_KEY = "wc_recurring_accept_gdpr";
 
@@ -21,7 +22,7 @@ class CustomerProperties
         } else {
             add_action('show_user_profile', [$this, 'edit_user_customer_reference'], 20);
             add_action('edit_user_profile', [$this, 'edit_user_customer_reference'], 20);
-            add_action('profile_update', [$this, 'update_customer_reference']);
+            add_action('profile_update', [$this, 'update_profile']);
         }
     }
 
@@ -52,6 +53,7 @@ class CustomerProperties
 
     public function edit_user_customer_reference($user)
     {
+        $billing_email = get_user_meta($user->ID, self::ADDITIONAL_BILLING_EMAIL, true);
         $customer_reference = get_user_meta($user->ID, self::CUSTOMER_REFERENCE_KEY, true);
         $gdpr = get_user_meta($user->ID, self::ACCEPT_GDPR_KEY, true);
         $dateFormat = new \IntlDateFormatter(get_locale(), \IntlDateFormatter::MEDIUM, \IntlDateFormatter::MEDIUM);
@@ -60,6 +62,12 @@ class CustomerProperties
 
         <h3><?php _e('Additional customer info', 'wc-invoice-pdf'); ?></h3>
         <table class="form-table">
+            <tr>
+                <th><label for="additional_billing_email"><?php _e('Additional Billing Email (CC)', 'wc-invoice-pdf'); ?></label></th>
+                <td>
+                    <input type="text" name="<?php echo self::ADDITIONAL_BILLING_EMAIL ?>" id="additional_billing_email" class="regular-text" value="<?php echo esc_attr($billing_email); ?>" />
+                </td>
+            </tr>
             <tr>
                 <th><label for="customer_reference"><?php _e('Customer reference ID (BT-10)', 'wc-invoice-pdf'); ?></label></th>
                 <td>
@@ -76,8 +84,9 @@ class CustomerProperties
         <?php
     }
 
-    public function update_customer_reference($user_id)
+    public function update_profile($user_id)
     {
+        update_user_meta($user_id, self::ADDITIONAL_BILLING_EMAIL, sanitize_email($_POST[self::ADDITIONAL_BILLING_EMAIL]));
         update_user_meta($user_id, self::CUSTOMER_REFERENCE_KEY, sanitize_key($_POST[self::CUSTOMER_REFERENCE_KEY]));
     }
 
