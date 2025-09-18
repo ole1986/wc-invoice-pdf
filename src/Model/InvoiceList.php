@@ -124,6 +124,14 @@ class InvoiceList extends \WP_List_Table
     {
         $res = sprintf('<a href="user-edit.php?user_id=%d">%s</a>', $item->user_id, $item->customer_name);
         $res.="<br /> ". $item->user_email;
+
+        $order = wc_get_order($item->order_id);
+
+        $additional_email = $order->get_meta('_billing_email2');
+
+        if ($additional_email) {
+            $res.="<br />CC: $additional_email";
+        }
         return $res;
     }
     

@@ -196,13 +196,23 @@ class InvoiceTask
                 $recipient = $order->get_billing_email();
             }
 
+            $headers = [
+                'From: '. WcRecurringIndex::$OPTIONS['wc_mail_sender']
+            ];
+
+            // Addtional Billing Email (CC)
+            $additional_billing_email = $order->get_meta('_billing_email2');
+            if (!empty($additional_billing_email)) {
+                $headers[] = "CC: $additional_billing_email";
+            }
+
             error_log("INFO: Sending invoice ".$invoice->invoice_number." to: " . $recipient);
 
             $success = wp_mail(
                 $recipient,
                 __('Invoice', 'wc-invoice-pdf') . ' ' . $invoice->invoice_number,
                 $substitude->message($messageBody),
-                'From: '. WcRecurringIndex::$OPTIONS['wc_mail_sender']
+                $headers
             );
 
             if ($success) {
