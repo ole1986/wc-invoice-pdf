@@ -3,8 +3,6 @@ services:
     # We use a mariadb image which supports both amd64 & arm64 architecture
     image: mariadb:10.6.4-focal
     container_name: db_wc_recurring
-    # If you really want to use MySQL, uncomment the following line
-    #image: mysql:8.0.27
     command: '--default-authentication-plugin=mysql_native_password'
     volumes:
       - db_data:/var/lib/mysql
@@ -23,7 +21,7 @@ services:
     image: wordpress_local
     container_name: wp_wc_recurring
     depends_on:
-    - db
+      - db
     build:
       context: .
     volumes:
@@ -35,6 +33,8 @@ services:
       - 80:80
     restart: always
     env_file: .env
+    extra_hosts:
+      - host.docker.internal:host.containers.internal
     environment:
       - WORDPRESS_DB_HOST=db
       - WORDPRESS_DB_USER=wordpress

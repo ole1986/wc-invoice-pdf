@@ -159,7 +159,7 @@ class Invoice
         global $wpdb;
 
         // check for order status
-        if ($this->order->get_status() == 'pending' && in_array($this->order->payment_method, ['paypal'])) {
+        if ($this->order->get_status() == 'pending' && in_array($this->order->get_payment_method(), ['paypal'])) {
             $this->order->add_order_note("skipped invoice creation because paypal payment is not yet completed");
             return false;
         }

@@ -71,6 +71,8 @@ class Xrechnung
             $total += $item->get_total();
             $tax += $item->get_total_tax();
 
+            $itemPrice = $item->get_total() / $item->get_quantity();
+
             $document->addNewPosition(strval($i++));
 
             $desc =  array_map(function ($v) {
@@ -79,7 +81,7 @@ class Xrechnung
 
             $document->setDocumentPositionProductDetails($item->get_name(), implode("\n\n", $desc), null, null, null, null, null, strval($item->get_product_id))
             ->setDocumentPositionQuantity($item->get_quantity(), "C62")
-            ->setDocumentPositionNetPrice(floatval($item->get_total()))
+            ->setDocumentPositionNetPrice(floatval($itemPrice))
             ->setDocumentPositionLineSummation(floatval($item->get_total()));
 
             if (!empty($taxItem)) {
