@@ -12,7 +12,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install subversion
-      - run: rm composer.lock
+      - run: composer remove --dev squizlabs/php_codesniffer
       - name: Install dependencies
         run: composer install --no-interaction --prefer-source
       - name: Run strauss
