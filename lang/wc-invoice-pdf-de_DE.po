@@ -22,10 +22,12 @@ msgstr "WC-Rechnung Einstellungen"
 
 #: src/WcExtend/InvoiceMetabox.php:95
 #: src/WcExtend/InvoiceMetabox.php:100
+#, php-format
 msgid "A scheduler will submit the invoice %s to '%s'"
 msgstr "Ein Aufgabenplaner versendet die Rechnung %s an '%s'"
 
 #: src/WcExtend/InvoiceMetabox.php:90
+#, php-format
 msgid "A scheduler will submit the invoice once it has been created using the %s button to '%s'"
 msgstr "Ein Aufgabenplaner versendet die Rechnung einmalig, sobald diese über den %s Knopf ersellt wurde an '%s'"
 
@@ -66,7 +68,7 @@ msgid "Email templates"
 msgstr "E-Mail Vorlagen"
 
 #: src/Menu/InvoiceMenu.php:209
-#: src/Model/InvoiceList.php:178
+#: src/Model/InvoiceList.php:179
 msgid "Export"
 msgstr "Exportieren"
 
@@ -74,15 +76,15 @@ msgstr "Exportieren"
 msgid "Generate"
 msgstr "Erstellen"
 
-#: src/Menu/InvoiceMenu.php:435
-#: src/Model/InvoiceList.php:124
+#: src/Menu/InvoiceMenu.php:432
+#: src/Model/InvoiceList.php:118
 #: src/WcExtend/InvoiceMetabox.php:158
 msgid "Payments"
 msgstr "Zahlungen"
 
 #: src/Menu/InvoiceMenu.php:207
-#: src/Menu/InvoiceMenu.php:440
-#: src/Menu/InvoiceMenu.php:446
+#: src/Menu/InvoiceMenu.php:437
+#: src/Menu/InvoiceMenu.php:443
 msgid "Invoice template"
 msgstr "Rechnungsvorlage"
 
@@ -90,33 +92,22 @@ msgstr "Rechnungsvorlage"
 msgid "Document Title"
 msgstr "Dokumenten Titel"
 
-#: src/Menu/InvoiceMenu.php:341
-msgid "Address line"
-msgstr "Adresszeile"
-
-#: src/Menu/InvoiceMenu.php:342
+#: src/Menu/InvoiceMenu.php:345
 msgid "Payment terms"
 msgstr "Zahlungsbedingungen"
 
-#: src/Menu/InvoiceMenu.php:343
+#: src/Menu/InvoiceMenu.php:346
 msgid "Offer terms"
 msgstr "Angebotsbedingungen"
 
-#: src/Menu/InvoiceMenu.php:345
-msgid "Protect rows from splitting"
-msgstr "Zeilenaufteilung vermeiden"
-
-#: src/Menu/InvoiceMenu.php:345
-msgid "Keep rows together when page breaks"
-msgstr "Behalte die Zeilen zusammen bei Seitenumbrüchen"
-
 #: src/Menu/InvoiceMenu.php:324
-#: src/Menu/InvoiceMenu.php:443
-#: src/Schedule/InvoiceTask.php:278
+#: src/Menu/InvoiceMenu.php:440
+#: src/Schedule/InvoiceTask.php:298
 msgid "Payment reminder"
 msgstr "Zahlungserinnerung"
 
-#: src/Model/InvoiceList.php:165
+#: src/Model/InvoiceList.php:166
+#, php-format
 msgid "%s reminders sent"
 msgstr "%s Erinnerungen versendet"
 
@@ -132,12 +123,13 @@ msgstr "Aktiviert den Test modus und ersetzt alle Empfänger mit der E - Mail de
 msgid "Send payment reminders to customer when invoice is due"
 msgstr "Verschickt Zahlungserinnerungen an den Kunden, nachdem eine Zahlung überfällig ist"
 
-#: src/Schedule/InvoiceTask.php:147
+#: src/Schedule/InvoiceTask.php:156
+#, php-format
 msgid "Recurring invoice %s has been created"
 msgstr "Wiederkehrende Rechnung %s wurde erstellt"
 
 #: src/Menu/InvoiceMenu.php:323
-#: src/Menu/InvoiceMenu.php:437
+#: src/Menu/InvoiceMenu.php:434
 msgid "Automate invoice submission"
 msgstr "Rechnungen automatisert versenden"
 
@@ -146,24 +138,28 @@ msgid "Enable automate invoice submission to customers on a daily schedule"
 msgstr "Aktiviert das automatische versenden von Rechnung (täglich)"
 
 #: src/Menu/InvoiceMenu.php:137
+#, php-format
 msgid "The next automated invoice submission is scheduled for %s"
 msgstr "Die nächste automatisierte Rechnungszustellung erfolgt am %s"
 
-#: src/Schedule/InvoiceTask.php:204
+#: src/Schedule/InvoiceTask.php:224
+#, php-format
 msgid "The invoice %s has been submitted to %s"
 msgstr "Die Rechnung %s wurde an %s übermittelt"
 
 #: src/WcExtend/InvoiceMetabox.php:145
+#, php-format
 msgid "Invoice %s successfully created"
 msgstr "Rechnung %s erfolgreich erstellt"
 
-#: src/Schedule/InvoiceTask.php:284
+#: src/Schedule/InvoiceTask.php:304
+#, php-format
 msgid "A reminder #%s for invoice %s has been submitted to %s"
 msgstr "Eine Erinnerung #%s für die Rechnung %s wurde an %s übermittelt"
 
 #: src/Menu/InvoiceMenu.php:322
-#: src/Menu/InvoiceMenu.php:427
-#: src/Menu/InvoiceMenu.php:433
+#: src/Menu/InvoiceMenu.php:424
+#: src/Menu/InvoiceMenu.php:430
 msgid "Payment report"
 msgstr "Zahlungsbericht"
 
@@ -184,12 +180,12 @@ msgid "Max reminders"
 msgstr "Maximale Erinnerungen"
 
 #: src/WcExtend/InvoiceMetabox.php:100
-#: wc-recurring.php:92
+#: wc-recurring.php:88
 msgid "yearly"
 msgstr "jährlich"
 
 #: src/WcExtend/InvoiceMetabox.php:95
-#: wc-recurring.php:92
+#: wc-recurring.php:88
 msgid "monthly"
 msgstr "monatlich"
 
@@ -211,9 +207,9 @@ msgstr "pro"
 
 #: src/Menu/AccountInvoice.php:69
 #: src/Model/InvoiceList.php:67
-#: src/Model/InvoicePdf.php:57
-#: src/Schedule/InvoiceTask.php:80
-#: src/Schedule/InvoiceTask.php:195
+#: src/Model/InvoicePdf.php:56
+#: src/Schedule/InvoiceTask.php:84
+#: src/Schedule/InvoiceTask.php:215
 #: src/WcExtend/InvoiceMetabox.php:55
 #: src/WcExtend/InvoiceMetabox.php:90
 msgid "Invoice"
@@ -235,82 +231,84 @@ msgstr "Bezahlen"
 msgid "Payment interval"
 msgstr "Zahlungsinterval"
 
-#: src/WcProduct/wc_product_webspace.php:241
+#: src/WcProduct/wc_product_webspace.php:243
 msgid "Period"
 msgstr "Zeitraum"
 
 #: src/Menu/AccountInvoice.php:94
 #: src/Model/InvoiceList.php:73
-#: src/Model/InvoicePdf.php:95
+#: src/Model/InvoicePdf.php:86
 msgid "Paid at"
 msgstr "Bezahlt am"
 
 #: src/Menu/AccountInvoice.php:72
 #: src/Model/InvoiceList.php:72
-#: src/Schedule/InvoiceTask.php:80
+#: src/Schedule/InvoiceTask.php:84
 msgid "Due at"
 msgstr "Fällig am"
 
-#: src/Model/InvoiceList.php:107
+#: src/Model/InvoiceList.php:101
 msgid "Paid"
 msgstr "Bezahlt"
 
-#: src/Model/InvoiceList.php:106
+#: src/Model/InvoiceList.php:100
 msgid "Sent"
 msgstr "Gesendet"
 
 #: src/Menu/AccountInvoice.php:90
-#: src/Model/InvoiceList.php:108
+#: src/Model/InvoiceList.php:102
 msgid "Canceled"
 msgstr "Abgebrochen"
 
-#: src/Model/InvoiceList.php:144
-#: src/Model/InvoicePdf.php:55
+#: src/Model/InvoiceList.php:138
+#: src/Model/InvoicePdf.php:54
 #: src/WcExtend/InvoiceMetabox.php:110
 msgid "Offer"
 msgstr "Angebot"
 
-#: src/Model/InvoicePdf.php:111
+#: src/Model/InvoicePdf.php:116
 msgid "No#"
 msgstr "Pos"
 
-#: src/Model/InvoicePdf.php:111
+#: src/Model/InvoicePdf.php:117
 msgid "Description"
 msgstr "Bezeichnung"
 
-#: src/Model/InvoicePdf.php:111
+#: src/Model/InvoicePdf.php:118
 msgid "Qty"
 msgstr "Menge"
 
-#: src/Model/InvoicePdf.php:111
+#: src/Model/InvoicePdf.php:119
 msgid "Unit Price"
 msgstr "Einzelpreis"
 
-#: src/Model/InvoicePdf.php:111
+#: src/Model/InvoicePdf.php:120
 msgid "Amount"
 msgstr "Gesamt"
 
-#: src/Model/InvoicePdf.php:218
+#: src/Model/InvoicePdf.php:226
+#, php-format
 msgid "includes %s %s"
 msgstr "enthält %s %s"
 
-#: src/Model/InvoicePdf.php:220
+#: src/Model/InvoicePdf.php:226
+#, php-format
 msgid "plus %s %s"
 msgstr "zzgl. %s %s"
 
-#: src/Model/InvoicePdf.php:206
-msgid "Summary"
+#: src/Model/InvoicePdf.php:218
+msgid "Total"
 msgstr "Summe"
 
-#: src/Model/InvoicePdf.php:227
-msgid "Total"
-msgstr "Total"
+#: src/Model/InvoicePdf.php:232
+msgid "Gross Amount"
+msgstr "Bruttobetrag"
 
 #: src/Model/InvoiceList.php:70
 msgid "Status"
 msgstr "Status"
 
-#: src/Menu/InvoiceMenu.php:466
+#: src/Menu/InvoiceMenu.php:463
 msgid "Save"
 msgstr "Speichern"
 
@@ -381,10 +379,6 @@ msgstr "Aktiviere B2C"
 msgid "Create invoice compatible for Business to Customer (B2C) relationship"
 msgstr "Erstelle Business to Customer (B2C) kompatible Rechnungen"
 
-#: src/Model/InvoicePdf.php:180
-msgid "Refund from %s"
-msgstr "Rückerstattung vom %s"
-
 #. Plugin Name of the plugin
 #: wc-recurring.php
 msgid "WC Recurring Invoice PDF"
@@ -416,9 +410,9 @@ msgid "Invoice not found our no access to this resource"
 msgstr "Rechnung nicht gefunden oder kein Zugriff auf diese Resource"
 
 #: src/Menu/InvoiceMenu.php:206
-#: src/Menu/InvoiceMenu.php:358
-#: src/Menu/InvoiceMenu.php:374
-#: src/Menu/InvoiceMenu.php:378
+#: src/Menu/InvoiceMenu.php:365
+#: src/Menu/InvoiceMenu.php:381
+#: src/Menu/InvoiceMenu.php:385
 msgid "General"
 msgstr "Allgemein"
 
@@ -426,13 +420,13 @@ msgstr "Allgemein"
 msgid "Business"
 msgstr "Geschäft"
 
-#: src/Menu/InvoiceMenu.php:546
-msgid "Select image"
-msgstr "Bild auswählen"
+#: src/Menu/InvoiceMenu.php:543
+msgid "Select media"
+msgstr "Medium auswählen"
 
-#: src/Menu/InvoiceMenu.php:547
-msgid "Clear image"
-msgstr "Bild löschen"
+#: src/Menu/InvoiceMenu.php:544
+msgid "Clear media"
+msgstr "Medium löschen"
 
 #: src/Menu/InvoiceMenu.php:310
 msgid "Email details"
@@ -468,9 +462,9 @@ msgid "Enter your company name"
 msgstr "Gebe hier die Firma an"
 
 #: src/Menu/InvoiceMenu.php:268
-#: src/Menu/InvoiceMenu.php:358
-#: src/Menu/InvoiceMenu.php:374
-#: src/Menu/InvoiceMenu.php:378
+#: src/Menu/InvoiceMenu.php:365
+#: src/Menu/InvoiceMenu.php:381
+#: src/Menu/InvoiceMenu.php:385
 msgid "Contact email"
 msgstr "Kontakt Email"
 
@@ -490,21 +484,18 @@ msgstr "Geben Sie hier die UST. ID an"
 msgid "Properties"
 msgstr "Eigenschaften"
 
-#: src/Menu/InvoiceMenu.php:413
-msgid "Content"
-msgstr "Inhalt"
-
-#: src/WcExtend/CustomerProperties.php:33
-#: src/WcExtend/CustomerProperties.php:64
+#: src/WcExtend/CustomerProperties.php:34
+#: src/WcExtend/CustomerProperties.php:72
 msgid "Customer reference ID (BT-10)"
 msgstr "Kundenreferenz ID (BT-10)"
 
-#: src/WcExtend/CustomerProperties.php:61
+#: src/WcExtend/CustomerProperties.php:63
 msgid "Additional customer info"
 msgstr "Zusätzliche Kundeninformation"
 
-#: src/Menu/InvoiceMenu.php:440
-#: src/Menu/InvoiceMenu.php:446
+#: src/Menu/InvoiceMenu.php:437
+#: src/Menu/InvoiceMenu.php:443
+#, php-format
 msgid "The same placeholder from %s can be used"
 msgstr "Platzhalter aus %s können verwendet werden"
 
@@ -524,7 +515,7 @@ msgstr "Konto Filter für Bestellung"
 msgid "Only show completed WooCommerce orders on customers account page"
 msgstr "Zeige nur abgeschlossene WooCommerce Bestellungen auf der Kundenkonto Seite"
 
-#: src/WcExtend/CustomerProperties.php:86
+#: src/WcExtend/CustomerProperties.php:95
 msgid "I hereby accept the "
 msgstr "Hiermit akzeptiere ich die "
 
@@ -536,6 +527,14 @@ msgstr "Kundenlogin um eine Auswahlbox für das akzeptieren der DSGVO erweitern"
 msgid "Customer GDPR compliance"
 msgstr "DSGVO Regelkonformität"
 
-#: src/WcExtend/CustomerProperties.php:70
+#: src/WcExtend/CustomerProperties.php:78
 msgid "GDPR accepted"
 msgstr "DSGVO akzeptiert"
+
+#: src/Menu/InvoiceMenu.php:353
+msgid "Placeholders"
+msgstr ""
+
+#: src/WcExtend/CustomerProperties.php:66
+msgid "Additional Billing Email (CC)"
+msgstr ""

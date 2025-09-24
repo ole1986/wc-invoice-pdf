@@ -46,7 +46,8 @@
     },
     "require": {
         "php": "^7.4 || ^8.0 || ^8.1 || ^8.2",
-        "rospdf/pdf-php": "0.12.*",
+        "tecnickcom/tcpdf": "^6.10.0",
+        "setasign/fpdi": "^2.6.4",
         "horstoeko/zugferd": "^1"
     },
     "require-dev": {

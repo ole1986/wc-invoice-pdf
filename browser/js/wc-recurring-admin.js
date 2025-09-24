@@ -168,9 +168,12 @@ function WcRecuringAdminClass() {
         }
 
         mediaFrame = wp.media({
-            title: 'Select a image to upload',
+            title: 'Select PDF document',
             button: {
-                text: 'Use this image',
+                text: 'Use this PDF',
+            },
+            library: {
+                type: ['application/pdf']
             },
             multiple: false	// Set to true to allow multiple files to be selected
         })
