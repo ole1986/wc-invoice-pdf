@@ -337,14 +337,17 @@ class InvoiceMenu
                             </div>
                             <?php
                             $this->addField('wc_pdf_title', __('Document Title', 'wc-invoice-pdf'));
-                            $this->addField('wc_pdf_logo', 'Logo', 'media');
-                            $this->addField('wc_pdf_addressline', __('Address line', 'wc-invoice-pdf'));
+                            $this->addField('wc_pdf_template', '<strong>PDF Template</strong><br />Get an example <a href="'.WCRECURRING_PLUGIN_URL.'resources/demo_invoice_template.docx" target="_blank">here</a>', 'media', ['attr' => ['style' => 'padding-left: 0.5em']]);
                             $this->addField('wc_pdf_condition', __('Payment terms', 'wc-invoice-pdf'), 'textarea');
                             $this->addField('wc_pdf_condition_offer', __('Offer terms', 'wc-invoice-pdf'), 'textarea');
-                            $this->addField('wc_pdf_info', '<strong>Info Block</strong><br />' . 'Supports "Inline codes" provided by the <a href="https://github.com/rospdf/pdf-php/blob/master/README.md" target="_blank">R&amp;OS pdf class</a>', 'textarea', ['input_attr' => ['style' => 'width: 340px; height: 100px']]);
-                            $this->addField('wc_pdf_keeprows', '<strong>' . __('Protect rows from splitting', 'wc-invoice-pdf') . '</strong><br />' . __('Keep rows together when page breaks', 'wc-invoice-pdf'), 'checkbox');
+                            $this->addField('wc_pdf_info', '<strong>Info Block</strong><br />' . '', 'textarea', ['input_attr' => ['style' => 'width: 340px; height: 100px']]);
                             ?>
                             <p>&nbsp;</p>
+                        </div>
+                        <div class="wc-recurring-postbox postbox">
+                            <div class="postbox-header">
+                                <h4><?php _e('Placeholders', 'wc-invoice-pdf') ?></h4>
+                            </div>
                             <table class="wc-recurring-table">
                                 <thead>
                                     <tr>
@@ -407,16 +410,6 @@ class InvoiceMenu
                                     </tr>
                                 </tbody>
                             </table>
-                        </div>
-                        <div class="wc-recurring-postbox postbox">
-                            <div class="postbox-header">
-                                <h4><?php _e('Content', 'wc-invoice-pdf') ?></h4>
-                            </div>
-                            <?php
-                            $this->addField('wc_pdf_block1', 'Block #1', 'rte', ['container' => 'div', 'input_attr' => ['style'=>'width: 350px;display:inline-block;'] ]);
-                            $this->addField('wc_pdf_block2', 'Block #2', 'rte', ['container' => 'div', 'input_attr' => ['style'=>'width: 350px;display:inline-block;'] ]);
-                            $this->addField('wc_pdf_block3', 'Block #3', 'rte', ['container' => 'div', 'input_attr' => ['style'=>'width: 350px;display:inline-block;'] ]);
-                            ?>
                         </div>
                     </div>
                 </div>
@@ -493,7 +486,7 @@ class InvoiceMenu
         }
 
         if ($type == 'media') {
-            $xargs['container'] = 'div';
+            $xargs['container'] = 'span';
         }
 
         echo '<' . $xargs['container'];
@@ -537,14 +530,14 @@ class InvoiceMenu
             echo '</div>';
         } elseif ($type == 'media') {
             wp_enqueue_media();
-            $url = '';
+            $title = '';
             if (intval($optValue) > 0) {
-                $url = wp_get_attachment_url($optValue);
+                $title = get_the_title($optValue);
             }
             echo "<div class='image-preview-wrapper' style='display:inline-block'>";
-            echo "<img id='$name-preview' src=\"$url\" style='max-height: 100px;'><br />";
-            echo "<input onclick=\"WcRecuringAdmin.OpenMedia(this,'$name')\" type=\"button\" class=\"button\" value=\"" . __('Select image', 'wc-invoice-pdf') ."\" />";
-            echo "<input onclick=\"WcRecuringAdmin.ClearMedia(this,'$name')\" type=\"button\" class=\"button\" value=\"" . __('Clear image', 'wc-invoice-pdf') ."\" />";
+            echo "<pre>$title</pre><br />";
+            echo "<input onclick=\"WcRecuringAdmin.OpenMedia(this,'$name')\" type=\"button\" class=\"button\" value=\"" . __('Select media', 'wc-invoice-pdf') ."\" />";
+            echo "<input onclick=\"WcRecuringAdmin.ClearMedia(this,'$name')\" type=\"button\" class=\"button\" value=\"" . __('Clear media', 'wc-invoice-pdf') ."\" />";
             echo "<input type='hidden' name=\"".$name."\" id='$name' value=\"$optValue\" />";
             echo "</div>";
         }

@@ -1,6 +1,7 @@
 <?php
 namespace WcRecurring\Model;
 
+use setasign\Fpdi\Tcpdf\Fpdi;
 use WcRecurring\Helper\Substitute;
 use WcRecurring\WcRecurringIndex;
 use WcRecurring\Model\Placeholder\CompanyDetails;
@@ -10,8 +11,6 @@ class InvoicePdf
 {
     public function __construct()
     {
-        // only load rospdf library when its necessary to avoid class conflicts
-        include_once WCRECURRING_PLUGIN_DIR . 'vendor/rospdf/pdf-php/src/Cezpdf.php';
     }
     /**
      * Used to build a pdf invoice using the WC_Order object
@@ -56,202 +55,199 @@ class InvoicePdf
         } else {
             $headlineText =  __('Invoice', 'wc-invoice-pdf') . ' ' . $invoice->invoice_number;
         }
-                    
-        $pdf = new \Cezpdf('a4');
-        $pdf->ezSetMargins(50, 110, 50, 50);
 
-        $mediaId = intval(WcRecurringIndex::$OPTIONS['wc_pdf_logo']);
+        $mediaId = intval(WcRecurringIndex::$OPTIONS['wc_pdf_template']);
+        
+        $pdf = new Fpdi();
+        $pdf->SetFont('helvetica', '', 9);
+        $pdf->setPrintHeader(0);
+        $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+        $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM * 2);
+        $pdf->AddPage();
+
+        $importedPageId = 0;
+
         if ($mediaId > 0) {
-            $mediaUrl = wp_get_attachment_url($mediaId);
-            if ($mediaUrl !== false) {
-                $pdf->ezImage($mediaUrl, 0, 250, 'none', 'right');
+            $mediaPath = get_attached_file($mediaId);
+            if ($mediaPath !== false) {
+                $pdf->setSourceFile($mediaPath);
+                $importedPageId = $pdf->importPage(1);
             }
         }
 
-
-        $all = $pdf->openObject();
-        $pdf->saveState();
-        $pdf->setStrokeColor(0, 0, 0, 1);
-        $pdf->line(50, 100, 550, 100);
-
-        $pdf->addTextWrap(50, 90, 8, $substitude->message(WcRecurringIndex::$OPTIONS['wc_pdf_block1']));
-        $pdf->addTextWrap(250, 90, 8, $substitude->message(WcRecurringIndex::$OPTIONS['wc_pdf_block2']), 0);
-        $pdf->addTextWrap(550, 90, 8, $substitude->message(WcRecurringIndex::$OPTIONS['wc_pdf_block3']), 0, 'right');
-
-        $pdf->restoreState();
-        $pdf->closeObject();
-
-        $pdf->addObject($all, 'all');
-
-        $pdf->ezSetDy(-60);
-
-        $y = $pdf->y;
-
-        $pdf->ezText($substitude->message(WcRecurringIndex::$OPTIONS['wc_pdf_info']), 0, ['justification' => 'right']);
-
-        if ($order->get_date_paid() && !$isOffer) {
-            $pdf->saveState();
-            $pdf->setColor(1, 0, 0);
-            $pdf->ezText(sprintf(__('Paid at', 'wc-invoice-pdf') . ' %s', $dateFormat->format(strtotime($order->get_date_paid()))), 0, ['justification' => 'right']);
-            $pdf->restoreState();
-        } else {
-            $pdf->ezText('');
+        if ($importedPageId) {
+            $pdf->useImportedPage($importedPageId);
         }
 
-        $pdf->y = $y;
+        $pdf->Ln(20);
+        $pdf->writeHTMLCell(0, 30, 0, $pdf->GetY(), nl2br($substitude->message(WcRecurringIndex::$OPTIONS['wc_pdf_info'])), 0, 0, false, true, 'R');
 
-        $pdf->ezText("<strong>" . $substitude->message(WcRecurringIndex::$OPTIONS['wc_pdf_addressline']) . "</strong>\n", 8);
-        $pdf->line($pdf->ez['leftMargin'], $pdf->y + 5, 200, $pdf->y + 5);
+        $pdf->Ln(5);
+        $pdf->writeHTMLCell(80, 25, PDF_MARGIN_LEFT, $pdf->GetY(), nl2br($billing_info), 0, 1);
+        
+        if ($order->get_date_paid() && !$isOffer) {
+            //$pdf->setFillColor(34, 58, 89);
+            $pdf->setFillColor(145, 166, 114);
+            $pdf->setTextColor(255, 255, 255);
+            $pdf->writeHTMLCell(40, 0, 155, $pdf->GetY(), sprintf(__('Paid at', 'wc-invoice-pdf') . ' %s', $dateFormat->format(strtotime($order->get_date_paid()))), 0, 0, true, true, 'R');
+        }
 
-        $pdf->ezText($billing_info, 10);
-        $pdf->ezSetDy(-60);
+        $pdf->setTextColor(0, 0, 0);
+        
+        $pdf->Ln(10);
+        $pdf->SetFontSize(14);
+        $pdf->Cell(0, 0, $headlineText, 0, 1, 'L', 0, '', 0);
 
-        $pdf->ezText("$headlineText", 14);
-
-        $cols = array('num' => __('No#', 'wc-invoice-pdf'), 'desc' => __('Description', 'wc-invoice-pdf'), 'qty' => __('Qty', 'wc-invoice-pdf'), 'price' => __('Unit Price', 'wc-invoice-pdf'), 'total' => __('Amount', 'wc-invoice-pdf'));
-        $colOptions = [
-            'num' => ['width' => 28],
-            'desc' => [],
-            'qty' => ['justification' => 'right', 'width' => 60],
-            'price' => ['justification' => 'right', 'width' => 80],
-            'total' => ['justification' => 'right', 'width' => 80],
-        ];
-
-        $data = [];
-
-        $i = 1;
         $summary = 0;
 
-        $fees = $order->get_fees();
-        $items = array_merge($items, $fees);
-
-        foreach ($items as $v) {
-            $row = [];
-            $product_name = $v['name'];
-                
-            if (!isset($v['qty'])) {
-                $v['qty'] = 1;
+        ob_start();
+        ?>
+        <style>
+            table {
+                padding: 2;
+                width: 100%;
             }
+            th {
+                background-color: #ccc;
+                border-right: 0.2em solid black;
+            }
+            td {
+                border-top: 1 solid black;
+                border-right: 0.2em solid black;
+            }
+        </style>
+        <table>
+            <tr>
+                <th style="width: 5%;text-align: center"><?php _e('No#', 'wc-invoice-pdf') ?></th>
+                <th style="width: 45%;"><?php _e('Description', 'wc-invoice-pdf') ?></th>
+                <th style="text-align: right; width: 11%;"><?php _e('Qty', 'wc-invoice-pdf') ?></th>
+                <th style="text-align: right; width: 19%;"><?php _e('Unit Price', 'wc-invoice-pdf') ?></th>
+                <th style="text-align: right; width: 20%; border-right: none !important"><?php _e('Amount', 'wc-invoice-pdf') ?></th>
+            </tr>
+            <?php
+                $fees = $order->get_fees();
+                $items = array_merge($items, $fees);
+                $i = 1;
+            foreach ($items as $v) {
+                $product_name = $v['name'];
+                            
+                if (!isset($v['qty'])) {
+                    $v['qty'] = 1;
+                }
 
-            if ($v instanceof \WC_Order_Item_Product) {
-                $product = $v->get_product();
-                if ($product instanceof \WC_Product_RecurringInterface) {
-                    $qtyStr = $product->invoice_qty($v, $invoice);
-                    $product_name = $product->invoice_title($v, $invoice);
+                if ($v instanceof \WC_Order_Item_Product) {
+                    $product = $v->get_product();
+                    if ($product instanceof \WC_Product_RecurringInterface) {
+                        $qtyStr = $product->invoice_qty($v, $invoice);
+                        $product_name = $product->invoice_title($v, $invoice);
+                    } else {
+                        $qtyStr = number_format($v['qty'], 2, ',', ' ');
+                        $product_name = $v['name'];
+                        if (!empty($product->sku)) {
+                            $product_name .= ' [' . $product->sku . ']';
+                        }
+                    }
                 } else {
                     $qtyStr = number_format($v['qty'], 2, ',', ' ');
                     $product_name = $v['name'];
-                    if (!empty($product->sku))
-                        $product_name .= ' [' . $product->sku . ']';
                 }
-            } else {
-                $qtyStr = number_format($v['qty'], 2, ',', ' ');
-                $product_name = $v['name'];
-            }
 
-            $total = round($v['total'], 2);
-            $tax = round($v['total_tax'], 2);
+                $total = round($v['total'], 2);
+                $tax = round($v['total_tax'], 2);
 
-            if ($isB2C) {
-                $total += $tax;
-            }
-
-            $unitprice = $total / intval($v['qty']);
-
-            $mdcontent = '';
-            if ($v instanceof \WC_Order_Item_Product) {
-                $meta = $v->get_meta_data();
-                if (!empty($meta)) {
-                    $mdcontent.= implode('', array_map(function ($m) {
-                        return "\n<strong>".$m->key.":</strong> ".$m->value;
-                    }, $meta));
+                if ($isB2C) {
+                    $total += $tax;
                 }
+
+                $unitprice = $total / intval($v['qty']);
+
+                $mdcontent = '';
+                if ($v instanceof \WC_Order_Item_Product) {
+                    $meta = $v->get_meta_data();
+                    if (!empty($meta)) {
+                        $mdcontent.= implode('', array_map(function ($m) {
+                            return "\n<strong>".$m->key.":</strong> ".nl2br($m->value);
+                        }, $meta));
+                    }
+                }
+
+                $color = ($i + 1) % 2 ? "#eee" : "white";
+
+                echo "<tr nobr=\"true\" style=\"background-color: $color\">";
+                echo "<td style=\"text-align: center\">$i</td>";
+                echo "<td style=\"font-size: small\"><div>$product_name</div><br/>". $mdcontent . "</td>";
+                echo "<td style=\"text-align: right;\">$qtyStr</td>";
+                echo "<td style=\"text-align: right;\">".$formatter->format($unitprice)."</td>";
+                echo "<td style=\"text-align: right; border-right: none !important\">".$formatter->format($total)."</td>";
+                echo "</tr>";
+
+                $summary += $total;
+                $i++;
             }
+            ?>
+        </table>
+        <?php
+        $htmlTable = ob_get_clean();
 
-            $row['num'] = "$i";
-            $row['desc'] = implode("\n", ["<i>$product_name</i>", $mdcontent]);
-            $row['qty'] = $qtyStr;
-            $row['price'] = $formatter->format($unitprice);
-            $row['total'] = $formatter->format($total);
+        $pdf->Ln(5);
+        $pdf->SetFontSize(10);
+        $pdf->writeHtml($htmlTable);
 
-            $summary += $total;
+        $pdf->Ln(5);
+        $footerText = $substitude->message($isOffer ? WcRecurringIndex::$OPTIONS['wc_pdf_condition_offer'] : WcRecurringIndex::$OPTIONS['wc_pdf_condition']);
+        $pdf->SetFontSize(8);
 
-            $data[] = $row;
-            $i++;
-        }
-
-        foreach ($order->get_refunds() as $v) {
-            $data[] = [
-                "num" => "",
-                "desc" => "\n<strong>" .sprintf(__('Refund from %s', 'wc-invoice-pdf'), $dateFormat->format($v->get_date_created()->getTimestamp())) . ":</strong>\n" . $v->reason . "\n",
-                "qty" => "",
-                "price" => "",
-                "total" => "\n" . $formatter->format($v->total),
-            ];
-
-            $summary -= $v->amount;
-        }
-        
-        $pdf->ezSetDy(-30);
-
-        $pdf->ezTable($data, $cols, '', ['width' => '500',
-                                         'shaded' => 1,
-                                         'shadeHeadingCol'=> [0.8,0.8,0.8],
-                                         'shadeCol' => [0.94,0.94,0.94],
-                                         'splitRows' => !boolval(WcRecurringIndex::$OPTIONS['wc_pdf_keeprows'] ?? 0),
-                                         'gridlines' => EZ_GRIDLINE_HEADERONLY + EZ_GRIDLINE_COLUMNS,
-                                         'cols' => $colOptions]);
-    
-        $colOptions = [
-            ['justification' => 'right'],
-            ['justification' => 'right']
-        ];
-
-        $summaryData = [
-            [
-                "<strong>".__('Summary', 'wc-invoice-pdf')."</strong>",
-                "<strong>".$formatter->format($summary)."</strong>"
-            ]
-        ];
+        $pdf->writeHTMLCell(100, 0, PDF_MARGIN_LEFT, $pdf->GetY(), "<div nobr=\"true\">" . nl2br($footerText) . "</div>", 0, 0);
 
         $summaryTax = 0;
 
-        foreach ($order->get_tax_totals() as $tax) {
-            $summaryTax += $tax->amount;
-            $tax_rate = \WC_Tax::get_rate_percent($tax->rate_id);
+        $pdf->SetFontSize(10);
 
-            if ($isB2C) {
-                $taxStr = sprintf(__("includes %s %s", 'wc-invoice-pdf'), $tax_rate, $tax->label);
-            } else {
-                $taxStr = sprintf(__("plus %s %s", 'wc-invoice-pdf'), $tax_rate, $tax->label);
+        ob_start();
+        ?>
+        <style>
+            table {
+                padding: 1.5;
+                background-color: #ccc;
+                text-align: right;
             }
+            th {
+                border-bottom: 0.2em solid black;
+            }
+            td {
+                border-bottom: 0.2em solid black;
+            }
+        </style>
+        <table nobr="true">
+            <tr>
+                <th style="font-weight: bold;"><?php _e('Total', 'wc-invoice-pdf') ?></th>
+                <td style="font-weight: bold;"><?php echo $formatter->format($summary) ?></td>
+            </tr>
+            <?php foreach ($order->get_tax_totals() as $tax) {
+                $summaryTax += $tax->amount;
+                $tax_rate = \WC_Tax::get_rate_percent($tax->rate_id);
+                ?>
+            <tr>
+                <th style="font-weight: bold;"><?php $isB2C ? printf(__("includes %s %s", 'wc-invoice-pdf'), $tax_rate, $tax->label) : printf(__("plus %s %s", 'wc-invoice-pdf'), $tax_rate, $tax->label) ?></th>
+                <td style="font-weight: bold;"><?php echo $formatter->format($tax->amount) ?></td>
+            </tr>
+            <?php } ?>
+            <?php if (!$isB2C) : ?>
+            <tr>
+                <th style="font-weight: bold;border-bottom: 0.4em solid black;"><?php _e('Gross Amount', 'wc-invoice-pdf') ?></th>
+                <td style="font-weight: bold;border-bottom: 0.4em solid black;"><?php echo $formatter->format($summary + $summaryTax) ?></td>
+            </tr>
+            <?php endif ?>
+        </table>
+        <?php
+        $summaryTable = ob_get_clean();
 
-            $summaryData[] = ['<strong>' . $taxStr . '</strong>', '<strong>' . $formatter->format($tax->amount) . '</strong>'];
-        }
-
-        if (!$isB2C) {
-            $summaryData[] = ["<strong>".__('Total', 'wc-invoice-pdf')."</strong>", "<strong>".$formatter->format($summary + $summaryTax)."</strong>"];
-        }
-
-        $pdf->ezSetDy(-15);
-
-        $footerText = $substitude->message($isOffer ? WcRecurringIndex::$OPTIONS['wc_pdf_condition_offer'] : WcRecurringIndex::$OPTIONS['wc_pdf_condition']);
-        $isNewPage = $pdf->ezText("<strong>" . $footerText . "</strong>", 8, ["aright" => 350], true);
-
-        if ($isNewPage) {
-            $pdf->ezNewPage();
-        }
-
-        $yOffset = $pdf->y;
-        $pdf->ezText("<strong>" . $footerText . "</strong>", 8, ["aright" => 350]);
-
-        $pdf->ezSetDy($yOffset - $pdf->y);
-        $pdf->ezTable($summaryData, null, '', ['width' => 200, 'gridlines' => 0, 'showHeadings' => 0,'shaded' => 0 ,'xPos' => 'right', 'xOrientation' => 'left', 'cols' => $colOptions ]);
+        $pdf->writeHTML($summaryTable);
 
         if ($stream) {
-            $pdf->ezStream(['Content-Disposition' => ($isOffer ? $invoice->offer_number : $invoice->invoice_number) . '.pdf' ]);
+            $pdf->Output($isOffer ? $invoice->offer_number : $invoice->invoice_number);
         } else {
-            return $pdf->ezOutput();
+            $pdf->Output($isOffer ? $invoice->offer_number : $invoice->invoice_number, 'D');
         }
     }
 }
