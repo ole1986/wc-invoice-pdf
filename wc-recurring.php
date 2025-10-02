@@ -2,7 +2,7 @@
 /*
  * Plugin Name: WC Recurring Invoice PDF
  * Description: WooCommerce invoice pdf plugin with recurring payments (scheduled)
- * Version: 1.6.6
+ * Version: 1.7.0
  * Author: ole1986 <ole.koeckemann@gmail.com>
  * Author URI: https://github.com/ole1986/wc-invoice-pdf
  * Plugin URI: https://github.com/ole1986/wc-invoice-pdf/releases
@@ -39,7 +39,7 @@ class WcRecurringIndex
     const MIGRATE_KEY = 'wc-invoice-pdf-version';
     const OPTION_KEY = 'wc-invoice-pdf';
 
-    public static $MIGRATE_VERSION = 5;
+    public static $MIGRATE_VERSION = 6;
 
     public static $OPTIONS = [
         'wc_payment_reminder' => 1,
@@ -195,7 +195,16 @@ class WcRecurringIndex
         $version = intval(get_option(self::MIGRATE_KEY, self::$MIGRATE_VERSION));
 
         if ($version < self::$MIGRATE_VERSION) {
-            echo '<div class="notice notice-warning"><p><strong>' . $plugin['Name'] .':</strong> IMPORTANT: Please review invoices and save <a href="admin.php?page=wcinvoicepdf_settings">Settings</a> due to PDF placeholder changes, before submitting new invoices!</p></div>';
+            ?>
+            <div class="notice notice-warning">
+                <p>
+                    <strong><?php echo $plugin['Name'] ?>:</strong>
+                    Please review invoices and <a href="admin.php?page=wcinvoicepdf_settings">Settings</a> due to BREAKING CHANGES in PDF output!
+                    - <a href="https://github.com/ole1986/wc-invoice-pdf/releases/tag/v1.7.0" target="_blank" class="button button-primary">RELEASE NOTES</a>
+                </p>
+                
+            </div>
+            <?php
         }
     }
 
