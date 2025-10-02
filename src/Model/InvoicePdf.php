@@ -247,7 +247,7 @@ class InvoicePdf
         if ($stream) {
             $pdf->Output($isOffer ? $invoice->offer_number : $invoice->invoice_number);
         } else {
-            $pdf->Output($isOffer ? $invoice->offer_number : $invoice->invoice_number, 'D');
+            return $pdf->Output($isOffer ? $invoice->offer_number : $invoice->invoice_number, 'S');
         }
     }
 }
