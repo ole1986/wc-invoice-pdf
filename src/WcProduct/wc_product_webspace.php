@@ -234,13 +234,14 @@ class WC_Product_Webspace extends \WC_Product implements WC_Product_RecurringInt
         $dateFormat = new IntlDateFormatter(get_locale(), IntlDateFormatter::MEDIUM, IntlDateFormatter::NONE);
 
         $product_name = $item['name'];
-        if (!empty($this->sku))
+        if (!empty($this->sku)) {
             $product_name .= ' ['.$this->sku.']';
+        }
         $current = new \DateTime($invoice->created);
         $next = clone $current;
         $next->add(new \DateInterval('P' . strval($item['qty']) . 'M'));
         
-        $product_name .= "\n<strong>" . __('Period', 'wc-invoice-pdf') . ": " . $dateFormat->format($current) ." - ". $dateFormat->format($next) . '</strong>';
+        $product_name .= "<br /><strong>" . __('Period', 'wc-invoice-pdf') . ": " . $dateFormat->format($current) ." - ". $dateFormat->format($next) . '</strong>';
         return $product_name;
     }
 

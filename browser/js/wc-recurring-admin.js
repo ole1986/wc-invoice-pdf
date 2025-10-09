@@ -168,9 +168,12 @@ function WcRecuringAdminClass() {
         }
 
         mediaFrame = wp.media({
-            title: 'Select a image to upload',
+            title: 'Select PDF document',
             button: {
-                text: 'Use this image',
+                text: 'Use this PDF',
+            },
+            library: {
+                type: ['application/pdf']
             },
             multiple: false	// Set to true to allow multiple files to be selected
         })
@@ -180,14 +183,14 @@ function WcRecuringAdminClass() {
             // Get media attachment details from the frame state
             var att = mediaFrame.state().get('selection').first().toJSON();
             console.log(att);
-            $('#' + name + "-preview").attr('src', att.url);
+            $('#' + name + "-preview").text(att.title);
             $('#' + name).val(att.id);
         });
     }
 
     this.ClearMedia = function (event, name) {
         $('#' + name).val('');
-        $('#' + name + "-preview").attr('src', '');
+        $('#' + name + "-preview").text('');
     }
 
     this.ShowNotice = function (message, type, ondismiss) {
