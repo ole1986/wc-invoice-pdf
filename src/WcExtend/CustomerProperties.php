@@ -21,7 +21,8 @@ class CustomerProperties
         } else {
             add_action('show_user_profile', [$this, 'edit_user_customer_reference'], 20);
             add_action('edit_user_profile', [$this, 'edit_user_customer_reference'], 20);
-            add_action('profile_update', [$this, 'update_customer_reference']);
+            add_action('profile_update', [$this, 'update_profile']);
+            add_filter('woocommerce_admin_billing_fields', [$this, 'admin_billing_fields']);
         }
     }
 
@@ -76,7 +77,16 @@ class CustomerProperties
         <?php
     }
 
-    public function update_customer_reference($user_id)
+    public function admin_billing_fields($fields)
+    {
+        // meta key: _billing_email2
+        $fields['email2'] = array(
+            'label' => __('Additional Email', 'woocommerce'),
+        );
+        return $fields;
+    }
+
+    public function update_profile($user_id)
     {
         update_user_meta($user_id, self::CUSTOMER_REFERENCE_KEY, sanitize_key($_POST[self::CUSTOMER_REFERENCE_KEY]));
     }
