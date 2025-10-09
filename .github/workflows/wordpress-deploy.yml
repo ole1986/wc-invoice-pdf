@@ -17,6 +17,8 @@ jobs:
         run: composer install --no-interaction --prefer-source
       - name: Run strauss
         run: composer prefix-namespaces
+      - name: Fix tcpdf to include font and autoconfig
+        run: cp -r vendor/tecnickcom/tcpdf/{tcpdf_autoconfig.php,fonts} vendor_build/tecnickcom/tcpdf/
       - name: Remove vendor
         run: rm -r vendor
       - run: composer dump-autoload
