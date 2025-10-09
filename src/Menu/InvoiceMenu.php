@@ -535,7 +535,7 @@ class InvoiceMenu
                 $title = get_the_title($optValue);
             }
             echo "<div class='image-preview-wrapper' style='display:inline-block'>";
-            echo "<pre>$title</pre><br />";
+            echo "<pre id='$name-preview'>$title</pre><br />";
             echo "<input onclick=\"WcRecuringAdmin.OpenMedia(this,'$name')\" type=\"button\" class=\"button\" value=\"" . __('Select media', 'wc-invoice-pdf') ."\" />";
             echo "<input onclick=\"WcRecuringAdmin.ClearMedia(this,'$name')\" type=\"button\" class=\"button\" value=\"" . __('Clear media', 'wc-invoice-pdf') ."\" />";
             echo "<input type='hidden' name=\"".$name."\" id='$name' value=\"$optValue\" />";
