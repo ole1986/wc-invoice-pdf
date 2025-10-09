@@ -19,7 +19,7 @@ The WC Recurring Invoice (aka WC Invoice PDF) extends WooCommerce to generate PD
 * Manage invoice status and due date
 * Email submission schedule for invoices
 * Individual payment reminder (internal and customer)
-* Customizable PDF and Email content through placeholders
+* Customizable PDF template and Email content through placeholders
 * [NEW] Support for XRechnung according to EN16931
 
 **WooCommerce Extended**
@@ -28,6 +28,7 @@ The WC Recurring Invoice (aka WC Invoice PDF) extends WooCommerce to generate PD
 * [PRODUCT] Individual "Service" product allowing to customize units (E.g PCS, hours, mins, any other)
 * [ORDER] Generate and preview PDF invoice for any WooCommerce order
 * [ORDER] Configurable subscription type (yearly, monthly) per WooCommerce order
+* [ORDER] Additional Email recipient (CC) in WooCommerce billing info
 
 [RELEASE NOTES](https://github.com/ole1986/wc-invoice-pdf/releases)
 
@@ -51,13 +52,13 @@ This plugins provides the following webhooks
 
 == Screenshots ==
 
-1. The PDF printout when generating invoice
-2. All invoices listing from admin panel
+1. List of invoices from admin panel
+2. The PDF printout when generating invoice
 3. Invoice frontend for customers incl. XRechnung download
-4. Generate invoice metabox from WooCommerce Order page
-5. WC Recurring Settings page (General)
-6. WC Recurring Settings page (Invoice PDF)
-7. Email template settings for payments and reminders
+4. Invoicemetabox from WooCommerce Order page
+5. WC Recurring Settings (General)
+6. WC Recurring Settings (Invoice PDF)
+7. WC Recurring Settings (Email templates)
 
 == License ==
 
