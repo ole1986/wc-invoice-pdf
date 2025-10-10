@@ -8,6 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
+      - name: Update readme.txt to match version
+        run: |
+          tag="${{ github.event.release.tag_name }}"
+          sed -i -E "s/Stable tag: [A-Za-z0-9._]+/Stable tag: ${tag:1}/" readme.txt
       - name: Install SVN ( Subversion )
         run: |
           sudo apt-get update
