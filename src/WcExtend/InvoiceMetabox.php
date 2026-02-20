@@ -106,8 +106,8 @@ class InvoiceMetabox
             <a href="#" data-id="<?php echo $post_id ?>" onclick="WcRecuringAdmin.ResetOrderPaidStatus(this)"><?php _e('Reset order paid status', 'wc-invoice-pdf') ?></a>
         </p>
         <p style="text-align: right">
-            <a href="admin.php?page=wcinvoicepdf_invoice&order=<?php echo $post_id ?>" target="_blank" class="button"><?php printf(__('Preview', 'wc-invoice-pdf'), '') ?></a>
-            <a href="admin.php?page=wcinvoicepdf_invoice&order=<?php echo $post_id ?>&offer=1" target="_blank" class="button"><?php _e('Offer', 'wc-invoice-pdf') ?></a>
+            <a href="admin.php?page=wcinvoicepdf_invoice&order=<?php echo $post_id ?>&<?php echo time() ?>" target="_blank" class="button"><?php printf(__('Preview', 'wc-invoice-pdf'), '') ?></a>
+            <a href="admin.php?page=wcinvoicepdf_invoice&order=<?php echo $post_id ?>&offer=1&<?php echo time() ?>" target="_blank" class="button"><?php _e('Offer', 'wc-invoice-pdf') ?></a>
             <button type="submit" name="ispconfig_invoice_action" class="button button-primary" value="invoice">
                 <?php _e('Generate', 'wc-invoice-pdf') ?>
             </button>
@@ -152,7 +152,7 @@ class InvoiceMetabox
 
         if ($column === 'order_number') {
             echo "<div style='font-size: 85%'>";
-            echo "<a href='admin.php?page=wcinvoicepdf_invoice&order=". $post->ID ."' target='_blank'>" . __('Preview', 'wc-invoice-pdf') .  " [PDF]</a>";
+            printf("<a href='admin.php?page=wcinvoicepdf_invoice&order=%s&%s' target='_blank'>" . __('Preview', 'wc-invoice-pdf') .  " [PDF]</a>", $post->ID, time());
             $period = get_post_meta($post->ID, '_ispconfig_period', true);
             if ($period) {
                 echo " | " . __('Payments', 'wc-invoice-pdf') . ': ' . __(Invoice::$PERIOD[$period], 'wc-invoice-pdf');
