@@ -3,7 +3,7 @@ Contributors: ole1986
 Tags:  woocommerce, invoicing, billing, pdf, custom products
 Donate link: https://www.paypal.com/cgi-bin/webscr?item_name=Donation+WC+Recurring+Invoice+Pdf&cmd=_donations&business=ole.koeckemann@gmail.com
 Requires at least: 3.1
-Tested up to: 6.8
+Tested up to: 6.9
 Stable tag: trunk
 License: MIT
 
