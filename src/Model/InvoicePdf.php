@@ -129,11 +129,8 @@ class InvoicePdf
                 $items = array_merge($items, $fees);
                 $i = 1;
             foreach ($items as $v) {
-                $product_name = $v['name'];
-                            
-                if (!isset($v['qty'])) {
-                    $v['qty'] = 1;
-                }
+                $product_name = $v->get_name();
+                $qty = $v->get_quantity() ?? 1;
 
                 if ($v instanceof \WC_Order_Item_Product) {
                     $product = $v->get_product();
@@ -141,25 +138,33 @@ class InvoicePdf
                         $qtyStr = $product->invoice_qty($v, $invoice);
                         $product_name = $product->invoice_title($v, $invoice);
                     } else {
-                        $qtyStr = number_format($v['qty'], 2, ',', ' ');
-                        $product_name = $v['name'];
+                        $qtyStr = number_format($qty, 2, ',', ' ');
                         if (!empty($product->sku)) {
                             $product_name .= ' [' . $product->sku . ']';
                         }
                     }
                 } else {
-                    $qtyStr = number_format($v['qty'], 2, ',', ' ');
-                    $product_name = $v['name'];
+                    $qtyStr = number_format($qty, 2, ',', ' ');
                 }
 
-                $total = round($v['total'], 2);
-                $tax = round($v['total_tax'], 2);
+                $total = round($v->get_total(), 2);
+                $tax = round($v->get_total_tax(), 2);
 
                 if ($isB2C) {
                     $total += $tax;
                 }
 
-                $unitprice = $total / intval($v['qty']);
+                $unitprice = $total / $qty;
+
+                if ($isOffer && $v->get_subtotal() != $v->get_total()) {
+                    $unitpriceStr = '<del>' . $formatter->format(floatval($v->get_subtotal()) / $qty) . '</del>';
+                    $unitpriceStr .= "<br /><strong>" . $formatter->format($unitprice) . "</strong>";
+                    $totalStr = '<del>' . $formatter->format($v->get_subtotal()) . '</del>';
+                    $totalStr .= "<br /><strong>" . $formatter->format($v->get_total()) . "</strong>";
+                } else {
+                    $unitpriceStr = $formatter->format($unitprice);
+                    $totalStr = $formatter->format($total);
+                }
 
                 $mdcontent = '';
                 if ($v instanceof \WC_Order_Item_Product) {
@@ -177,8 +182,8 @@ class InvoicePdf
                 echo "<td style=\"text-align: center\">$i</td>";
                 echo "<td style=\"font-size: small\"><div>$product_name</div><br/>". $mdcontent . "</td>";
                 echo "<td style=\"text-align: right;\">$qtyStr</td>";
-                echo "<td style=\"text-align: right;\">".$formatter->format($unitprice)."</td>";
-                echo "<td style=\"text-align: right; border-right: none !important\">".$formatter->format($total)."</td>";
+                echo "<td style=\"text-align: right;\">". $unitpriceStr . "</td>";
+                echo "<td style=\"text-align: right; border-right: none !important\">".$totalStr."</td>";
                 echo "</tr>";
 
                 $summary += $total;
