@@ -42,8 +42,9 @@ class InvoiceMetabox
                 delete_post_meta($order_id, '_wc_pdf_b2c');
             }
         } elseif (isset($_POST['resetpaid'])) {
-            delete_post_meta($order_id, '_date_paid');
-            delete_post_meta($order_id, '_paid_date');
+            $order = wc_get_order($order_id);
+            $order->set_date_paid( null );
+            $order->save();
         }
 
         echo json_encode($result);
