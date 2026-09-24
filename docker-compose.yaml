@@ -33,8 +33,6 @@ services:
       - 80:80
     restart: always
     env_file: .env
-    extra_hosts:
-      - host.docker.internal:host.containers.internal
     environment:
       - WORDPRESS_DB_HOST=db
       - WORDPRESS_DB_USER=wordpress
