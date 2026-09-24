@@ -13,3 +13,5 @@ vendor_build
 # ignore email settings
 msmtprc
 .env
+
+dist

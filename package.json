@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vite build",
+        "build": "vite build && node scripts/copy-runtime-assets.mjs",
         "preview": "vite preview",
         "i18n-pot": "wp i18n make-pot . lang/wc-invoice-pdf.pot --domain=wc-invoice-pdf --location --exclude=dist,import,node_modules,vendor",
         "i18n-update": "wp i18n update-po lang/wc-invoice-pdf.pot lang/wc-invoice-pdf-de_DE.po && wp i18n make-mo lang/wc-invoice-pdf-de_DE.po lang/wc-invoice-pdf-de_DE.mo && npx po2json lang/wc-invoice-pdf-de_DE.po lang/wc-invoice-pdf-de_DE-wc-recurring.json -f jed1.x"

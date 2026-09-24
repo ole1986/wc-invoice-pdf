@@ -168,8 +168,13 @@ class WcRecurringIndex
     {
         $plugin_data = get_plugin_data(__FILE__);
 
-        wp_enqueue_script('wc-recurring-script', WCRECURRING_PLUGIN_URL . 'browser/js/wc-recurring-admin.js', null, $plugin_data['Version']);
-        wp_enqueue_style('wc-recurring-style', WCRECURRING_PLUGIN_URL . 'browser/style/wc-recurring.css', null, $plugin_data['Version']);
+        if (isset($_GET['page']) && $_GET['page'] === 'wcinvoicepdf_settings') {
+            wp_enqueue_script('wc-recurring-script', WCRECURRING_PLUGIN_URL . 'dist/wc-recurring-settings.js', ['media-editor'], $plugin_data['Version'], true);
+            wp_enqueue_style('wc-recurring-style', WCRECURRING_PLUGIN_URL . 'dist/wc-recurring-settings.css', [], $plugin_data['Version']);
+        } else {
+            wp_enqueue_script('wc-recurring-script', WCRECURRING_PLUGIN_URL . 'dist/wc-recurring-admin.js', null, $plugin_data['Version']);
+            wp_enqueue_style('wc-recurring-style', WCRECURRING_PLUGIN_URL . 'dist/wc-recurring.css', [], $plugin_data['Version']);
+        }
     }
 
     public static function plugin_meta($links, $file)

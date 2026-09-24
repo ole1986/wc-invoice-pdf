@@ -19,13 +19,17 @@ class InvoiceMenu
         if (is_admin()) {
             add_action('admin_menu', array( $this, 'admin_menu' ));
         }
+
+        foreach (['general', 'invoice', 'email', 'export'] as $section) {
+            add_action('admin_post_wc_recurring_save_' . $section, [$this, 'saveSettingsSection']);
+        }
     }
 
     public function admin_menu()
     {
         add_menu_page('WC-' . __('Invoices', 'wc-invoice-pdf'), 'WC-' . __('Invoices', 'wc-invoice-pdf'), 'null', 'wcinvoicepdf_menu', null, WCRECURRING_PLUGIN_URL.'invoicepdf.png', 3);
         add_submenu_page('wcinvoicepdf_menu', __('Invoices', 'wc-invoice-pdf'), __('Invoices', 'wc-invoice-pdf'), 'edit_themes', 'wcinvoicepdf_invoices', [$this, 'DisplayInvoices']);
-        add_submenu_page('wcinvoicepdf_menu', __('Settings'), __('Settings'), 'edit_themes', 'wcinvoicepdf_settings', [$this, 'DisplaySettings']);
+        add_submenu_page('wcinvoicepdf_menu', __('Settings'), __('Settings'), 'edit_themes', 'wcinvoicepdf_settings', [$this, 'DisplaySettingsVue']);
         // hide the menu using null
         add_submenu_page(null, '_Invoice', '_Invoice', 'wc_invoice_pdf', 'wcinvoicepdf_invoice', [$this, 'OpenInvoice']);
     }
@@ -176,6 +180,88 @@ class InvoiceMenu
             </form>
         </div>
         <?php
+    }
+
+    /**
+     * Render the Vue-based settings application.
+     */
+    public function DisplaySettingsVue()
+    {
+        wp_enqueue_media();
+        $config = $this->getSettingsConfig();
+        ?>
+        <div class="wrap wc-recurring-settings">
+            <h1><?php _e('WC-Invoice Settings', 'wc-invoice-pdf'); ?></h1>
+            <script type="application/json" id="wc-recurring-settings-data"><?php echo wp_json_encode($config); ?></script>
+            <div id="wc-recurring-settings-app"></div>
+            <noscript><?php _e('JavaScript is required to edit these settings.', 'wc-invoice-pdf'); ?></noscript>
+        </div>
+        <?php
+    }
+
+    private function getSettingsSections()
+    {
+        return [
+            'general' => ['wc_company_name', 'wc_company_email', 'wc_company_vat', 'wc_invoice_due_days', 'wc_order_subscriptions', 'wc_mail_reminder', 'wc_mail_sender', 'wc_pdf_xinvoice', 'wc_order_show_completed', 'wc_customer_login_gdpr', 'wc_pdf_b2c', 'wc_recur_test', 'wc_payment_reminder', 'wc_recur', 'wc_recur_reminder', 'wc_recur_reminder_age', 'wc_recur_reminder_interval', 'wc_recur_reminder_max'],
+            'invoice' => ['wc_pdf_title', 'wc_pdf_template', 'wc_pdf_condition', 'wc_pdf_condition_offer', 'wc_pdf_info'],
+            'email' => ['wc_payment_message', 'wc_recur_message', 'wc_recur_reminder_message'],
+            'export' => ['wc_export_locale', 'wc_export_notes', 'wc_export_account', 'wc_export_account_posted', 'wc_export_account_tax']
+        ];
+    }
+
+    private function getSettingsConfig()
+    {
+        $company = CompanyDetails::getInstance();
+        $endpoints = [];
+        foreach ($this->getSettingsSections() as $section => $fields) {
+            $endpoints[$section] = [
+                'url' => admin_url('admin-post.php?action=wc_recurring_save_' . $section),
+                'nonce' => wp_create_nonce('wc-recurring-settings-' . $section)
+            ];
+        }
+
+        return [
+            'options' => WcRecurringIndex::$OPTIONS,
+            'subscriptions' => WcRecurringIndex::$SUBSCRIPTIONS,
+            'sections' => $this->getSettingsSections(),
+            'endpoints' => $endpoints,
+            'companyAddress' => $company->getSingleAddress(),
+            'scheduleActive' => (bool) wp_get_schedule('invoice_reminder'),
+            'templateUrl' => WCRECURRING_PLUGIN_URL . 'resources/demo_invoice_template.docx',
+            'woocommerceSettingsUrl' => admin_url('admin.php?page=wc-settings&tab=general'),
+            'strings' => [
+                'saved' => __('Settings saved', 'wc-invoice-pdf'),
+                'save' => __('Save', 'wc-invoice-pdf'),
+                'selectMedia' => __('Select media', 'wc-invoice-pdf'),
+                'clearMedia' => __('Clear media', 'wc-invoice-pdf')
+            ]
+        ];
+    }
+
+    public function saveSettingsSection()
+    {
+        if (!current_user_can('edit_themes')) {
+            wp_die(__('You do not have permission to change these settings.', 'wc-invoice-pdf'));
+        }
+
+        $section = sanitize_key(wp_unslash($_GET['action'] ?? ''));
+        $section = str_replace('wc_recurring_save_', '', $section);
+        $sections = $this->getSettingsSections();
+        if (!isset($sections[$section])) {
+            wp_die(__('Invalid settings section.', 'wc-invoice-pdf'));
+        }
+
+        check_admin_referer('wc-recurring-settings-' . $section);
+        $posted = array_intersect_key(wp_unslash($_POST), array_flip($sections[$section]));
+        $checkboxes = ['wc_pdf_xinvoice', 'wc_order_show_completed', 'wc_customer_login_gdpr', 'wc_pdf_b2c', 'wc_recur_test', 'wc_payment_reminder', 'wc_recur', 'wc_recur_reminder'];
+        foreach (array_intersect($checkboxes, $sections[$section]) as $checkbox) {
+            $posted[$checkbox] = isset($posted[$checkbox]) ? 1 : 0;
+        }
+
+        WcRecurringIndex::$OPTIONS = array_replace(WcRecurringIndex::$OPTIONS, $posted);
+        WcRecurringIndex::save_options();
+        wp_safe_redirect(add_query_arg(['page' => 'wcinvoicepdf_settings', 'settings-updated' => $section], admin_url('admin.php')));
+        exit;
     }
 
     /**

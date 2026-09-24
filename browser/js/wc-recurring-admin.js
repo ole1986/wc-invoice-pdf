@@ -3,9 +3,6 @@
  */
 function WcRecuringAdminClass() {
     var $ = jQuery;
-    var self = this;
-
-    var mediaFrame;
     /**
      * 
      * @param {JSON} data data parameters
@@ -130,81 +127,6 @@ function WcRecuringAdminClass() {
         }).always(function () { loading.remove(); });
     }
 
-    this.RunTask = function (obj, name) {
-        var tmp = $(obj).text();
-        $(obj).text('Loading...');
-
-        jsonRequest({ name: name }, 'InvoiceTask').done(function (resp) {
-            if (name === 'reminder' && resp < -1) {
-                self.ShowNotice("Failed to send the payment reminder due to an invalid email address", 'warning');
-                return;
-            }
-            if (name === 'reminder' && resp < 0) {
-                self.ShowNotice("The payment reminder is disabled. Please enable before using it", 'warning');
-                return;
-            }
-            if (name === 'recurring' && resp < -1) {
-                self.ShowNotice("Please select 'Test Recurring' first.", 'warning');
-                return;
-            }
-            if (name === 'recurring' && resp < 0) {
-                self.ShowNotice("Recurring payments is disabled", 'warning');
-                return;
-            }
-            if (name === 'recurring_reminder' && resp < 0) {
-                self.ShowNotice("Recurring reminder is disabled", 'warning');
-                return;
-            }
-
-            self.ShowNotice("Task " + name + " successfully executed | Return code: " + resp, 'success');
-        }).always(function () { $(obj).text(tmp); });
-    }
-
-    this.OpenMedia = function (event, name) {
-
-        if (mediaFrame) {
-            mediaFrame.open();
-            return;
-        }
-
-        mediaFrame = wp.media({
-            title: 'Select PDF document',
-            button: {
-                text: 'Use this PDF',
-            },
-            library: {
-                type: ['application/pdf']
-            },
-            multiple: false	// Set to true to allow multiple files to be selected
-        })
-        mediaFrame.open();
-
-        mediaFrame.on('select', function () {
-            // Get media attachment details from the frame state
-            var att = mediaFrame.state().get('selection').first().toJSON();
-            console.log(att);
-            $('#' + name + "-preview").text(att.title);
-            $('#' + name).val(att.id);
-        });
-    }
-
-    this.ClearMedia = function (event, name) {
-        $('#' + name).val('');
-        $('#' + name + "-preview").text('');
-    }
-
-    this.ShowNotice = function (message, type, ondismiss) {
-        $button = $('<button />', { type: 'button', class: 'notice-dismiss' });
-        $notice = $('<div />', { class: 'notice is-dismissible notice-' + type });
-
-        $button.click(function () { $(this).parent().remove(); });
-
-        $notice.html('<p>' + message + '</p>');
-        $notice.append($button);
-
-        $('#wpbody-content > .wc-recurring-settings > :first-child').after($notice);
-    }
-
     var openDateInput = function (defaultValue, onSaveCallback, onCancelCallback) {
         var container = $('<div />');
 
@@ -227,33 +149,6 @@ function WcRecuringAdminClass() {
         return container;
     }
 
-    var hideTabs = function () {
-        $('#wcinvoicepdf-tabs a').each(function () {
-            var other_id = $(this).attr('href');
-            $(other_id).hide();
-        })
-        $('#wcinvoicepdf-tabs > a').removeClass('nav-tab-active');
-    }
-
-    var initTabs = function () {
-        $('#wcinvoicepdf-tabs > a').click(function (event) {
-            event.preventDefault();
-
-            var id = $(this).attr('href');
-
-            hideTabs();
-
-            $(this).addClass('nav-tab-active');
-            $(id).show();
-        })
-
-        hideTabs();
-        $('#wcinvoicepdf-tabs a:first').trigger('click');
-    }
-
-    $(function () {
-        initTabs();
-    })
 }
 
 window['WcRecuringAdmin'] = new WcRecuringAdminClass();

@@ -26,6 +26,10 @@ jobs:
       - name: Remove vendor
         run: rm -r vendor
       - run: composer dump-autoload
+      - name: Build frontend assets
+        run: |
+          npm ci
+          npm run build
       - name: WordPress Plugin Deploy
         id: deploy
         uses: 10up/action-wordpress-plugin-deploy@stable
