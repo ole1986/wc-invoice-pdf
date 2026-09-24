@@ -1,18 +1,27 @@
 {
     "name": "wc-recurring",
+    "private": true,
     "version": "1.0.0",
     "description": "",
-    "main": "browser/src/index.js",
+    "type": "module",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "webpack-cli --config webpack.config.js --mode development --watch",
-        "build": "webpack-cli --config webpack.config.js --mode production",
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
         "i18n-pot": "wp i18n make-pot . lang/wc-invoice-pdf.pot --domain=wc-invoice-pdf --location --exclude=dist,import,node_modules,vendor",
         "i18n-update": "wp i18n update-po lang/wc-invoice-pdf.pot lang/wc-invoice-pdf-de_DE.po && wp i18n make-mo lang/wc-invoice-pdf-de_DE.po lang/wc-invoice-pdf-de_DE.mo && npx po2json lang/wc-invoice-pdf-de_DE.po lang/wc-invoice-pdf-de_DE-wc-recurring.json -f jed1.x"
     },
     "browserslist": "> 0.25%, not dead",
     "author": "",
     "license": "ISC",
-    "devDependencies": {},
-    "dependencies": {}
+    "dependencies": {
+        "@mdi/font": "^7.4.45"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-vue": "6.0.4",
+        "vite-plugin-vuetify": "^2.1.3",
+        "vue": "^3.2.47",
+        "vuetify": "^3.7.5",
+        "vite": "^7.3.1"
+    }
 }
