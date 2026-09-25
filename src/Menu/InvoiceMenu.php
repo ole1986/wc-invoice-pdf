@@ -228,13 +228,7 @@ class InvoiceMenu
             'companyAddress' => $company->getSingleAddress(),
             'scheduleActive' => (bool) wp_get_schedule('invoice_reminder'),
             'templateUrl' => WCRECURRING_PLUGIN_URL . 'resources/demo_invoice_template.docx',
-            'woocommerceSettingsUrl' => admin_url('admin.php?page=wc-settings&tab=general'),
-            'strings' => [
-                'saved' => __('Settings saved', 'wc-invoice-pdf'),
-                'save' => __('Save', 'wc-invoice-pdf'),
-                'selectMedia' => __('Select media', 'wc-invoice-pdf'),
-                'clearMedia' => __('Clear media', 'wc-invoice-pdf')
-            ]
+            'woocommerceSettingsUrl' => admin_url('admin.php?page=wc-settings&tab=general')
         ];
     }
 
@@ -260,8 +254,7 @@ class InvoiceMenu
 
         WcRecurringIndex::$OPTIONS = array_replace(WcRecurringIndex::$OPTIONS, $posted);
         WcRecurringIndex::save_options();
-        wp_safe_redirect(add_query_arg(['page' => 'wcinvoicepdf_settings', 'settings-updated' => $section], admin_url('admin.php')));
-        exit;
+        wp_send_json_success(['section' => $section]);
     }
 
     /**

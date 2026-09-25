@@ -169,12 +169,14 @@ class WcRecurringIndex
         $plugin_data = get_plugin_data(__FILE__);
 
         if (isset($_GET['page']) && $_GET['page'] === 'wcinvoicepdf_settings') {
-            wp_enqueue_script('wc-recurring-script', WCRECURRING_PLUGIN_URL . 'dist/wc-recurring-settings.js', ['media-editor'], $plugin_data['Version'], true);
+            wp_enqueue_script('wc-recurring', WCRECURRING_PLUGIN_URL . 'dist/wc-recurring-settings.js', ['media-editor', 'wp-i18n'], $plugin_data['Version'], true);
             wp_enqueue_style('wc-recurring-style', WCRECURRING_PLUGIN_URL . 'dist/wc-recurring-settings.css', [], $plugin_data['Version']);
         } else {
-            wp_enqueue_script('wc-recurring-script', WCRECURRING_PLUGIN_URL . 'dist/wc-recurring-admin.js', null, $plugin_data['Version']);
+            wp_enqueue_script('wc-recurring', WCRECURRING_PLUGIN_URL . 'dist/wc-recurring-admin.js', null, $plugin_data['Version']);
             wp_enqueue_style('wc-recurring-style', WCRECURRING_PLUGIN_URL . 'dist/wc-recurring.css', [], $plugin_data['Version']);
         }
+
+        wp_set_script_translations('wc-recurring', 'wc-invoice-pdf', WCRECURRING_PLUGIN_DIR . 'lang');
     }
 
     public static function plugin_meta($links, $file)
