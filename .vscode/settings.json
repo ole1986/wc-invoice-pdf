@@ -82,5 +82,6 @@
         "zip",
         "zlib",
         "wordpress"
-    ]
+    ],
+    "html.format.wrapLineLength": 0
 }
