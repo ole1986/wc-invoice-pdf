@@ -83,5 +83,12 @@
         "zlib",
         "wordpress"
     ],
-    "html.format.wrapLineLength": 0
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "vue"
+    ],
+    "[vue]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
 }
