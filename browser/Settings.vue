@@ -200,7 +200,7 @@ function selectMedia() {
               cols="12"
               md="7"
             >
-              <v-card variant="outlined">
+              <v-card variant="flat">
                 <v-card-title>{{ t('Business') }}</v-card-title><v-card-text>
                   <v-text-field
                     v-model="options.wc_company_name"
@@ -259,7 +259,7 @@ function selectMedia() {
               md="5"
             >
               <v-card
-                variant="outlined"
+                variant="flat"
                 class="mb-4"
               >
                 <v-card-title>
@@ -280,7 +280,7 @@ function selectMedia() {
                   />
                 </v-card-text>
               </v-card>
-              <v-card variant="outlined">
+              <v-card variant="flat">
                 <v-card-title>
                   {{ t('Task Scheduler')
                   }}
@@ -325,8 +325,8 @@ function selectMedia() {
             <v-card
               v-for="task in tasks"
               :key="task[0]"
+              variant="flat"
               class="mx-auto ml-0 mr-0"
-              color="white"
               min-width="300"
               max-width="300"
               height="160"
@@ -370,7 +370,7 @@ function selectMedia() {
               cols="12"
               md="6"
             >
-              <v-card variant="outlined">
+              <v-card variant="flat">
                 <v-card-title>
                   {{ t('Properties')
                   }}
@@ -381,7 +381,7 @@ function selectMedia() {
                     :label="t('Document Title')"
                     variant="outlined"
                   />
-                  <div class="d-flex align-center ga-2 mb-4">
+                  <div class="d-flex align-top ga-2 mb-4">
                     <v-text-field
                       :model-value="mediaTitle || options.wc_pdf_template"
                       :label="t('PDF template')"
@@ -389,6 +389,7 @@ function selectMedia() {
                       variant="outlined"
                     /><v-btn
                       type="button"
+                      variant="tonal"
                       @click="selectMedia"
                     >
                       {{
@@ -430,7 +431,7 @@ function selectMedia() {
               cols="12"
               md="6"
             >
-              <v-card variant="outlined">
+              <v-card variant="flat">
                 <v-card-title>{{ t('Placeholders') }}</v-card-title><v-table>
                   <thead>
                     <tr>
@@ -475,7 +476,8 @@ function selectMedia() {
             type="hidden"
             name="_wpnonce"
             :value="endpoint('email').nonce"
-          ><v-card variant="outlined">
+          >
+          <v-card variant="flat">
             <v-card-title>
               {{ t('Email templates')
               }}
@@ -524,7 +526,8 @@ function selectMedia() {
             type="hidden"
             name="_wpnonce"
             :value="endpoint('export').nonce"
-          ><v-card variant="outlined">
+          >
+          <v-card variant="flat">
             <v-card-title>{{ t('Export') }}</v-card-title><v-card-text>
               <p>{{ t('The export feature currently supports GnuCash CSV format.') }}</p><v-text-field
                 v-model="options.wc_export_locale"
