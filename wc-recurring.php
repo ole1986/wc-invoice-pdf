@@ -169,8 +169,24 @@ class WcRecurringIndex
         $plugin_data = get_plugin_data(__FILE__);
 
         if (isset($_GET['page']) && $_GET['page'] === 'wcinvoicepdf_settings') {
-            wp_enqueue_script('wc-recurring', WCRECURRING_PLUGIN_URL . 'dist/wc-recurring-settings.js', ['media-editor', 'wp-i18n'], $plugin_data['Version'], true);
-            wp_enqueue_style('wc-recurring-style', WCRECURRING_PLUGIN_URL . 'dist/wc-recurring-settings.css', [], $plugin_data['Version']);
+            if (!file_exists(WCRECURRING_PLUGIN_DIR . '/dist')) {
+                $vite_url = 'http://localhost:5173';
+                $vite_handles = ['wc-recurring-vite-client', 'wc-recurring'];
+
+                add_filter('script_loader_tag', static function ($tag, $handle) use ($vite_handles) {
+                    if (in_array($handle, $vite_handles, true)) {
+                        return str_replace('<script ', '<script type="module" ', $tag);
+                    }
+
+                    return $tag;
+                }, 10, 2);
+
+                wp_enqueue_script('wc-recurring-vite-client', $vite_url . '/@vite/client', [], null, true);
+                wp_enqueue_script('wc-recurring', $vite_url . '/main.js', ['media-editor', 'wp-i18n'], null, true);
+            } else {
+                wp_enqueue_script('wc-recurring', WCRECURRING_PLUGIN_URL . 'dist/wc-recurring-settings.js', ['media-editor', 'wp-i18n'], $plugin_data['Version'], true);
+                wp_enqueue_style('wc-recurring-style', WCRECURRING_PLUGIN_URL . 'dist/wc-recurring-settings.css', [], $plugin_data['Version']);
+            }
         } else {
             wp_enqueue_script('wc-recurring', WCRECURRING_PLUGIN_URL . 'dist/wc-recurring-admin.js', null, $plugin_data['Version']);
             wp_enqueue_style('wc-recurring-style', WCRECURRING_PLUGIN_URL . 'dist/wc-recurring.css', [], $plugin_data['Version']);

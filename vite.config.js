@@ -3,8 +3,13 @@ import { defineConfig } from 'vite'
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 
 // https://vite.dev/config/
-export default defineConfig({
-    base: './',
+export default defineConfig(({ command }) => ({
+    base: command === 'serve' ? '/' : './',
+    server: {
+        host: 'localhost',
+        cors: true,
+        origin: 'http://localhost:5173',
+    },
     build: {
         outDir: '../dist',
         emptyOutDir: true,
@@ -24,4 +29,4 @@ export default defineConfig({
         },
     },
     root: 'browser',
-})
+}))

@@ -26,18 +26,33 @@ services:
       context: .
     volumes:
       - wp_data:/var/www/html
-      - ./wp-install.sh:/wp-install.sh
       - ./:/var/www/html/wp-content/plugins/wc-recurring-pdf
       - ./msmtprc:/etc/msmtprc
     ports:
       - 80:80
     restart: always
+    extra_hosts:
+      - host.docker.internal:host-gateway
     env_file: .env
     environment:
       - WORDPRESS_DB_HOST=db
       - WORDPRESS_DB_USER=wordpress
       - WORDPRESS_DB_PASSWORD=wordpress
       - WORDPRESS_DB_NAME=wordpress
+  wpcli:
+    image: wordpress:cli-php8.2
+    user: 33:33
+    depends_on:
+      - wordpress
+    volumes:
+      - wp_data:/var/www/html
+      - ./:/var/www/html/wp-content/plugins/wc-recurring-pdf
+    environment:
+      - WORDPRESS_DB_HOST=db
+      - WORDPRESS_DB_USER=wordpress
+      - WORDPRESS_DB_PASSWORD=wordpress
+      - WORDPRESS_DB_NAME=wordpress
+    working_dir: /var/www/html
 volumes:
   db_data:
   wp_data:

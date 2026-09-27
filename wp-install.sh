@@ -15,3 +15,7 @@ found=$(wp post list --format=count --title="Legacy Cart" --post_type=page)
 [ $found -eq 0 ] && wp post create  --post_type=page --post_title="Legacy Cart" --post_content="[woocommerce_cart]" --post_status="publish"
 found=$(wp post list --format=count --title="Legacy Checkout" --post_type=page)
 [ $found -eq 0 ] && wp post create  --post_type=page --post_title="Legacy Checkout" --post_content="[woocommerce_checkout]" --post_status="publish"
+
+
+# Enable VITE DEV
+wp config set WCRECURRING_VITE_DEV true --raw --type=constant

@@ -108,7 +108,7 @@ function selectMedia() {
         return
     }
 
-    mediaFrame = wp.media({
+    const mediaFrame = wp.media({
         title: t('Select PDF document'),
         library: { type: 'application/pdf' },
         multiple: false,
@@ -159,9 +159,9 @@ function selectMedia() {
                         </v-col>
                         <v-col cols="12" md="5">
                             <v-card variant="outlined" class="mb-4"><v-card-title>{{ t('Email details')
-                                    }}</v-card-title><v-card-text><v-text-field v-model="options.wc_mail_reminder" name="wc_mail_reminder" :label="t('Report recipient')" type="email" variant="outlined" /><v-text-field v-model="options.wc_mail_sender" name="wc_mail_sender" :label="t('Sender address')" variant="outlined" /></v-card-text></v-card>
+                            }}</v-card-title><v-card-text><v-text-field v-model="options.wc_mail_reminder" name="wc_mail_reminder" :label="t('Report recipient')" type="email" variant="outlined" /><v-text-field v-model="options.wc_mail_sender" name="wc_mail_sender" :label="t('Sender address')" variant="outlined" /></v-card-text></v-card>
                             <v-card variant="outlined"><v-card-title>{{ t('Task Scheduler')
-                                    }}</v-card-title><v-card-text>
+                            }}</v-card-title><v-card-text>
                                     <v-checkbox v-for="field in schedulerFlags" :key="field[0]" v-model="options[field[0]]" :label="field[1] + ' - ' + field[2]" :name="field[0]" value="1" :true-value="1" :false-value="0" hide-details />
                                     <v-text-field v-model="options.wc_recur_reminder_age" name="wc_recur_reminder_age" :label="t('First reminder (days)')" type="number" variant="outlined" />
                                     <v-text-field v-model="options.wc_recur_reminder_interval" name="wc_recur_reminder_interval" :label="t('Reminder interval')" type="number" variant="outlined" />
@@ -170,17 +170,17 @@ function selectMedia() {
                         </v-col>
                     </v-row>
                     <v-card variant="outlined" class="mt-4"><v-card-title>{{ t('Manual tasks')
-                            }}</v-card-title><v-card-text class="d-flex flex-wrap ga-2"><v-btn v-for="task in [['notify', t('Payment notification')], ['recur', t('Generate invoices')], ['submit', t('Submit invoices')], ['reminder', t('Trigger reminder')]]" :key="task[0]" type="button" @click="runTask($event, task[0])">{{ task[1]
-                            }}</v-btn></v-card-text></v-card>
+                    }}</v-card-title><v-card-text class="d-flex flex-wrap ga-2"><v-btn v-for="task in [['notify', t('Payment notification')], ['recur', t('Generate invoices')], ['submit', t('Submit invoices')], ['reminder', t('Trigger reminder')]]" :key="task[0]" type="button" @click="runTask($event, task[0])">{{ task[1]
+                                }}</v-btn></v-card-text></v-card>
                     <div class="d-flex justify-end mt-6"><v-btn color="primary" type="submit" :loading="saving" :disabled="saving">{{ t('Save')
-                    }}</v-btn></div>
+                            }}</v-btn></div>
                 </form>
             </v-window-item>
 
             <v-window-item value="invoice">
                 <form method="post" :action="endpoint('invoice').url" @submit.prevent="saveSection($event, 'invoice')">
                     <input type="hidden" name="_wpnonce" :value="endpoint('invoice').nonce" /><v-row><v-col cols="12" md="6"><v-card variant="outlined"><v-card-title>{{ t('Properties')
-                                    }}</v-card-title><v-card-text>
+                    }}</v-card-title><v-card-text>
                                     <v-text-field v-model="options.wc_pdf_title" name="wc_pdf_title" :label="t('Document Title')" variant="outlined" />
                                     <div class="d-flex align-center ga-2 mb-4"><v-text-field :model-value="mediaTitle || options.wc_pdf_template" :label="t('PDF template')" readonly variant="outlined" /><v-btn type="button" @click="selectMedia">{{
                                         t('Select media') }}</v-btn><v-btn type="button" variant="text" @click="clearMedia">{{ t('Clear media') }}</v-btn></div>
@@ -203,16 +203,16 @@ function selectMedia() {
                                     </tbody>
                                 </v-table></v-card></v-col></v-row>
                     <div class="d-flex justify-end mt-6"><v-btn color="primary" type="submit" :loading="saving" :disabled="saving">{{ t('Save')
-                    }}</v-btn></div>
+                            }}</v-btn></div>
                 </form>
             </v-window-item>
 
             <v-window-item value="email">
                 <form method="post" :action="endpoint('email').url" @submit.prevent="saveSection($event, 'email')">
                     <input type="hidden" name="_wpnonce" :value="endpoint('email').nonce" /><v-card variant="outlined"><v-card-title>{{ t('Email templates')
-                            }}</v-card-title><v-card-text><v-textarea v-model="options.wc_payment_message" name="wc_payment_message" :label="t('Payment report')" rows="6" variant="outlined" /><v-textarea v-model="options.wc_recur_message" name="wc_recur_message" :label="t('Automate invoice submission')" rows="8" variant="outlined" /><v-textarea v-model="options.wc_recur_reminder_message" name="wc_recur_reminder_message" :label="t('Payment reminder')" rows="8" variant="outlined" /></v-card-text></v-card>
+                    }}</v-card-title><v-card-text><v-textarea v-model="options.wc_payment_message" name="wc_payment_message" :label="t('Payment report')" rows="6" variant="outlined" /><v-textarea v-model="options.wc_recur_message" name="wc_recur_message" :label="t('Automate invoice submission')" rows="8" variant="outlined" /><v-textarea v-model="options.wc_recur_reminder_message" name="wc_recur_reminder_message" :label="t('Payment reminder')" rows="8" variant="outlined" /></v-card-text></v-card>
                     <div class="d-flex justify-end mt-6"><v-btn color="primary" type="submit" :loading="saving" :disabled="saving">{{ t('Save')
-                    }}</v-btn></div>
+                            }}</v-btn></div>
                 </form>
             </v-window-item>
             <v-window-item value="export">
@@ -221,7 +221,7 @@ function selectMedia() {
                             <p>{{ t('The export feature currently supports GnuCash CSV format.') }}</p><v-text-field v-model="options.wc_export_locale" name="wc_export_locale" :label="t('Locale')" variant="outlined" /><v-textarea v-model="options.wc_export_notes" name="wc_export_notes" :label="t('Notes')" variant="outlined" /><v-text-field v-model="options.wc_export_account" name="wc_export_account" :label="t('Account name')" variant="outlined" /><v-text-field v-model="options.wc_export_account_posted" name="wc_export_account_posted" :label="t('Posted account name')" variant="outlined" /><v-text-field v-model="options.wc_export_account_tax" name="wc_export_account_tax" :label="t('Tax account')" variant="outlined" />
                         </v-card-text></v-card>
                     <div class="d-flex justify-end mt-6"><v-btn color="primary" type="submit" :loading="saving" :disabled="saving">{{ t('Save')
-                    }}</v-btn></div>
+                            }}</v-btn></div>
                 </form>
             </v-window-item>
         </v-window>

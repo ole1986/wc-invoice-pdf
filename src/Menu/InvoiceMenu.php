@@ -193,7 +193,9 @@ class InvoiceMenu
         <div class="wrap wc-recurring-settings">
             <h1><?php _e('WC-Invoice Settings', 'wc-invoice-pdf'); ?></h1>
             <script type="application/json" id="wc-recurring-settings-data"><?php echo wp_json_encode($config); ?></script>
-            <div id="wc-recurring-settings-app"></div>
+            <div id="wc-recurring-settings-app">
+                <span>Loading...</span>
+            </div>
             <noscript><?php _e('JavaScript is required to edit these settings.', 'wc-invoice-pdf'); ?></noscript>
         </div>
         <?php
