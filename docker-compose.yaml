@@ -39,7 +39,7 @@ services:
       - WORDPRESS_DB_USER=wordpress
       - WORDPRESS_DB_PASSWORD=wordpress
       - WORDPRESS_DB_NAME=wordpress
-  wpcli:
+  setup:
     image: wordpress:cli-php8.2
     user: 33:33
     depends_on:
@@ -47,12 +47,23 @@ services:
     volumes:
       - wp_data:/var/www/html
       - ./:/var/www/html/wp-content/plugins/wc-recurring-pdf
+    env_file: .env
     environment:
       - WORDPRESS_DB_HOST=db
       - WORDPRESS_DB_USER=wordpress
       - WORDPRESS_DB_PASSWORD=wordpress
       - WORDPRESS_DB_NAME=wordpress
     working_dir: /var/www/html
+    entrypoint: [ "sh", "-c" ]
+    command:
+      - |
+        set -e
+        wp core install --url=http://localhost --title="$${WP_TITLE}" --admin_user="$${WP_USER}" --admin_password="$${WP_PASS}" --admin_email="$${WP_EMAIL}" --skip-email
+        wp plugin install woocommerce
+        wp plugin activate woocommerce
+        wp plugin activate wc-recurring-pdf
+        wp post create --post_type=page --post_title="Legacy Cart" --post_content="[woocommerce_cart]" --post_status=publish
+        wp post create --post_type=page --post_title="Legacy Checkout" --post_content="[woocommerce_checkout]" --post_status=publish
 volumes:
   db_data:
   wp_data:

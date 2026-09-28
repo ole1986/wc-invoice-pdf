@@ -10,7 +10,6 @@ https://wordpress.org/plugins/wc-invoice-pdf/
 
 - Docker
 - Docker Compose
-- Task (optional, but recommended for the automated setup steps)
 
 ## Starting the local environment
 
@@ -26,7 +25,7 @@ The Compose setup includes the following services:
 
 - `db`: MariaDB
 - `wordpress`: local WordPress instance
-- `wpcli`: WordPress CLI for installation and configuration tasks
+- `setup`: one-time WordPress and WooCommerce initialization
 
 If you want to reset the environment completely, including databases and volumes:
 
@@ -47,20 +46,10 @@ WP_EMAIL=your@email.tld
 
 These values are used during the WordPress setup process.
 
-## Using the Taskfile
-
-This project uses `Taskfile.yml` as the central entry point for recurring tasks.
-
-### WordPress setup
+## WordPress setup
 
 ```bash
-task setup VITE_DEBUG=enable
-```
-
-or
-
-```bash
-task setup VITE_DEBUG=disable
+docker compose run --rm setup
 ```
 
 This runs the following steps:
@@ -69,45 +58,5 @@ This runs the following steps:
 - install and activate WooCommerce
 - activate the plugin
 - create legacy cart and checkout pages
-- optionally enable or disable Vite development mode
-
-### Run WP-CLI commands directly
-
-```bash
-task wp -- --info
-```
-
-or for example:
-
-```bash
-task wp -- plugin list
-```
-
-The `wp` task executes a WP-CLI command inside the `wpcli` container.
-
-### Toggle Vite debug mode
-
-```bash
-task vite-debug-on
-task vite-debug-off
-```
-
-These tasks set the WordPress constant `WCRECURRING_VITE_DEV`.
-
-## Quick overview
-
-```bash
-# Start containers
-docker compose up --build -d
-
-# Run WordPress setup
-task setup VITE_DEBUG=enable
-
-# Run WP-CLI command
-task wp -- plugin list
-
-# Stop containers
-docker compose down
-```
 
 > Note: This project is primarily intended for local development and demo installations. For production environments, additional security and deployment checks should be added.
