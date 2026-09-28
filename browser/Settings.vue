@@ -49,7 +49,7 @@ function endpoint(name) {
 }
 
 function clearMedia() {
-    options.wc_pdf_template = ''
+    options.wc_pdf_templatefile = options.wc_pdf_template = ''
     mediaTitle.value = ''
 }
 
@@ -383,7 +383,7 @@ function selectMedia() {
                   />
                   <div class="d-flex align-top ga-2 mb-4">
                     <v-text-field
-                      :model-value="mediaTitle || options.wc_pdf_template"
+                      :model-value="mediaTitle || options.wc_pdf_templatefile"
                       :label="t('PDF template')"
                       readonly
                       variant="outlined"

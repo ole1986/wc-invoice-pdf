@@ -222,8 +222,15 @@ class InvoiceMenu
             ];
         }
 
+        $options = WcRecurringIndex::$OPTIONS;
+
+        if (!empty($options['wc_pdf_template'])) {
+            $file = get_attached_file($options['wc_pdf_template']);
+            $options['wc_pdf_templatefile'] = basename($file);
+        }
+
         return [
-            'options' => WcRecurringIndex::$OPTIONS,
+            'options' => $options,
             'subscriptions' => WcRecurringIndex::$SUBSCRIPTIONS,
             'sections' => $this->getSettingsSections(),
             'endpoints' => $endpoints,
