@@ -536,3 +536,179 @@ msgstr ""
 #: src/WcProduct/wc_product_webspace.php:243
 msgid "Period"
 msgstr ""
+
+#: browser/Settings.vue
+msgid "Only show completed WooCommerce orders on customer account pages"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Provide a GDPR acceptance checkbox on customer login"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Create invoices for business-to-customer relationships"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Test Mode"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Replace all recipients with the administrator email address"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Send a daily report of unpaid invoices to the administrator"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Submit recurring invoices to customers on a daily schedule"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Send payment reminders when an invoice is due"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Payment notification"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Run the payment notifier now and submit outstanding invoice information"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Generate invoices"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Generate all recurring invoices for today. Please be careful with this as it may generate (and later submit) duplicates to the recipients"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Submit invoices"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Submit all outstanding invoices to their recipients"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Trigger reminder"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Submit all reminders for invoices that are due. Please be careful with this as it will resubmit the reminders and increase the counter"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Street and number"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Postal code"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "City"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "IBAN"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "BIC"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Bank name"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Invoice number"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Invoice creation date"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Due period in days"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Due date"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Settings could not be saved."
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Loading..."
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Task %1$s returned code %2$s"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Task %1$s failed"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "The WordPress media library is not loaded."
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Select PDF document"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Choose PDF"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Run"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "PDF template"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Info block"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Placeholder"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "The export feature currently supports GnuCash CSV format."
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Locale"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Notes"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Account name"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Posted account name"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "Tax account"
+msgstr ""
+
+#: browser/Settings.vue
+msgid "WooCommerce settings"
+msgstr ""

@@ -533,8 +533,184 @@ msgstr "DSGVO akzeptiert"
 
 #: src/Menu/InvoiceMenu.php:353
 msgid "Placeholders"
-msgstr ""
+msgstr "Platzhalter"
 
 #: src/WcExtend/CustomerProperties.php:66
 msgid "Additional Billing Email (CC)"
 msgstr ""
+
+#: browser/Settings.vue
+msgid "Only show completed WooCommerce orders on customer account pages"
+msgstr "Nur abgeschlossene WooCommerce-Bestellungen auf den Kundenkontoseiten anzeigen"
+
+#: browser/Settings.vue
+msgid "Provide a GDPR acceptance checkbox on customer login"
+msgstr "Beim Kunden-Login ein Kontrollkästchen zur DSGVO-Zustimmung anzeigen"
+
+#: browser/Settings.vue
+msgid "Create invoices for business-to-customer relationships"
+msgstr "Rechnungen für Geschäftsbeziehungen zwischen Unternehmen und Verbrauchern (B2C) erstellen"
+
+#: browser/Settings.vue
+msgid "Test Mode"
+msgstr "Testmodus"
+
+#: browser/Settings.vue
+msgid "Replace all recipients with the administrator email address"
+msgstr "Alle Empfänger durch die E-Mail-Adresse des Administrators ersetzen"
+
+#: browser/Settings.vue
+msgid "Send a daily report of unpaid invoices to the administrator"
+msgstr "Täglichen Bericht über unbezahlte Rechnungen an den Administrator senden"
+
+#: browser/Settings.vue
+msgid "Submit recurring invoices to customers on a daily schedule"
+msgstr "Wiederkehrende Rechnungen täglich an Kunden übermitteln"
+
+#: browser/Settings.vue
+msgid "Send payment reminders when an invoice is due"
+msgstr "Zahlungserinnerungen senden, wenn eine Rechnung fällig ist"
+
+#: browser/Settings.vue
+msgid "Payment notification"
+msgstr "Zahlungsbenachrichtigung"
+
+#: browser/Settings.vue
+msgid "Run the payment notifier now and submit outstanding invoice information"
+msgstr "Zahlungsbenachrichtigung jetzt ausführen und ausstehende Rechnungsinformationen übermitteln"
+
+#: browser/Settings.vue
+msgid "Generate invoices"
+msgstr "Rechnungen erstellen"
+
+#: browser/Settings.vue
+msgid "Generate all recurring invoices for today. Please be careful with this as it may generate (and later submit) duplicates to the recipients"
+msgstr "Alle wiederkehrenden Rechnungen für heute erstellen. Vorsicht: Dadurch können Duplikate erzeugt und später an die Empfänger übermittelt werden."
+
+#: browser/Settings.vue
+msgid "Submit invoices"
+msgstr "Rechnungen übermitteln"
+
+#: browser/Settings.vue
+msgid "Submit all outstanding invoices to their recipients"
+msgstr "Alle ausstehenden Rechnungen an ihre Empfänger übermitteln"
+
+#: browser/Settings.vue
+msgid "Trigger reminder"
+msgstr "Erinnerung auslösen"
+
+#: browser/Settings.vue
+msgid "Submit all reminders for invoices that are due. Please be careful with this as it will resubmit the reminders and increase the counter"
+msgstr "Alle Erinnerungen für fällige Rechnungen auslösen. Vorsicht: Dadurch werden die Erinnerungen erneut versendet und der Zähler erhöht."
+
+#: browser/Settings.vue
+msgid "Street and number"
+msgstr "Straße und Hausnummer"
+
+#: browser/Settings.vue
+msgid "Postal code"
+msgstr "Postleitzahl"
+
+#: browser/Settings.vue
+msgid "City"
+msgstr "Ort"
+
+#: browser/Settings.vue
+msgid "IBAN"
+msgstr "IBAN"
+
+#: browser/Settings.vue
+msgid "BIC"
+msgstr "BIC"
+
+#: browser/Settings.vue
+msgid "Bank name"
+msgstr "Name der Bank"
+
+#: browser/Settings.vue
+msgid "Invoice number"
+msgstr "Rechnungsnummer"
+
+#: browser/Settings.vue
+msgid "Invoice creation date"
+msgstr "Rechnungsdatum"
+
+#: browser/Settings.vue
+msgid "Due period in days"
+msgstr "Fälligkeitszeitraum in Tagen"
+
+#: browser/Settings.vue
+msgid "Due date"
+msgstr "Fälligkeitsdatum"
+
+#: browser/Settings.vue
+msgid "Settings could not be saved."
+msgstr "Einstellungen konnten nicht gespeichert werden."
+
+#: browser/Settings.vue
+msgid "Loading..."
+msgstr "Wird geladen..."
+
+#: browser/Settings.vue
+msgid "Task %1$s returned code %2$s"
+msgstr "Aufgabe %1$s gab den Code %2$s zurück"
+
+#: browser/Settings.vue
+msgid "Task %1$s failed"
+msgstr "Aufgabe %1$s ist fehlgeschlagen"
+
+#: browser/Settings.vue
+msgid "The WordPress media library is not loaded."
+msgstr "Die WordPress-Mediathek ist nicht geladen."
+
+#: browser/Settings.vue
+msgid "Select PDF document"
+msgstr "PDF-Dokument auswählen"
+
+#: browser/Settings.vue
+msgid "Choose PDF"
+msgstr "PDF auswählen"
+
+#: browser/Settings.vue
+msgid "Run"
+msgstr "Start"
+
+#: browser/Settings.vue
+msgid "PDF template"
+msgstr "PDF-Vorlage"
+
+#: browser/Settings.vue
+msgid "Info block"
+msgstr "Infoblock"
+
+#: browser/Settings.vue
+msgid "Placeholder"
+msgstr "Platzhalter"
+
+#: browser/Settings.vue
+msgid "The export feature currently supports GnuCash CSV format."
+msgstr "Die Exportfunktion unterstützt derzeit das GnuCash-CSV-Format."
+
+#: browser/Settings.vue
+msgid "Locale"
+msgstr "Gebietsschema"
+
+#: browser/Settings.vue
+msgid "Notes"
+msgstr "Anmerkungen"
+
+#: browser/Settings.vue
+msgid "Account name"
+msgstr "Kontoname"
+
+#: browser/Settings.vue
+msgid "Posted account name"
+msgstr "Name des Buchungskontos"
+
+#: browser/Settings.vue
+msgid "Tax account"
+msgstr "Steuerkonto"
+
+#: browser/Settings.vue
+msgid "WooCommerce settings"
+msgstr "WooCommerce-Einstellungen"

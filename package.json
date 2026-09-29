@@ -1,18 +1,30 @@
 {
     "name": "wc-recurring",
+    "private": true,
     "version": "1.0.0",
     "description": "",
-    "main": "browser/src/index.js",
+    "type": "module",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "webpack-cli --config webpack.config.js --mode development --watch",
-        "build": "webpack-cli --config webpack.config.js --mode production",
+        "dev": "vite",
+        "build": "vite build && node scripts/copy-runtime-assets.mjs",
+        "preview": "vite preview",
         "i18n-pot": "wp i18n make-pot . lang/wc-invoice-pdf.pot --domain=wc-invoice-pdf --location --exclude=dist,import,node_modules,vendor",
-        "i18n-update": "wp i18n update-po lang/wc-invoice-pdf.pot lang/wc-invoice-pdf-de_DE.po && wp i18n make-mo lang/wc-invoice-pdf-de_DE.po lang/wc-invoice-pdf-de_DE.mo && npx po2json lang/wc-invoice-pdf-de_DE.po lang/wc-invoice-pdf-de_DE-wc-recurring.json -f jed1.x"
+        "i18n-update-po": "docker compose run --rm --no-deps --entrypoint wp setup i18n update-po wp-content/plugins/wc-recurring-pdf/lang/wc-invoice-pdf.pot wp-content/plugins/wc-recurring-pdf/lang/wc-invoice-pdf-de_DE.po",
+        "i18n-make-mo": "docker compose run --rm --no-deps --entrypoint wp setup i18n make-mo wp-content/plugins/wc-recurring-pdf/lang/wc-invoice-pdf-de_DE.po wp-content/plugins/wc-recurring-pdf/lang/wc-invoice-pdf-de_DE.mo",
+        "i18n-po2json": "npx po2json lang/wc-invoice-pdf-de_DE.po lang/wc-invoice-pdf-de_DE-wc-recurring.json -f jed1.x"
     },
     "browserslist": "> 0.25%, not dead",
     "author": "",
     "license": "ISC",
-    "devDependencies": {},
-    "dependencies": {}
+    "dependencies": {
+        "@mdi/font": "^7.4.45"
+    },
+    "devDependencies": {
+        "@vue/eslint-config-typescript": "14.9.0",
+        "@vitejs/plugin-vue": "6.0.4",
+        "vite-plugin-vuetify": "^2.1.3",
+        "vue": "^3.2.47",
+        "vuetify": "^3.7.5",
+        "vite": "^7.3.1"
+    }
 }

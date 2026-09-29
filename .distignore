@@ -1,7 +1,11 @@
-assets
-.vscode
-.git
-.github
-
-.distignore
+browser/
+node_modules/
+.github/
+.git/
 .gitignore
+.distignore
+.vscode/
+package.json
+package-lock.json
+vite.config.js
+scripts/

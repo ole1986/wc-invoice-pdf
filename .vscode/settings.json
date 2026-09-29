@@ -82,5 +82,13 @@
         "zip",
         "zlib",
         "wordpress"
-    ]
+    ],
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "vue"
+    ],
+    "[vue]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
 }

@@ -19,13 +19,17 @@ class InvoiceMenu
         if (is_admin()) {
             add_action('admin_menu', array( $this, 'admin_menu' ));
         }
+
+        foreach (['general', 'invoice', 'email', 'export'] as $section) {
+            add_action('admin_post_wc_recurring_save_' . $section, [$this, 'saveSettingsSection']);
+        }
     }
 
     public function admin_menu()
     {
         add_menu_page('WC-' . __('Invoices', 'wc-invoice-pdf'), 'WC-' . __('Invoices', 'wc-invoice-pdf'), 'null', 'wcinvoicepdf_menu', null, WCRECURRING_PLUGIN_URL.'invoicepdf.png', 3);
         add_submenu_page('wcinvoicepdf_menu', __('Invoices', 'wc-invoice-pdf'), __('Invoices', 'wc-invoice-pdf'), 'edit_themes', 'wcinvoicepdf_invoices', [$this, 'DisplayInvoices']);
-        add_submenu_page('wcinvoicepdf_menu', __('Settings'), __('Settings'), 'edit_themes', 'wcinvoicepdf_settings', [$this, 'DisplaySettings']);
+        add_submenu_page('wcinvoicepdf_menu', __('Settings'), __('Settings'), 'edit_themes', 'wcinvoicepdf_settings', [$this, 'DisplaySettingsVue']);
         // hide the menu using null
         add_submenu_page(null, '_Invoice', '_Invoice', 'wc_invoice_pdf', 'wcinvoicepdf_invoice', [$this, 'OpenInvoice']);
     }
@@ -179,368 +183,86 @@ class InvoiceMenu
     }
 
     /**
-     * Show the avaialble settings
+     * Render the Vue-based settings application.
      */
-    public function DisplaySettings()
+    public function DisplaySettingsVue()
     {
-        $company = CompanyDetails::getInstance();
+        wp_enqueue_media();
+        $config = $this->getSettingsConfig();
         ?>
-        <div class="wc-recurring-settings">
-            <h1><?php _e('WC-Invoice Settings', 'wc-invoice-pdf');?></h1>
-            <?php
-            if ('POST' === $_SERVER[ 'REQUEST_METHOD' ]) {
-                check_admin_referer('wc-recurring-settings');
-
-                WcRecurringIndex::$OPTIONS = $_POST;
-                if (WcRecurringIndex::save_options()) {
-                    ?><div class="updated"><p> <?php _e('Settings saved', 'wc-invoice-pdf');?></p></div><?php
-                }
-            }
-            ?>
-            <?php if (wp_get_schedule('invoice_reminder')) : ?>
-                <div class="notice notice-info"><p><?php _e('The schedule is properly installed and running', 'wc-invoice-pdf') ?></p></div>
-            <?php else : ?>
-                <div class="notice notice-error"><p><?php _e('The scheduled task is not installed - Please try to reenable the plugin', 'wc-invoice-pdf') ?></p></div>
-            <?php endif; ?>
-            <h2 id="wcinvoicepdf-tabs" class="nav-tab-wrapper">
-                <a href="#wcinvoicepdf-order" class="nav-tab nav-tab-active"><?php _e('General', 'wc-invoice-pdf') ?></a>
-                <a href="#wcinvoicepdf-invoice" class="nav-tab"><?php _e('Invoice template', 'wc-invoice-pdf') ?></a>
-                <a href="#wcinvoicepdf-template" class="nav-tab"><?php _e('Email templates', 'wc-invoice-pdf') ?></a>
-                <a href="#wcinvoicepdf-export" class="nav-tab"><?php _e('Export', 'wc-invoice-pdf') ?></a>
-            </h2>
-            <form method="post" action="">
-                <div id="wcinvoicepdf-order" class="inside tabs-panel" style="display: none;">
-                    <div class="wc-recurring-scheduler">
-                        <div class="wc-recurring-postbox postbox">
-                            <div class="postbox-header">
-                                <h4>Payment notifcation [internal]</h4>
-                                <div class="handle-actions hide-if-no-js">
-                                    <a href="javascript:void(0)" onclick="WcRecuringAdmin.RunTask(this, 'notify')" class="components-button is-compact">Run</a>
-                                </div>
-                            </div>
-                            <p>
-                                Run the payment notifier now and submit outstanding invoice information to <strong><?php _e('Report recipient', 'wc-invoice-pdf') ?></strong>.
-                            </p>
-                        </div>
-                        <div class="wc-recurring-postbox postbox">
-                            <div class="postbox-header">
-                                <h4>Generate Invoices</h4>
-                                <div class="handle-actions hide-if-no-js">
-                                    <a href="javascript:void(0)" onclick="WcRecuringAdmin.RunTask(this, 'recur')" class="components-button is-compact">Run</a>
-                                </div>
-                            </div>
-                            <p>
-                                Generate all recurring invoices for today. Please be careful with this as it may generate (and later submit) duplicates to the recipients
-                            </p>
-                        </div>
-                        <div class="wc-recurring-postbox postbox">
-                            <div class="postbox-header">
-                                <h4>Submit Invoices</h4>
-                                <div class="handle-actions hide-if-no-js">
-                                    <a href="javascript:void(0)" onclick="WcRecuringAdmin.RunTask(this, 'submit')" class="components-button is-compact"">Run</a>
-                                </div>
-                            </div>
-                            <p>
-                                Submit all outstanding invoices to their recipients
-                            </p>
-                        </div>
-                        <div class="wc-recurring-postbox postbox">
-                            <div class="postbox-header">
-                                <h4>Trigger Invoice reminder</h4>
-                                <div class="handle-actions hide-if-no-js">
-                                    <a href="javascript:void(0)" onclick="WcRecuringAdmin.RunTask(this, 'reminder')" class="components-button is-compact">Run</a>
-                                </div>
-                            </div>
-                            <p>
-                                Submit all reminder for invoice which are due. Please be careful with this as it will re-submit the reminders and increase the counter
-                            </p>
-                        </div>
-                    </div>
-                    <div style="display: flex; flex-direction: row; flex-wrap: wrap">
-                        <div class="wc-recurring-postbox postbox">
-                            <div class="postbox-header">
-                                <h4><?php _e('Business', 'wc-invoice-pdf') ?></h4>
-                            </div>
-                            <?php
-                                $this->addField('wc_company_name', '<strong>' . __('Company name', 'wc-invoice-pdf') . '</strong><br />' . __('Enter your company name', 'wc-invoice-pdf'));
-                            ?>
-                            <?php
-                                $this->addField('wc_company_email', '<strong>' . __('Contact email', 'wc-invoice-pdf') . '</strong><br />' . __('Enter invoice contact email address', 'wc-invoice-pdf'));
-                            ?>
-                            <?php
-                                $this->addField('wc_company_vat', '<strong>' . __('VAT ID', 'wc-invoice-pdf') . '</strong><br />' . __('Enter your VAT ID', 'wc-invoice-pdf'));
-                            ?>
-                            <p>
-                                <label style="width: 220px; display:inline-block;vertical-align:top;">
-                                    <strong>Address</strong>
-                                </label>
-                                <?php echo $company->getSingleAddress() ?>
-                            </p>
-                            <p>Further address details are located in <a href="?page=wc-settings&tab=general">Woocommerce -> Settings</a></p>
-                            <?php
-                                $this->addField('wc_pdf_xinvoice', '<strong>' . __('Enable XInvoice', 'wc-invoice-pdf') . '</strong><br />' . __('Enable support for XInvoice (XML)', 'wc-invoice-pdf'), 'checkbox');
-                            ?>
-                            <?php
-                                $this->addField('wc_order_show_completed', '<strong>' . __('Order account filter', 'wc-invoice-pdf') . '</strong><br />' . __('Only show completed WooCommerce orders on customers account page', 'wc-invoice-pdf'), 'checkbox');
-                            ?>
-                            <?php
-                                $this->addField('wc_customer_login_gdpr', '<strong>' . __('Customer GDPR compliance', 'wc-invoice-pdf') . '</strong><br />' . __('Provide checkbox on customer login for to accept the GDPR', 'wc-invoice-pdf'), 'checkbox');
-                            ?>
-                            <?php
-                                $this->addField('wc_pdf_b2c', '<strong>' . __('Enable B2C', 'wc-invoice-pdf') . '</strong><br />' . __('Create invoice compatible for Business to Customer (B2C) relationship', 'wc-invoice-pdf'), 'checkbox');
-                            ?>
-                            <?php
-                                $this->addField('wc_invoice_due_days', '<strong>' . __('Due date in days', 'wc-invoice-pdf') . '</strong><br />' . __('The number of days an invoice becomes due', 'wc-invoice-pdf'), 'number');
-                            ?>
-                            <p>
-                            <label style="width: 220px; display:inline-block;vertical-align:top;">
-                                <strong><?php _e('Subscription option', 'wc-invoice-pdf')  ?></strong><br />
-                                <?php _e('Allow the customer to choose between the subscriptions during checkout or fix a value', 'wc-invoice-pdf') ?>
-                            </label>
-                            <select name="wc_order_subscriptions">
-                                <option value=""><?php _e('Customer choose', 'wc-invoice-pdf') ?></option>
-                                <?php
-                                foreach (WcRecurringIndex::$SUBSCRIPTIONS as $key => $value) {
-                                    $selected = WcRecurringIndex::$OPTIONS['wc_order_subscriptions'] == $key ? 'selected' : '';
-                                    echo '<option value="'. $key . '" '. $selected .'>'. $value .'</option>';
-                                }
-                                ?>
-                            </select>
-                            </p>
-                            <h4><?php _e('Email details', 'wc-invoice-pdf') ?></h4>
-                            <?php
-                            $this->addField('wc_mail_reminder', '<strong>' . __('Report recipient', 'wc-invoice-pdf') . '</strong><br />' . __('Reciepient address for payment reports', 'wc-invoice-pdf'));
-                            $this->addField('wc_mail_sender', '<strong>' . __('Sender address', 'wc-invoice-pdf') . '</strong><br />' . __('Public sender address the invoice is being submitted', 'wc-invoice-pdf'));
-                            ?>
-                        </div>
-                        <div class="wc-recurring-postbox postbox">
-                            <div class="postbox-header">
-                                <h4><?php _e('Task Scheduler', 'wc-invoice-pdf') ?></h4>
-                            </div>
-                            <?php
-                            $this->addField('wc_recur_test', '<span style="color: red; font-weight: bold">Test Mode</span><br />' . __('Enable test mode and replace all recipients with the admin email address', 'wc-invoice-pdf'), 'checkbox');
-                            $this->addField('wc_payment_reminder', '<strong>'. __('Payment report', 'wc-invoice-pdf') .'</strong><br />Send a daily report of unpaid invoices to "Admin Email"', 'checkbox');
-                            $this->addField('wc_recur', '<strong>' . __('Automate invoice submission', 'wc-invoice-pdf').'</strong><br />' . __('Enable automate invoice submission to customers on a daily schedule', 'wc-invoice-pdf'), 'checkbox');
-                            $this->addField('wc_recur_reminder', '<strong>'. __('Payment reminder', 'wc-invoice-pdf').'</strong><br />' . __('Send payment reminders to customer when invoice is due', 'wc-invoice-pdf'), 'checkbox');
-                            $this->addField('wc_recur_reminder_age', '<strong>' . __('First reminder (days)', 'wc-invoice-pdf') . '</strong><br />' . __('The number of days (after due) when the first payment reminder should be sent to the customer', 'wc-invoice-pdf'));
-                            $this->addField('wc_recur_reminder_interval', '<strong>'. __('Reminder interval', 'wc-invoice-pdf') .'</strong><br />The number of days (after first occurence) a reminder should be resent to customer');
-                            $this->addField('wc_recur_reminder_max', '<strong>'. __('Max reminders', 'wc-invoice-pdf') .'</strong><br />How many reminders should be sent for a single invoice to the customer');
-                            ?>
-                        </div>
-                    </div>
-                </div>
-                <div id="wcinvoicepdf-invoice" class="inside tabs-panel" style="display: none;">
-                    <div style="display: flex; flex-direction: row; flex-wrap: wrap">
-                        <div class="wc-recurring-postbox postbox">
-                            <div class="postbox-header">
-                                <h4><?php _e('Properties', 'wc-invoice-pdf') ?></h4>
-                            </div>
-                            <?php
-                            $this->addField('wc_pdf_title', __('Document Title', 'wc-invoice-pdf'));
-                            $this->addField('wc_pdf_template', '<strong>PDF Template</strong><br />Get an example <a href="'.WCRECURRING_PLUGIN_URL.'resources/demo_invoice_template.docx" target="_blank">here</a>', 'media', ['attr' => ['style' => 'padding-left: 0.5em']]);
-                            $this->addField('wc_pdf_condition', __('Payment terms', 'wc-invoice-pdf'), 'textarea');
-                            $this->addField('wc_pdf_condition_offer', __('Offer terms', 'wc-invoice-pdf'), 'textarea');
-                            $this->addField('wc_pdf_info', '<strong>Info Block</strong><br />' . '', 'textarea', ['input_attr' => ['style' => 'width: 340px; height: 100px']]);
-                            ?>
-                            <p>&nbsp;</p>
-                        </div>
-                        <div class="wc-recurring-postbox postbox">
-                            <div class="postbox-header">
-                                <h4><?php _e('Placeholders', 'wc-invoice-pdf') ?></h4>
-                            </div>
-                            <table class="wc-recurring-table">
-                                <thead>
-                                    <tr>
-                                        <th>Placeholder</th>
-                                        <th>Description</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>{COMPANY_NAME}</td>
-                                        <td>company name from <?php _e('General', 'wc-invoice-pdf') ?> -&gt; <?php _e('Contact email', 'wc-invoice-pdf') ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>{ADDRESS}</td>
-                                        <td>street and no. from Woocommerce setting</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{POSTCODE}</td>
-                                        <td>address postal code from Woocommerce setting</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{CITY}</td>
-                                        <td>Name of the City from Woocommerce setting</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{EMAIL}</td>
-                                        <td> Email address from <?php _e('General', 'wc-invoice-pdf') ?> -&gt; <?php _e('Contact email', 'wc-invoice-pdf') ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>{VAT_ID}</td>
-                                        <td>VAT details from <?php _e('General', 'wc-invoice-pdf') ?> -&gt; <?php _e('Contact email', 'wc-invoice-pdf') ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td>{IBAN}</td>
-                                        <td>IBAN from first Woocommerce BACS detail</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{BIC}</td>
-                                        <td>BIC from first Woocommerce BACS detail</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{BANK_NAME}</td>
-                                        <td>Bank name from first Woocommerce BACS detail</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{INVOICE_NUMBER}</td>
-                                        <td>Invoice number</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{INVOICE_CREATED}</td>
-                                        <td>Created date of the invoice</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{DUE_DAYS}</td>
-                                        <td>The due of the invoice in days</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{DUE_DATE}</td>
-                                        <td>The due date of the invoice</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div id="wcinvoicepdf-template" class="inside tabs-panel" style="display: none;">
-                    <p>
-                        Customize your templates being sent internally or to the customer<br />
-                    </p>
-                    <h3><?php _e('Payment report', 'wc-invoice-pdf')  ?></h3>
-                    <?php
-                    $attr = [
-                        'label_attr' => [ 'style' => 'width: 200px; display:inline-block;vertical-align:top;'],
-                        'input_attr' => ['style' => 'margin-left: 1em; width:50em;height: 200px']
-                    ];
-                    $this->addField('wc_payment_message', '<strong>'. __('Payment report', 'wc-invoice-pdf') .'</strong><br />Inform the administrator (see "Admin Email") about outstanding invoices', 'textarea', $attr);
-                    ?>
-                    <h3><?php _e('Payments', 'wc-invoice-pdf') ?></h3>
-                    <?php
-                    $this->addField('wc_recur_message', '<strong>' . __('Automate invoice submission', 'wc-invoice-pdf').'</strong><br />Submit the recurring invoice to the customer containing this message', 'textarea', $attr);
-                    ?>
-                    <div style="font-size: small;margin-left: 220px;margin-bottom: 1em;">
-                        <?php printf(__('The same placeholder from %s can be used', 'wc-invoice-pdf'), __('Invoice template', 'wc-invoice-pdf')) ?>
-                    </div>
-                    <?php
-                    $this->addField('wc_recur_reminder_message', '<strong>'. __('Payment reminder', 'wc-invoice-pdf').'</strong><br />Submit the recurring invoice to the customer containing this message', 'textarea', $attr);
-                    ?>
-                    <div style="font-size: small;margin-left: 220px;margin-bottom: 1em;">
-                        <?php printf(__('The same placeholder from %s can be used', 'wc-invoice-pdf'), __('Invoice template', 'wc-invoice-pdf')) ?>
-                    </div>
-                </div>
-                <div id="wcinvoicepdf-export" class="inside tabs-panel" style="display: none;">
-                    <p>
-                        The export feature currently supports GnuCash *.csv format to import invoices.</br />
-                        Please make sure the CUSTOMER ID (in GnuCash) matches the user id in wordpress
-                    </p>
-                    <?php
-                    $this->addField('wc_export_locale', '<strong>Locale</strong><br />Example: de_DE en_US');
-                    $this->addField('wc_export_notes', '<strong>Notes</strong><br />Invoice notes');
-                    $this->addField('wc_export_account', '<strong>Account name</strong><br />Name of the account an invoce is booked');
-                    $this->addField('wc_export_account_posted', '<strong>Account name</strong><br />Name of the account invoce is posted');
-                    $this->addField('wc_export_account_tax', '<strong>Tax Account (optional)</strong><br />Name of the tax account');
-                    ?>
-                </div>
-            <div class="inside">
-                <p></p>
-                <p>
-                    <?php wp_nonce_field('wc-recurring-settings'); ?>
-                    <input type="submit" class="button-primary" name="submit" value="<?php _e('Save', 'wc-invoice-pdf');?>" />
-                </p>
-                <p></p>
+        <div class="wrap wc-recurring-settings">
+            <h1><?php _e('WC-Invoice Settings', 'wc-invoice-pdf'); ?></h1>
+            <script type="application/json" id="wc-recurring-settings-data"><?php echo wp_json_encode($config); ?></script>
+            <div id="wc-recurring-settings-app">
+                <span>Loading...</span>
             </div>
-            </form>
+            <noscript><?php _e('JavaScript is required to edit these settings.', 'wc-invoice-pdf'); ?></noscript>
         </div>
         <?php
     }
 
-    public function addField($name, $title, $type = 'text', $args = [])
+    private function getSettingsSections()
     {
-        $xargs = [  'container' => 'p',
-                    'required' => false,
-                    'attr' => [],
-                    'label_attr' => ['style' => 'width: 220px; display:inline-block;vertical-align:top;'],
-                    'input_attr' => ['style' => 'width: 340px'],
-                    'value' => ''
-                ];
+        return [
+            'general' => ['wc_company_name', 'wc_company_email', 'wc_company_vat', 'wc_invoice_due_days', 'wc_order_subscriptions', 'wc_mail_reminder', 'wc_mail_sender', 'wc_pdf_xinvoice', 'wc_order_show_completed', 'wc_customer_login_gdpr', 'wc_pdf_b2c', 'wc_recur_test', 'wc_payment_reminder', 'wc_recur', 'wc_recur_reminder', 'wc_recur_reminder_age', 'wc_recur_reminder_interval', 'wc_recur_reminder_max'],
+            'invoice' => ['wc_pdf_title', 'wc_pdf_template', 'wc_pdf_condition', 'wc_pdf_condition_offer', 'wc_pdf_info'],
+            'email' => ['wc_payment_message', 'wc_recur_message', 'wc_recur_reminder_message'],
+            'export' => ['wc_export_locale', 'wc_export_notes', 'wc_export_account', 'wc_export_account_posted', 'wc_export_account_tax']
+        ];
+    }
 
-        if ($type == null) {
-            $type = 'text';
-        }
-
-        foreach ($xargs as $k => $v) {
-            if (!empty($args[$k])) {
-                $xargs[$k] = $args[$k];
-            }
-        }
-
-        if ($type == 'media') {
-            $xargs['container'] = 'span';
+    private function getSettingsConfig()
+    {
+        $company = CompanyDetails::getInstance();
+        $endpoints = [];
+        foreach ($this->getSettingsSections() as $section => $fields) {
+            $endpoints[$section] = [
+                'url' => admin_url('admin-post.php?action=wc_recurring_save_' . $section),
+                'nonce' => wp_create_nonce('wc-recurring-settings-' . $section)
+            ];
         }
 
-        echo '<' . $xargs['container'];
-        foreach ($xargs['attr'] as $k => $v) {
-            echo ' '.$k.'="'.$v.'"';
-        }
-        echo '>';
-        echo '<label';
-        foreach ($xargs['label_attr'] as $k => $v) {
-            echo ' '. $k . '="'.$v.'"';
+        $options = WcRecurringIndex::$OPTIONS;
+
+        if (!empty($options['wc_pdf_template'])) {
+            $file = get_attached_file($options['wc_pdf_template']);
+            $options['wc_pdf_templatefile'] = basename($file);
         }
 
-        echo '>' . $title;
-        if ($xargs['required']) {
-            echo '<span style="color: red;"> *</span>';
-        }
-        echo '</label>';
+        return [
+            'options' => $options,
+            'subscriptions' => WcRecurringIndex::$SUBSCRIPTIONS,
+            'sections' => $this->getSettingsSections(),
+            'endpoints' => $endpoints,
+            'companyAddress' => $company->getSingleAddress(),
+            'scheduleActive' => (bool) wp_get_schedule('invoice_reminder'),
+            'templateUrl' => WCRECURRING_PLUGIN_URL . 'resources/demo_invoice_template.docx',
+            'woocommerceSettingsUrl' => admin_url('admin.php?page=wc-settings&tab=general')
+        ];
+    }
 
-        $attrStr = '';
-        foreach ($xargs['input_attr'] as $k => $v) {
-            $attrStr.= ' '.$k.'="'.$v.'"';
+    public function saveSettingsSection()
+    {
+        if (!current_user_can('edit_themes')) {
+            wp_die(__('You do not have permission to change these settings.', 'wc-invoice-pdf'));
         }
 
-        if (isset(WcRecurringIndex::$OPTIONS[$name])) {
-            $optValue = WcRecurringIndex::$OPTIONS[$name];
-        } else {
-            $optValue = $xargs['value'];
+        $section = sanitize_key(wp_unslash($_GET['action'] ?? ''));
+        $section = str_replace('wc_recurring_save_', '', $section);
+        $sections = $this->getSettingsSections();
+        if (!isset($sections[$section])) {
+            wp_die(__('Invalid settings section.', 'wc-invoice-pdf'));
         }
 
-        if ($type == 'text' || $type == 'password' || $type == 'number') {
-            echo '<input type="'.$type.'" class="regular-text" name="'.$name.'" value="'.$optValue.'"'.$attrStr.' />';
-        } elseif ($type == 'email') {
-            echo '<input type="'.$type.'" class="regular-text" name="'.$name.'" value="'.$optValue.'"'.$attrStr.' />';
-        } elseif ($type == 'textarea') {
-            echo '<textarea name="'.$name.'" '.$attrStr.'>'  . esc_attr($optValue) . '</textarea>';
-        } elseif ($type == 'checkbox') {
-            echo '<input type="'.$type.'" name="'.$name.'" value="1"' . (($optValue == '1')?'checked':'') .' />';
-        } elseif ($type == 'rte') {
-            echo '<div '.$attrStr.'>';
-            wp_editor($optValue, $name, ['teeny' => true, 'editor_height'=>200, 'media_buttons' => false]);
-            echo '</div>';
-        } elseif ($type == 'media') {
-            wp_enqueue_media();
-            $title = '';
-            if (intval($optValue) > 0) {
-                $title = get_the_title($optValue);
-            }
-            echo "<div class='image-preview-wrapper' style='display:inline-block'>";
-            echo "<pre id='$name-preview'>$title</pre><br />";
-            echo "<input onclick=\"WcRecuringAdmin.OpenMedia(this,'$name')\" type=\"button\" class=\"button\" value=\"" . __('Select media', 'wc-invoice-pdf') ."\" />";
-            echo "<input onclick=\"WcRecuringAdmin.ClearMedia(this,'$name')\" type=\"button\" class=\"button\" value=\"" . __('Clear media', 'wc-invoice-pdf') ."\" />";
-            echo "<input type='hidden' name=\"".$name."\" id='$name' value=\"$optValue\" />";
-            echo "</div>";
+        check_admin_referer('wc-recurring-settings-' . $section);
+        $posted = array_intersect_key(wp_unslash($_POST), array_flip($sections[$section]));
+        $checkboxes = ['wc_pdf_xinvoice', 'wc_order_show_completed', 'wc_customer_login_gdpr', 'wc_pdf_b2c', 'wc_recur_test', 'wc_payment_reminder', 'wc_recur', 'wc_recur_reminder'];
+        foreach (array_intersect($checkboxes, $sections[$section]) as $checkbox) {
+            $posted[$checkbox] = isset($posted[$checkbox]) ? 1 : 0;
         }
-        echo '</' . $xargs['container'] .'>';
+
+        WcRecurringIndex::$OPTIONS = array_replace(WcRecurringIndex::$OPTIONS, $posted);
+        WcRecurringIndex::save_options();
+        wp_send_json_success(['section' => $section]);
     }
 }

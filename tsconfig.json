@@ -1,0 +1,11 @@
+{
+    "include": [
+        "./browser/**/*"
+    ],
+    "compilerOptions": {
+        "module": "es2015",
+        "sourceMap": true,
+        "allowJs": true,
+        "noEmit": true
+    }
+}

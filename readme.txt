@@ -3,7 +3,7 @@ Contributors: ole1986
 Tags:  woocommerce, invoicing, billing, pdf, custom products
 Donate link: https://www.paypal.com/cgi-bin/webscr?item_name=Donation+WC+Recurring+Invoice+Pdf&cmd=_donations&business=ole.koeckemann@gmail.com
 Requires at least: 3.1
-Tested up to: 6.9
+Tested up to: 7.1
 Stable tag: trunk
 License: MIT
 
@@ -59,6 +59,7 @@ This plugins provides the following webhooks
 5. WC Recurring Settings (General)
 6. WC Recurring Settings (Invoice PDF)
 7. WC Recurring Settings (Email templates)
+8. WC Recurring Settings (Export / GnuCash)
 
 == License ==
 
