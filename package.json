@@ -9,7 +9,9 @@
         "build": "vite build && node scripts/copy-runtime-assets.mjs",
         "preview": "vite preview",
         "i18n-pot": "wp i18n make-pot . lang/wc-invoice-pdf.pot --domain=wc-invoice-pdf --location --exclude=dist,import,node_modules,vendor",
-        "i18n-update": "wp i18n update-po lang/wc-invoice-pdf.pot lang/wc-invoice-pdf-de_DE.po && wp i18n make-mo lang/wc-invoice-pdf-de_DE.po lang/wc-invoice-pdf-de_DE.mo && npx po2json lang/wc-invoice-pdf-de_DE.po lang/wc-invoice-pdf-de_DE-wc-recurring.json -f jed1.x"
+        "i18n-update-po": "docker compose run --rm --no-deps --entrypoint wp setup i18n update-po wp-content/plugins/wc-recurring-pdf/lang/wc-invoice-pdf.pot wp-content/plugins/wc-recurring-pdf/lang/wc-invoice-pdf-de_DE.po",
+        "i18n-make-mo": "docker compose run --rm --no-deps --entrypoint wp setup i18n make-mo wp-content/plugins/wc-recurring-pdf/lang/wc-invoice-pdf-de_DE.po wp-content/plugins/wc-recurring-pdf/lang/wc-invoice-pdf-de_DE.mo",
+        "i18n-po2json": "npx po2json lang/wc-invoice-pdf-de_DE.po lang/wc-invoice-pdf-de_DE-wc-recurring.json -f jed1.x"
     },
     "browserslist": "> 0.25%, not dead",
     "author": "",

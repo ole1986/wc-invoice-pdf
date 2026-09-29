@@ -4,6 +4,7 @@ import { reactive, ref } from 'vue'
 const dataElement = document.getElementById('wc-recurring-settings-data')
 const config = dataElement ? JSON.parse(dataElement.textContent) : { options: {}, subscriptions: {}, endpoints: {} }
 const t = (text) => window.wp?.i18n?.__(text, 'wc-invoice-pdf') || text
+const format = (text, ...values) => values.reduce((translated, value, index) => translated.replace(`%${index + 1}$s`, value), t(text))
 const options = reactive({ ...config.options })
 const tab = ref('general')
 const mediaTitle = ref('')
@@ -24,10 +25,10 @@ const schedulerFlags = [
 ]
 
 const tasks = [
-    ['notify', t('Payment notification'), 'Run the payment notifier now and submit outstanding invoice information'],
-    ['recur', t('Generate invoices'), 'Generate all recurring invoices for today. Please be careful with this as it may generate (and later submit) duplicates to the recipients'], 
-    ['submit', t('Submit invoices'), 'Submit all outstanding invoices to their recipients'], 
-    ['reminder', t('Trigger reminder'), 'Submit all reminder for invoice which are due. Please be careful with this as it will re-submit the reminders and increase the counter']
+    ['notify', t('Payment notification'), t('Run the payment notifier now and submit outstanding invoice information')],
+    ['recur', t('Generate invoices'), t('Generate all recurring invoices for today. Please be careful with this as it may generate (and later submit) duplicates to the recipients')],
+    ['submit', t('Submit invoices'), t('Submit all outstanding invoices to their recipients')],
+    ['reminder', t('Trigger reminder'), t('Submit all reminders for invoices that are due. Please be careful with this as it will resubmit the reminders and increase the counter')]
 ]
 
 for (const [name] of [...businessFlags, ...schedulerFlags]) {
@@ -85,7 +86,7 @@ function runTask(event, name) {
     const button = event.target.tagName === 'SPAN' ? event.target.parentElement : event.target
     const originalText = button.textContent
     button.disabled = true
-    button.textContent = 'Loading...'
+    button.textContent = t('Loading...')
 
     const request = new URLSearchParams({ action: 'InvoiceTask', name })
     return fetch(window.ajaxurl, {
@@ -96,11 +97,13 @@ function runTask(event, name) {
         .then((response) => response.text())
         .then((response) => {
             const result = Number.parseInt(response, 10)
-            window.alert(`Task ${name} returned code ${result}`)
+            const taskTitle = tasks.find(([taskName]) => taskName === name)?.[1] || name
+            window.alert(format('Task %1$s returned code %2$s', taskTitle, result))
             return result
         })
         .catch(() => {
-            window.alert(`Task ${name} failed`)
+            const taskTitle = tasks.find(([taskName]) => taskName === name)?.[1] || name
+            window.alert(format('Task %1$s failed', taskTitle))
             return null
         })
         .finally(() => {
@@ -336,7 +339,7 @@ function selectMedia() {
               <template #append>
                 <v-btn
                   variant="outlined"
-                  text="Run"
+                  :text="t('Run')"
                   @click="runTask($event, task[0])"
                 />
               </template>
@@ -435,7 +438,7 @@ function selectMedia() {
                 <v-card-title>{{ t('Placeholders') }}</v-card-title><v-table>
                   <thead>
                     <tr>
-                      <th>Placeholder</th>
+                      <th>{{ t('Placeholder') }}</th>
                       <th>{{ t('Description') }}</th>
                     </tr>
                   </thead>
