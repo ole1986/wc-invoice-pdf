@@ -14,6 +14,6 @@ RUN { \
     echo 'xdebug.client_host=host.docker.internal'; \
     echo 'xdebug.client_port=9003'; \
     echo 'xdebug.log_level=0'; \
-    } > /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    } > /usr/local/etc/php/conf.d/xdebug-settings.ini
 
 RUN echo 'memory_limit=256M' > /usr/local/etc/php/conf.d/docker-php-memlimit.ini
