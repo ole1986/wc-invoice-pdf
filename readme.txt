@@ -59,6 +59,7 @@ This plugins provides the following webhooks
 5. WC Recurring Settings (General)
 6. WC Recurring Settings (Invoice PDF)
 7. WC Recurring Settings (Email templates)
+8. WC Recurring Settings (Export / GnuCash)
 
 == License ==
 
