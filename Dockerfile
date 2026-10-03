@@ -16,4 +16,8 @@ RUN { \
     echo 'xdebug.log_level=0'; \
     } > /usr/local/etc/php/conf.d/xdebug-settings.ini
 
-RUN echo 'memory_limit=256M' > /usr/local/etc/php/conf.d/docker-php-memlimit.ini
+RUN { \
+    echo 'memory_limit=256M'; \
+    echo 'upload_max_filesize=128M'; \
+    echo 'post_max_size=160M'; \
+    } > /usr/local/etc/php/conf.d/docker-php-settings.ini

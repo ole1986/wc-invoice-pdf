@@ -13,7 +13,7 @@ function WcRecuringAdminClass() {
             alert('No hook action defined');
             return;
         }
-        $.extend(data, { action: action });
+        $.extend(data, { action: action, nonce: wcRecurringAdminData.nonce });
         return jQuery.post(ajaxurl, data, null, 'json');
     };
 

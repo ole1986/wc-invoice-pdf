@@ -167,11 +167,13 @@ class WcRecurringIndex
     public static function loadJS()
     {
         $plugin_data = get_plugin_data(__FILE__);
+        $is_vue_debug = !file_exists(WCRECURRING_PLUGIN_DIR . '/dist');
+        $is_settings_page = isset($_GET['page']) && $_GET['page'] === 'wcinvoicepdf_settings';
 
-        if (isset($_GET['page']) && $_GET['page'] === 'wcinvoicepdf_settings') {
-            if (!file_exists(WCRECURRING_PLUGIN_DIR . '/dist')) {
+        if ($is_settings_page) {
+            if ($is_vue_debug) {
                 $vite_url = 'http://localhost:5173';
-                $vite_handles = ['wc-recurring-vite-client', 'wc-recurring'];
+                $vite_handles = ['wc-recurring'];
 
                 add_filter('script_loader_tag', static function ($tag, $handle) use ($vite_handles) {
                     if (in_array($handle, $vite_handles, true)) {
@@ -181,7 +183,6 @@ class WcRecurringIndex
                     return $tag;
                 }, 10, 2);
 
-                wp_enqueue_script('wc-recurring-vite-client', $vite_url . '/@vite/client', [], null, true);
                 wp_enqueue_script('wc-recurring', $vite_url . '/main.js', ['media-editor', 'wp-i18n'], null, true);
             } else {
                 wp_enqueue_script('wc-recurring', WCRECURRING_PLUGIN_URL . 'dist/wc-recurring-settings.js', ['media-editor', 'wp-i18n'], $plugin_data['Version'], true);
@@ -190,8 +191,10 @@ class WcRecurringIndex
         } else {
             wp_enqueue_script('wc-recurring', WCRECURRING_PLUGIN_URL . 'dist/wc-recurring-admin.js', null, $plugin_data['Version']);
             wp_enqueue_style('wc-recurring-style', WCRECURRING_PLUGIN_URL . 'dist/wc-recurring.css', [], $plugin_data['Version']);
+            wp_localize_script('wc-recurring', 'wcRecurringAdminData', [
+            'nonce' => wp_create_nonce('wc-recurring-admin')
+            ]);
         }
-
         wp_set_script_translations('wc-recurring', 'wc-invoice-pdf', WCRECURRING_PLUGIN_DIR . 'lang');
     }
 
@@ -201,8 +204,8 @@ class WcRecurringIndex
 
         if (substr(__FILE__, -$l) == $file) {
             $row_meta = array(
-                'bug'    => '<a href="https://github.com/ole1986/wc-invoice-pdf/issues" style="color: #a00" target="_blank">Report Bug</a>',
-                'donate'    => '<a href="https://www.paypal.com/cgi-bin/webscr?item_name=Donation+WC+Recurring+Invoice+Pdf&cmd=_donations&business=ole.koeckemann@gmail.com" target="_blank"><span class="dashicons dashicons-heart"></span> Donate</a>'
+            'bug'    => '<a href="https://github.com/ole1986/wc-invoice-pdf/issues" style="color: #a00" target="_blank">Report Bug</a>',
+            'donate'    => '<a href="https://www.paypal.com/cgi-bin/webscr?item_name=Donation+WC+Recurring+Invoice+Pdf&cmd=_donations&business=ole.koeckemann@gmail.com" target="_blank"><span class="dashicons dashicons-heart"></span> Donate</a>'
             );
             return array_merge($links, $row_meta);
         }
