@@ -290,14 +290,25 @@ class Invoice
 
     public static function DoAjax()
     {
+        check_ajax_referer('wc-recurring-admin', 'nonce');
+
+        if (!current_user_can('edit_themes')) {
+            wp_die('Forbidden', '', ['response' => 403]);
+        }
+
         $result = '';
-        if (!empty($_POST['invoice_id'])) {
-            $invoice = new self(intval($_POST['invoice_id']));
+        $invoice_id = absint($_POST['invoice_id'] ?? 0);
+        if ($invoice_id) {
+            $invoice = new self($invoice_id);
+            if (empty($invoice->ID)) {
+                wp_die('Invoice not found', '', ['response' => 404]);
+            }
+
             if (!empty($_POST['due_date'])) {
-                $invoice->due_date = $result = date('Y-m-d H:i:s', strtotime($_POST['due_date']));
+                $invoice->due_date = $result = date('Y-m-d H:i:s', strtotime(wp_unslash($_POST['due_date'])));
             }
             if (!empty($_POST['paid_date'])) {
-                $invoice->paid_date = $result = date('Y-m-d H:i:s', strtotime($_POST['paid_date']));
+                $invoice->paid_date = $result = date('Y-m-d H:i:s', strtotime(wp_unslash($_POST['paid_date'])));
             }
 
             $invoice->Save();

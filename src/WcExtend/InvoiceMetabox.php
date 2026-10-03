@@ -25,18 +25,32 @@ class InvoiceMetabox
 
     public function DoAjax()
     {
-        $order_id = intval($_POST['order_id']);
+        check_ajax_referer('wc-recurring-admin', 'nonce');
 
-        if (empty($order_id)) {
-            wp_die();
+        $order_id = absint($_POST['order_id'] ?? 0);
+        $order = $order_id ? wc_get_order($order_id) : false;
+
+        if (!$order || !current_user_can('edit_shop_order', $order_id)) {
+            wp_die('Forbidden', '', ['response' => 403]);
         }
 
+        $result = '';
+
         if (isset($_POST['period'])) {
-            $period = esc_attr($_POST['period']);
+            $period = sanitize_key(wp_unslash($_POST['period']));
+            if (!in_array($period, ['', 'm', 'y'], true)) {
+                wp_die('Invalid period', '', ['response' => 400]);
+            }
+
             do_action('wc_recurring_order_period', $order_id, $period);
             $result = $period;
         } elseif (isset($_POST['b2c'])) {
-            if ($_POST['b2c'] == 'true') {
+            $b2c = sanitize_text_field(wp_unslash($_POST['b2c']));
+            if (!in_array($b2c, ['true', 'false'], true)) {
+                wp_die('Invalid value', '', ['response' => 400]);
+            }
+
+            if ($b2c === 'true') {
                 update_post_meta($order_id, '_wc_pdf_b2c', '1');
             } else {
                 delete_post_meta($order_id, '_wc_pdf_b2c');
